@@ -698,7 +698,10 @@
 
       <div class="taglist" id="protEntries"></div>
 
-      <button class="btn ghost wide" id="quickPA">+ Pequeno-almoço do plano · 38 g</button>
+      <div class="label" style="margin-bottom:7px">blocos do plano</div>
+      <div class="chipgrid" id="mealChips"></div>
+
+      <div class="label" style="margin:14px 0 0">ou somar alimento a alimento</div>
 
       <div class="foodtools">
         <input id="foodSearch" type="search" placeholder="Procurar alimento…" aria-label="Procurar alimento" />
@@ -943,7 +946,13 @@
     { g: "Extras", n: "Levedura nutricional",            p: "2 c. sopa",     v: 5,   vg: 1 }
   ];
 
-  var PA_PLANO = 38; // pequeno-almoço do plano, um toque
+  // Atalhos: os quatro blocos do plano, com a proteína prevista para cada um.
+  var MEALS = [
+    { id: "pa", t: "Pequeno-almoço", g: 38 },
+    { id: "al", t: "Almoço",         g: 40 },
+    { id: "me", t: "Merenda",        g: 23 },
+    { id: "ja", t: "Jantar",         g: 35 }
+  ];
 
   // Sem equipamento: a progressão vem da alavanca e do trabalho unilateral,
   // não de acrescentar quilos. `prog` vai do mais fácil ao mais difícil.
@@ -1245,6 +1254,14 @@
     });
     el("protEntries").innerHTML = tags;
 
+    // atalhos das quatro refeições do plano
+    var mh = "";
+    for (var mi = 0; mi < MEALS.length; mi++) {
+      mh += '<button class="chip" data-meal="' + MEALS[mi].id + '">' +
+            '<span>' + esc(MEALS[mi].t) + '</span><b>+' + MEALS[mi].g + ' g</b></button>';
+    }
+    el("mealChips").innerHTML = mh;
+
     // lista de alimentos, filtrada
     var q = norm(foodQuery.trim());
     var shown = FOODS.filter(function (f) {
@@ -1543,6 +1560,14 @@
       toast(ex.n + " · nível " + (next + 1) + ": " + ex.prog[next]);
       return;
     }
+    if (t.dataset.meal) {
+      var mid = t.dataset.meal, mm = null;
+      for (var mk = 0; mk < MEALS.length; mk++) {
+        if (MEALS[mk].id === mid) mm = MEALS[mk];
+      }
+      if (mm) { addProt(mm.t + " do plano", mm.g); toast(mm.t + " · +" + mm.g + " g"); }
+      return;
+    }
     if (t.dataset.food) {
       var f = FOODS[+t.dataset.food];
       if (f) { addProt(f.n, f.v); toast(f.n + " · +" + fmt(f.v) + " g"); }
@@ -1577,11 +1602,6 @@
     el("protExtra").value = "";
     addProt("Outro", v);
     toast("+" + fmt(v) + " g");
-  });
-
-  el("quickPA").addEventListener("click", function () {
-    addProt("Pequeno-almoço do plano", PA_PLANO);
-    toast("Pequeno-almoço somado · +" + PA_PLANO + " g");
   });
 
   el("veganTog").addEventListener("click", function () {

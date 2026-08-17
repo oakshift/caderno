@@ -1,0 +1,20 @@
+{
+  "name": "Plano de treino e alimentação",
+  "short_name": "Plano",
+  "description": "Registo diário de suplementos, proteína, treino, peso e cintura.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F3EF",
+  "theme_color": "#F5F3EF",
+  "lang": "pt-PT",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

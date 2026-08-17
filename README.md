@@ -1,4 +1,4 @@
-# Plano de CB
+# Plano de treino e alimentação
 
 Registo diário de treino e nutrição, numa única página HTML sem dependências.
 

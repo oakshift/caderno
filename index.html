@@ -3,14 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Plano de CB</title>
+<title>Plano de treino e alimentação</title>
 <meta name="description" content="Registo diário de suplementos, proteína, treino, peso e cintura.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F5F3EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12181E" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Plano de CB">
+<meta name="apple-mobile-web-app-title" content="Plano">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>%F0%9F%93%93</text></svg>">
 <style>
@@ -113,15 +115,18 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
+    gap: 4px 12px;
+    flex-wrap: wrap;
   }
 
   .brand {
     font-family: var(--font-display);
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 600;
+    line-height: 1.25;
     letter-spacing: -0.01em;
     margin: 0;
+    text-wrap: balance;
   }
 
   .brand span { color: var(--azulejo); }
@@ -660,7 +665,7 @@
 
 <header>
   <div class="head-inner">
-    <h1 class="brand">Plano de <span>CB</span></h1>
+    <h1 class="brand">Plano de <span>treino e alimentação</span></h1>
     <div class="phase-tag" id="phaseTag">semana 1 · fase 1</div>
   </div>
   <div class="weekstrip" id="weekstrip"></div>
@@ -1642,7 +1647,7 @@
 
   function summary() {
     var L = [];
-    L.push("PONTO DE SITUAÇÃO — Plano de CB");
+    L.push("PONTO DE SITUAÇÃO — Plano de treino e alimentação");
     L.push("Gerado: " + iso(new Date()) + " · semana " + weekNum() + " (fase " + phase() + ")");
     L.push("");
     L.push("SEQUÊNCIA DE SUPLEMENTOS: " + streak() + " dias consecutivos");
@@ -1759,7 +1764,7 @@
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
       a.href = url;
-      a.download = "plano-cb-" + iso(new Date()) + ".json";
+      a.download = "plano-" + iso(new Date()) + ".json";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

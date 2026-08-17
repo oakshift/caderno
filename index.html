@@ -1,0 +1,1802 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Caderno de Gaia</title>
+<meta name="description" content="Registo diário de suplementos, proteína, treino, peso e cintura.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F5F3EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12181E" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Caderno">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>%F0%9F%93%93</text></svg>">
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body, h1, h2, p { margin: 0; }
+  button, input { font-family: inherit; }
+  :root {
+    --ground: #F5F3EF;
+    --surface: #FFFFFF;
+    --surface-sunk: #EDEAE4;
+    --edge: #DAD5CC;
+    --edge-strong: #C3BCB0;
+    --ink: #1A2530;
+    --ink-soft: #55504A;
+    --ink-faint: #837C72;
+    --azulejo: #17539A;
+    --azulejo-soft: #E4EBF5;
+    --olive: #5C6E33;
+    --olive-soft: #E9EDDD;
+    --amber: #A9691A;
+    --porto: #7A2A33;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(26, 37, 48, 0.06);
+    --font-display: ui-serif, Georgia, "Times New Roman", serif;
+    --font-ui: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", sans-serif;
+    --font-data: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #12181E;
+      --surface: #1A222A;
+      --surface-sunk: #151C23;
+      --edge: #2B353F;
+      --edge-strong: #3D4954;
+      --ink: #E8E4DD;
+      --ink-soft: #ADA69C;
+      --ink-faint: #7E7669;
+      --azulejo: #6BA3E0;
+      --azulejo-soft: #1C2B3D;
+      --olive: #A3B86A;
+      --olive-soft: #222A18;
+      --amber: #D69A4E;
+      --porto: #C9757D;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #12181E;
+    --surface: #1A222A;
+    --surface-sunk: #151C23;
+    --edge: #2B353F;
+    --edge-strong: #3D4954;
+    --ink: #E8E4DD;
+    --ink-soft: #ADA69C;
+    --ink-faint: #7E7669;
+    --azulejo: #6BA3E0;
+    --azulejo-soft: #1C2B3D;
+    --olive: #A3B86A;
+    --olive-soft: #222A18;
+    --amber: #D69A4E;
+    --porto: #C9757D;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    padding-bottom: 84px;
+  }
+
+  .shell {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* ---------- header ---------- */
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--ground);
+    border-bottom: 1px solid var(--edge);
+  }
+
+  .head-inner {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .brand {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .brand span { color: var(--azulejo); }
+
+  .phase-tag {
+    font-family: var(--font-data);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  /* ---------- week strip ---------- */
+
+  .weekstrip {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 16px 12px;
+  }
+
+  .daychip {
+    border: 1px solid var(--edge);
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 6px 2px 7px;
+    text-align: center;
+    font-family: var(--font-data);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .daychip:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+  .daychip .dow { font-size: 10px; text-transform: uppercase; color: var(--ink-faint); letter-spacing: 0.04em; }
+  .daychip .num { font-size: 14px; font-variant-numeric: tabular-nums; }
+  .daychip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--edge-strong); }
+  .daychip.has-strength { border-color: var(--azulejo); }
+  .daychip.has-strength .dow { color: var(--azulejo); }
+  .daychip.filled .dot { background: var(--olive); }
+  .daychip.is-today { background: var(--azulejo); border-color: var(--azulejo); }
+  .daychip.is-today .dow, .daychip.is-today .num { color: #fff; }
+  .daychip.is-today .dot { background: rgba(255,255,255,0.55); }
+  .daychip.is-today.filled .dot { background: #fff; }
+
+  /* ---------- cards ---------- */
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  .label {
+    font-family: var(--font-data);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+
+  .pill {
+    font-family: var(--font-data);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .pill.blue { background: var(--azulejo-soft); color: var(--azulejo); }
+  .pill.green { background: var(--olive-soft); color: var(--olive); }
+
+  /* ---------- checkable rows ---------- */
+
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+
+  .checkrow {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    text-align: left;
+    background: var(--surface-sunk);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 11px 12px;
+    font: inherit;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .checkrow:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+
+  .box {
+    flex: none;
+    width: 21px; height: 21px;
+    border: 1.5px solid var(--edge-strong);
+    border-radius: 5px;
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+  }
+  .box svg { width: 13px; height: 13px; opacity: 0; }
+  .checkrow.on { background: var(--olive-soft); border-color: var(--olive); }
+  .checkrow.on .box { background: var(--olive); border-color: var(--olive); }
+  .checkrow.on .box svg { opacity: 1; }
+
+  .rowtext { flex: 1; min-width: 0; }
+  .rowtitle { font-size: 15px; }
+  .rowsub { font-size: 12.5px; color: var(--ink-faint); font-family: var(--font-data); }
+
+  /* ---------- protein ---------- */
+
+  .meter {
+    height: 8px;
+    background: var(--surface-sunk);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 4px 0 12px;
+  }
+  .meter > i {
+    display: block;
+    height: 100%;
+    background: var(--azulejo);
+    border-radius: 20px;
+    transition: width 0.2s ease;
+  }
+  .meter.hit > i { background: var(--olive); }
+
+  .bignum {
+    font-family: var(--font-data);
+    font-size: 27px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .bignum small { font-size: 14px; color: var(--ink-faint); letter-spacing: 0; }
+
+  .chipgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .chip {
+    background: var(--surface-sunk);
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font: inherit;
+    font-size: 13.5px;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    align-items: center;
+  }
+  .chip:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+  .chip b { font-family: var(--font-data); font-size: 12px; color: var(--azulejo); }
+  .chip.on { background: var(--olive-soft); border-color: var(--olive); }
+  .chip.on b { color: var(--olive); }
+
+  /* ---------- exercises ---------- */
+
+  .ex { border-top: 1px solid var(--edge); padding: 13px 0 4px; }
+  .ex:first-of-type { border-top: 0; padding-top: 4px; }
+
+  .ex-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .ex-name { font-size: 15px; font-weight: 500; }
+  .ex-target { font-family: var(--font-data); font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
+
+  .ex-last {
+    font-family: var(--font-data);
+    font-size: 11.5px;
+    color: var(--amber);
+    margin-top: 3px;
+  }
+
+  .sets { display: flex; gap: 7px; margin-top: 9px; flex-wrap: wrap; }
+
+  .setbox { display: flex; align-items: center; gap: 3px; }
+  .setbox .n {
+    font-family: var(--font-data);
+    font-size: 10px;
+    color: var(--ink-faint);
+    width: 12px;
+  }
+  .setbox input {
+    width: 44px;
+    font-family: var(--font-data);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    padding: 7px 2px;
+    border: 1px solid var(--edge-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .setbox input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; border-color: var(--azulejo); }
+  .setbox .x { font-family: var(--font-data); font-size: 11px; color: var(--ink-faint); }
+
+  /* ---------- metrics ---------- */
+
+  .statrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .stat {
+    background: var(--surface-sunk);
+    border-radius: 8px;
+    padding: 11px 12px;
+  }
+  .stat .label { display: block; margin-bottom: 3px; }
+  .stat .v { font-family: var(--font-data); font-size: 21px; font-variant-numeric: tabular-nums; }
+  .stat .d { font-family: var(--font-data); font-size: 11.5px; color: var(--ink-faint); }
+
+  .entry { display: flex; gap: 8px; align-items: stretch; margin-top: 10px; }
+  .entry input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-data);
+    font-size: 15px;
+    padding: 10px 11px;
+    border: 1px solid var(--edge-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .entry input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
+
+  .btn {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--azulejo);
+    background: var(--azulejo);
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .btn.ghost { background: transparent; color: var(--azulejo); }
+  .btn.wide { width: 100%; justify-content: center; }
+  .btn.danger { border-color: var(--porto); color: var(--porto); background: transparent; }
+
+  #loadFile { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  #loadLabel { display: block; text-align: center; cursor: pointer; }
+  #loadLabel:focus-within { outline: 2px solid var(--azulejo); outline-offset: 2px; }
+
+  .hist { margin-top: 12px; display: flex; flex-direction: column; gap: 0; }
+  .hist-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-data);
+    font-size: 12.5px;
+    padding: 7px 0;
+    border-top: 1px solid var(--edge);
+    font-variant-numeric: tabular-nums;
+  }
+  .hist-row span:last-child { color: var(--ink-faint); }
+
+  .note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: var(--azulejo-soft);
+    border-radius: 8px;
+    padding: 11px 12px;
+    margin-top: 12px;
+  }
+  .note strong { color: var(--azulejo); }
+
+  .empty {
+    font-size: 13.5px;
+    color: var(--ink-faint);
+    text-align: center;
+    padding: 18px 6px;
+  }
+
+  /* ---------- tabs ---------- */
+
+  nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--edge);
+    z-index: 30;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .nav-inner {
+    max-width: 560px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .tab {
+    background: none;
+    border: 0;
+    padding: 10px 4px 12px;
+    font: inherit;
+    font-size: 11px;
+    font-family: var(--font-data);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border-top: 2px solid transparent;
+    margin-top: -1px;
+  }
+  .tab svg { width: 19px; height: 19px; }
+  .tab.on { color: var(--azulejo); border-top-color: var(--azulejo); }
+  .tab:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -3px; }
+
+  .view { display: none; padding-top: 4px; }
+  .view.on { display: block; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 78px;
+    transform: translate(-50%, 12px);
+    background: var(--ink);
+    color: var(--ground);
+    font-size: 13.5px;
+    padding: 9px 15px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 40;
+    max-width: calc(100% - 32px);
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- progressão de exercício ---------- */
+
+  .cue {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  .lvlbar {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 9px;
+    border: 1px solid var(--edge-strong);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface-sunk);
+  }
+
+  .lvlbtn {
+    flex: none;
+    width: 38px;
+    border: 0;
+    background: var(--surface);
+    color: var(--azulejo);
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    font-family: var(--font-ui);
+  }
+  .lvlbtn:disabled { color: var(--edge-strong); cursor: default; }
+  .lvlbtn:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -2px; }
+  .lvlbtn.up { border-left: 1px solid var(--edge-strong); }
+  .lvlbtn.down { border-right: 1px solid var(--edge-strong); }
+
+  .lvlname {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    justify-content: center;
+  }
+  .lvlname .lv {
+    font-family: var(--font-data);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-faint);
+  }
+  .lvlname .lt { font-size: 13.5px; line-height: 1.3; }
+
+  .kitlist { display: flex; flex-direction: column; gap: 0; }
+  .kitrow {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    padding: 9px 0;
+    border-top: 1px solid var(--edge);
+    display: flex;
+    gap: 9px;
+  }
+  .kitrow:first-child { border-top: 0; }
+  .kitrow::before {
+    content: "";
+    flex: none;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--azulejo);
+    margin-top: 8px;
+  }
+
+  /* ---------- food picker ---------- */
+
+  .taglist { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--olive-soft);
+    color: var(--olive);
+    border: 1px solid var(--olive);
+    border-radius: 20px;
+    padding: 4px 6px 4px 10px;
+    font-family: var(--font-data);
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+  .tag:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+  .tag i { font-style: normal; opacity: 0.6; font-size: 14px; line-height: 1; }
+
+  .foodtools { display: flex; gap: 7px; margin: 12px 0 8px; }
+  .foodtools input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 14.5px;
+    padding: 9px 11px;
+    border: 1px solid var(--edge-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .foodtools input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
+
+  .vtog {
+    flex: none;
+    font-family: var(--font-data);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 0 11px;
+    border-radius: 8px;
+    border: 1px solid var(--edge-strong);
+    background: var(--surface);
+    color: var(--ink-faint);
+    cursor: pointer;
+  }
+  .vtog.on { background: var(--olive); border-color: var(--olive); color: #fff; }
+  .vtog:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+
+  .foodlist {
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    background: var(--surface-sunk);
+  }
+
+  .fgroup {
+    font-family: var(--font-data);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    padding: 9px 11px 5px;
+    position: sticky;
+    top: 0;
+    background: var(--surface-sunk);
+  }
+
+  .frow {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 0;
+    border-top: 1px solid var(--edge);
+    padding: 10px 11px;
+    font: inherit;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .frow:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -2px; }
+  .frow:active { background: var(--azulejo-soft); }
+  .frow .fn { flex: 1; font-size: 14.5px; }
+  .frow .fp { font-family: var(--font-data); font-size: 11px; color: var(--ink-faint); white-space: nowrap; }
+  .frow .fv {
+    font-family: var(--font-data);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--azulejo);
+    white-space: nowrap;
+    min-width: 38px;
+    text-align: right;
+  }
+  .frow.hi .fv { color: var(--olive); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <h1 class="brand">Caderno de <span>Gaia</span></h1>
+    <div class="phase-tag" id="phaseTag">semana 1 · fase 1</div>
+  </div>
+  <div class="weekstrip" id="weekstrip"></div>
+</header>
+
+<div class="shell">
+
+  <!-- ============ HOJE ============ -->
+  <section class="view on" id="v-hoje">
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Suplementos</h2>
+        <div class="pill blue" id="streakPill">sequência 0 d</div>
+      </div>
+      <div class="rows" id="suppRows"></div>
+      <div class="note">
+        Tome os quatro <strong>à mesma refeição, com gordura</strong> — a D3 e o óleo
+        precisam dela para serem absorvidos. A consistência diária é o que conta.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Proteína</h2>
+        <div class="label">alvo 125 g</div>
+      </div>
+      <div class="bignum"><span id="protNum">0</span><small> / 125 g</small></div>
+      <div class="meter" id="protMeter"><i style="width:0%"></i></div>
+
+      <div class="taglist" id="protEntries"></div>
+
+      <button class="btn ghost wide" id="quickPA">+ Pequeno-almoço do plano · 38 g</button>
+
+      <div class="foodtools">
+        <input id="foodSearch" type="search" placeholder="Procurar alimento…" aria-label="Procurar alimento" />
+        <button class="vtog" id="veganTog" aria-pressed="false">vegan</button>
+      </div>
+
+      <div class="foodlist" id="foodList"></div>
+
+      <div class="entry">
+        <input id="protExtra" type="number" inputmode="decimal" placeholder="outro (g)" aria-label="Gramas de proteína a somar manualmente" />
+        <button class="btn ghost" id="protAdd">Somar</button>
+      </div>
+    </div>
+
+    <div class="card" id="promoCard" style="display:none"></div>
+
+    <div class="card" id="todayTrainCard"></div>
+
+  </section>
+
+  <!-- ============ TREINO ============ -->
+  <section class="view" id="v-treino">
+    <div class="card">
+      <div class="card-head">
+        <h2 id="trainTitle">Treino</h2>
+        <div class="pill blue" id="trainPill"></div>
+      </div>
+      <div id="exList"></div>
+      <button class="btn wide" id="markDone" style="margin-top:14px">Marcar sessão como feita</button>
+      <div class="note">
+        Deixe <strong>1–2 repetições na reserva</strong>. Sem pesos, a progressão é
+        de <strong>nível</strong>: quando fizer o topo do intervalo em todas as
+        séries, com boa forma, suba um nível com o <strong>+</strong>. Se no nível
+        novo não chegar ao mínimo, desça e fique mais uma semana.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Escolher sessão</h2></div>
+      <div class="chipgrid" id="pickSession"></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2>Material que já tem em casa</h2>
+        <div class="label">sem ginásio</div>
+      </div>
+      <div class="kitlist" id="kitList"></div>
+      <div class="note">
+        Se algum dia comprar uma coisa só, compre uma <strong>barra de porta para
+        puxadas</strong> (15–25 €). Puxar é o único padrão que a casa não substitui bem.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÉTRICAS ============ -->
+  <section class="view" id="v-metricas">
+    <div class="card">
+      <div class="card-head"><h2>Peso e cintura</h2></div>
+      <div class="statrow">
+        <div class="stat">
+          <span class="label">peso</span>
+          <div class="v" id="wNow">—</div>
+          <div class="d" id="wDelta">sem registo</div>
+        </div>
+        <div class="stat">
+          <span class="label">cintura</span>
+          <div class="v" id="cNow">—</div>
+          <div class="d" id="cDelta">sem registo</div>
+        </div>
+      </div>
+      <div class="entry">
+        <input id="wIn" type="number" inputmode="decimal" step="0.1" placeholder="peso, kg" aria-label="Peso em quilogramas" />
+        <button class="btn" id="wAdd">Registar</button>
+      </div>
+      <div class="entry">
+        <input id="cIn" type="number" inputmode="decimal" step="0.5" placeholder="cintura, cm" aria-label="Perímetro abdominal em centímetros" />
+        <button class="btn" id="cAdd">Registar</button>
+      </div>
+      <div class="note" id="readout">
+        Leia os dois juntos: <strong>peso a subir devagar com cintura estável = massa
+        muscular.</strong> Ambos a subir = excedente calórico, corte ~200 kcal.
+        Peso a descer = coma mais.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Histórico</h2>
+        <div class="label">peso · kg</div>
+      </div>
+      <div class="hist" id="wHist"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Treinos por semana</h2></div>
+      <div class="hist" id="volHist"></div>
+    </div>
+  </section>
+
+  <!-- ============ DADOS ============ -->
+  <section class="view" id="v-dados">
+    <div class="card">
+      <div class="card-head"><h2>Ponto de situação</h2></div>
+      <p style="font-size:14px;color:var(--ink-soft);margin:0 0 12px">
+        Copie o resumo e cole-o numa conversa comigo para eu revisar a progressão,
+        ajustar cargas e comparar com as análises.
+      </p>
+      <button class="btn wide" id="copyBtn">Copiar resumo para o Claude</button>
+      <div style="height:8px"></div>
+      <button class="btn ghost wide" id="saveBtn">Guardar cópia de segurança (.json)</button>
+      <div style="height:8px"></div>
+      <label class="btn ghost wide" id="loadLabel" for="loadFile">Restaurar a partir de ficheiro</label>
+      <input id="loadFile" type="file" accept=".json,application/json" aria-label="Ficheiro de cópia de segurança">
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Definições</h2></div>
+      <div class="entry">
+        <input id="hIn" type="number" inputmode="decimal" step="1" placeholder="altura, cm" aria-label="Altura em centímetros" />
+        <button class="btn ghost" id="hSave">Guardar</button>
+      </div>
+      <p style="font-size:13px;color:var(--ink-soft);margin:10px 0 0">
+        Usada para calcular a razão cintura/altura, que é melhor indicador que o
+        perímetro isolado. Abaixo de 0,50 é o objetivo.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Análises a repetir</h2></div>
+      <div class="rows" id="labRows"></div>
+      <div class="note">
+        Faça a <strong>homocisteína</strong> antes de regularizar a B12, se ainda der.
+        A <strong>Lp(a)</strong> é uma vez na vida. Leve a tensão medida em casa.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Os seus dados</h2></div>
+      <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 12px">
+        Tudo fica guardado apenas neste telemóvel, no armazenamento local do browser.
+        Nada é enviado para servidor nenhum. Se limpar os dados do browser, perde o
+        registo — guarde o ficheiro .json de vez em quando.
+      </p>
+      <button class="btn danger wide" id="resetBtn">Apagar todo o registo</button>
+    </div>
+  </section>
+
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <button class="tab on" data-view="hoje">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Hoje
+    </button>
+    <button class="tab" data-view="treino">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11"/></svg>
+      Treino
+    </button>
+    <button class="tab" data-view="metricas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-8 4 5"/><path d="M3 21h18"/></svg>
+      Métricas
+    </button>
+    <button class="tab" data-view="dados">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+      Dados
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "caderno-gaia-v1";
+  var PROT_TARGET = 125;
+
+  var SUPPS = [
+    { id: "b12",   t: "B12 metilcobalamina", s: "1000 µg · diária" },
+    { id: "d3",    t: "Vitamina D3",         s: "1000 UI · com gordura" },
+    { id: "algas", t: "Óleo de algas",       s: "250–500 mg DHA" },
+    { id: "creat", t: "Creatina",            s: "3–5 g · qualquer hora" }
+  ];
+
+  // v = gramas de proteína na porção indicada. vg = adequado a dieta vegan.
+  var FOODS = [
+    { g: "Soja e derivados", n: "Seitan",                p: "120 g",         v: 30,  vg: 1 },
+    { g: "Soja e derivados", n: "Soja texturizada",      p: "60 g seca",     v: 30,  vg: 1 },
+    { g: "Soja e derivados", n: "Tempeh",                p: "120 g",         v: 24,  vg: 1 },
+    { g: "Soja e derivados", n: "Tofu extra-firme",      p: "100 g",         v: 19,  vg: 1 },
+    { g: "Soja e derivados", n: "Tofu firme",            p: "100 g",         v: 16,  vg: 1 },
+    { g: "Soja e derivados", n: "Edamame",               p: "150 g",         v: 17,  vg: 1 },
+    { g: "Soja e derivados", n: "Bebida de soja",        p: "250 ml",        v: 8,   vg: 1 },
+
+    { g: "Leguminosas (cozidas)", n: "Tremoços",         p: "150 g",         v: 24,  vg: 1 },
+    { g: "Leguminosas (cozidas)", n: "Lentilhas",        p: "200 g",         v: 18,  vg: 1 },
+    { g: "Leguminosas (cozidas)", n: "Grão-de-bico",     p: "200 g",         v: 18,  vg: 1 },
+    { g: "Leguminosas (cozidas)", n: "Feijão preto",     p: "200 g",         v: 17,  vg: 1 },
+    { g: "Leguminosas (cozidas)", n: "Feijão encarnado", p: "200 g",         v: 17,  vg: 1 },
+    { g: "Leguminosas (cozidas)", n: "Feijão-frade",     p: "200 g",         v: 16,  vg: 1 },
+    { g: "Leguminosas (cozidas)", n: "Ervilhas",         p: "200 g",         v: 11,  vg: 1 },
+
+    { g: "Lácteos e ovos", n: "Skyr",                    p: "200 g",         v: 22,  vg: 0 },
+    { g: "Lácteos e ovos", n: "Queijo quark",            p: "200 g",         v: 22,  vg: 0 },
+    { g: "Lácteos e ovos", n: "Iogurte grego",           p: "150 g",         v: 14,  vg: 0 },
+    { g: "Lácteos e ovos", n: "Requeijão",               p: "100 g",         v: 11,  vg: 0 },
+    { g: "Lácteos e ovos", n: "Leite",                   p: "250 ml",        v: 8.5, vg: 0 },
+    { g: "Lácteos e ovos", n: "Queijo flamengo / Serra", p: "fatia 30 g",    v: 7,   vg: 0 },
+    { g: "Lácteos e ovos", n: "Ovo",                     p: "1 grande",      v: 6.5, vg: 0 },
+
+    { g: "Peixe", n: "Salmão",                           p: "130 g",         v: 27,  vg: 0 },
+    { g: "Peixe", n: "Cavala",                           p: "130 g",         v: 26,  vg: 0 },
+    { g: "Peixe", n: "Atum em lata",                     p: "1 lata",        v: 20,  vg: 0 },
+    { g: "Peixe", n: "Sardinha em lata",                 p: "1 lata",        v: 20,  vg: 0 },
+
+    { g: "Frutos secos e sementes", n: "Sementes de abóbora",  p: "30 g",    v: 9,   vg: 1 },
+    { g: "Frutos secos e sementes", n: "Manteiga de amendoim", p: "30 g",    v: 7.5, vg: 1 },
+    { g: "Frutos secos e sementes", n: "Amêndoas",             p: "30 g",    v: 6,   vg: 1 },
+    { g: "Frutos secos e sementes", n: "Tahini",               p: "30 g",    v: 5,   vg: 1 },
+    { g: "Frutos secos e sementes", n: "Nozes",                p: "30 g",    v: 4.5, vg: 1 },
+
+    { g: "Cereais", n: "Massa integral",                 p: "200 g cozida",  v: 11,  vg: 1 },
+    { g: "Cereais", n: "Aveia",                          p: "80 g seca",     v: 10,  vg: 1 },
+    { g: "Cereais", n: "Quinoa",                         p: "200 g cozida",  v: 9,   vg: 1 },
+    { g: "Cereais", n: "Pão de centeio",                 p: "2 fatias",      v: 6,   vg: 1 },
+    { g: "Cereais", n: "Arroz",                          p: "200 g cozido",  v: 5,   vg: 1 },
+
+    { g: "Extras", n: "Proteína em pó",                  p: "1 medida 30 g", v: 24,  vg: 1 },
+    { g: "Extras", n: "Levedura nutricional",            p: "2 c. sopa",     v: 5,   vg: 1 }
+  ];
+
+  var PA_PLANO = 38; // pequeno-almoço do plano, um toque
+
+  // Sem equipamento: a progressão vem da alavanca e do trabalho unilateral,
+  // não de acrescentar quilos. `prog` vai do mais fácil ao mais difícil.
+  var SESSIONS = {
+    A: { name: "Força A", ex: [
+      { n: "Agachamento", t: "3 × 8–15", sets: 3, load: true,
+        cue: "Peito aberto, joelhos a acompanhar a ponta dos pés, descer até à coxa paralela ao chão.",
+        prog: ["Sentar e levantar de uma cadeira", "Agachamento livre", "Com pausa de 2 s no fundo",
+               "Com mochila carregada", "Afundo estático (split)", "Búlgaro com pé de trás na cadeira",
+               "A uma perna com mão na parede", "Pistol completo"] },
+
+      { n: "Flexões", t: "3 × 8–12", sets: 3, load: false,
+        cue: "Corpo em prancha do calcanhar à cabeça. Cotovelos a ~45°, não abertos em T.",
+        prog: ["Na parede", "Mãos na bancada da cozinha", "Mãos numa cadeira", "Joelhos no chão",
+               "Completas", "Com pausa de 2 s no fundo", "Pés numa cadeira", "Mãos juntas (diamante)",
+               "Archer (peso deslocado para um lado)"] },
+
+      { n: "Remada", t: "3 × 8–12", sets: 3, load: true,
+        cue: "Puxe com as omoplatas, não com os bíceps. Apertar as costas no fim de cada repetição.",
+        prog: ["Toalha presa no batente da porta, puxar de pé", "Remada com mochila carregada, tronco inclinado",
+               "Remada invertida debaixo de uma mesa robusta, joelhos dobrados",
+               "Remada invertida com pernas esticadas", "Com pés elevados numa cadeira",
+               "Barra fixa do parque: puxada assistida com os pés", "Puxada completa"] },
+
+      { n: "Ponte de glúteos", t: "3 × 12–20", sets: 3, load: true,
+        cue: "Empurrar o chão com os calcanhares e apertar o glúteo no topo. Não arquear a lombar.",
+        prog: ["Ponte no chão", "Com pausa de 3 s no topo", "Pés numa cadeira",
+               "Mochila sobre a bacia", "A uma perna", "A uma perna com pés elevados"] },
+
+      { n: "Prancha frontal", t: "3 × 30–45 s", sets: 3, load: false,
+        cue: "Costelas para baixo, glúteo apertado. Se a lombar cede, pare — o tempo não vale nada sem forma.",
+        prog: ["Nos joelhos", "Completa", "Com elevação alternada de um braço",
+               "Prancha lateral", "Hollow hold"] }
+    ]},
+
+    B: { name: "Força B", ex: [
+      { n: "Agachamento búlgaro", t: "3 × 8–10 / perna", sets: 3, load: true,
+        cue: "Pé de trás numa cadeira. O trabalho é da perna da frente; tronco ligeiramente inclinado.",
+        prog: ["Afundo estático, pés no chão", "Afundo com passada atrás", "Búlgaro na cadeira",
+               "Búlgaro com pausa no fundo", "Búlgaro com mochila", "Búlgaro com mochila pesada"] },
+
+      { n: "Empurrar acima da cabeça", t: "3 × 6–12", sets: 3, load: true,
+        cue: "O padrão vertical do ombro. Cabeça passa entre as mãos, não à frente.",
+        prog: ["Press com mochila carregada, de pé", "Flexão em V (pike), pés no chão",
+               "Pike com pés numa cadeira", "Pike com pausa no fundo",
+               "Flexão em pirâmide alta", "Contra a parede, invertido"] },
+
+      { n: "Puxada vertical", t: "3 × 5–12", sets: 3, load: false,
+        cue: "Se houver barra no parque da escola, use-a. É o padrão mais difícil de substituir em casa.",
+        prog: ["Toalha na porta: puxada isométrica, 20 s", "Remada invertida na mesa",
+               "Barra do parque: suspensão passiva 20 s", "Puxada com salto e descida lenta (excêntrica 5 s)",
+               "Puxada assistida com um pé no chão", "Puxada completa", "Puxada com pausa no topo"] },
+
+      { n: "Dobradiça / posterior", t: "3 × 8–12", sets: 3, load: true,
+        cue: "Empurrar a bacia atrás com as pernas quase esticadas. Sente-se atrás da coxa, não na lombar.",
+        prog: ["Bom-dia sem carga", "Peso morto romeno com mochila", "A uma perna, mão na parede",
+               "A uma perna com mochila", "Nordic curl excêntrico: joelhos no chão, pés presos sob o sofá, descer 5 s"] },
+
+      { n: "Elevação de gémeos", t: "3 × 15–25", sets: 3, load: true,
+        cue: "No bordo de um degrau, amplitude completa: descer o talão abaixo do degrau e subir ao máximo.",
+        prog: ["Duas pernas no chão", "Duas pernas no degrau", "Com mochila",
+               "A uma perna", "A uma perna com pausa de 2 s no topo"] }
+    ]},
+
+    C: { name: "Força C", ex: [
+      { n: "Agachamento (carga alta)", t: "4 × 6–8", sets: 4, load: true,
+        cue: "A sessão pesada da semana. Menos repetições, mais dificuldade por repetição.",
+        prog: ["Búlgaro na cadeira", "Búlgaro com mochila", "Búlgaro com mochila pesada",
+               "Step-up alto numa cadeira", "A uma perna com mão na parede", "Pistol completo"] },
+
+      { n: "Flexões (variante difícil)", t: "3 × 6–12", sets: 3, load: false,
+        cue: "Escolha a variante em que 6 repetições já custam. Se fizer 15, subiu demasiado devagar.",
+        prog: ["Completas com pausa de 2 s", "Pés numa cadeira", "Diamante", "Archer",
+               "Excêntrica lenta a um braço, 5 s"] },
+
+      { n: "Remada invertida", t: "3 × 8–12", sets: 3, load: false,
+        cue: "Debaixo de uma mesa que aguente o seu peso. Quanto mais horizontal o corpo, mais difícil.",
+        prog: ["Joelhos dobrados", "Pernas esticadas", "Pés elevados numa cadeira",
+               "Com pausa de 2 s no topo", "A um braço, assistida"] },
+
+      { n: "Farmer walks", t: "3 × 30–40 m", sets: 3, load: true,
+        cue: "Dois garrafões de água de 5 L, um em cada mão. Ombros atrás, andar direito.",
+        prog: ["2 garrafões de 5 L", "2 sacos de compras carregados", "Mochila + garrafões",
+               "Distância maior com o mesmo peso"] },
+
+      { n: "Saltos verticais", t: "3 × 10", sets: 3, load: false,
+        cue: "Para o osso, não para o músculo. Aterragem suave, joelhos a amortecer. Nunca em fadiga.",
+        prog: ["Elevação nas pontas dos pés com impulso", "Saltos pequenos no lugar",
+               "Salto vertical máximo", "Salto para cima de um degrau", "Subir escadas a correr"] }
+    ]}
+  };
+
+  var LOADS = [
+    "Mochila com livros — 8 a 20 kg, e ajusta-se aos poucos",
+    "Garrafas de água na mochila — 1 L = 1 kg, fácil de calibrar",
+    "Garrafões de 5 L — têm asa, servem para farmer walks e agachamento abraçado",
+    "Saco de arroz ou batatas — 5 a 10 kg",
+    "Toalha e o batente de uma porta — para todos os padrões de puxar",
+    "Uma cadeira robusta — búlgaro, pés elevados, step-up",
+    "Uma mesa que aguente o seu peso — remada invertida",
+    "Barra do parque da escola — puxadas, quando lá deixar o seu filho"
+  ];
+
+  var LABS = [
+    { id: "homo",  t: "Homocisteína",             s: "estado funcional da B12" },
+    { id: "trans", t: "Saturação da transferrina", s: "jejum, sem ferro 3 dias" },
+    { id: "vitd",  t: "25-OH-vitamina D",         s: "define a dose de D3" },
+    { id: "lpa",   t: "Lipoproteína(a)",          s: "uma vez na vida" },
+    { id: "hemo",  t: "Hemograma repetido",       s: "bem hidratado" },
+    { id: "ta",    t: "Tensão arterial, 7 dias",  s: "em casa, 2× por dia" }
+  ];
+
+  var DOW = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+  // ---------- state ----------
+
+  var S = load();
+  var viewDate = iso(new Date());
+  var foodQuery = "";
+
+  // busca insensível a acentos
+  function norm(s) {
+    return s.toLowerCase()
+      .replace(/[áàâã]/g, "a").replace(/[éê]/g, "e").replace(/[í]/g, "i")
+      .replace(/[óòôõ]/g, "o").replace(/[úü]/g, "u").replace(/[ç]/g, "c");
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var p = JSON.parse(raw);
+        if (p && p.days) return p;
+      }
+    } catch (e) {}
+    return { start: iso(new Date()), days: {}, weights: [], waists: [], labs: {}, phase2: false, veganOnly: false };
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); }
+    catch (e) { toast("Não foi possível guardar neste browser."); }
+  }
+
+  function iso(d) {
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function parseIso(s) {
+    var a = s.split("-");
+    return new Date(+a[0], +a[1] - 1, +a[2]);
+  }
+
+  function day(d) {
+    if (!S.days[d]) S.days[d] = { supps: {}, prot: 0, entries: [], sess: null, done: false, log: {} };
+    var o = S.days[d];
+    if (!o.supps) o.supps = {};
+    if (!o.entries) o.entries = [];
+    if (!o.log) o.log = {};
+    return o;
+  }
+
+  // O nível de progressão é global por exercício, não por dia:
+  // uma vez subido, mantém-se nas sessões seguintes.
+  function lvlOf(exName) {
+    if (!S.levels) S.levels = {};
+    return S.levels[exName] || 0;
+  }
+
+  function heightCm() {
+    return (S.height && S.height > 100 && S.height < 250) ? S.height : 193;
+  }
+
+  function weekNum() {
+    var diff = parseIso(iso(new Date())) - parseIso(S.start);
+    return Math.floor(diff / 604800000) + 1;
+  }
+  // A fase 2 nunca avança sozinha: exige confirmação explícita a partir da semana 5.
+  function phase() { return (weekNum() >= 5 && S.phase2) ? 2 : 1; }
+  function phase2Available() { return weekNum() >= 5 && !S.phase2; }
+
+  // Fase 1: Seg=A, Qui=B.  Fase 2: Seg=A, Qua=B, Sex=C.
+  function plannedFor(d) {
+    var w = parseIso(d).getDay();
+    if (phase() === 1) {
+      if (w === 1) return "A";
+      if (w === 4) return "B";
+    } else {
+      if (w === 1) return "A";
+      if (w === 3) return "B";
+      if (w === 5) return "C";
+    }
+    return null;
+  }
+
+  function sessionOf(d) {
+    var o = day(d);
+    return o.sess || plannedFor(d);
+  }
+
+  function weekTarget() { return phase() === 1 ? 2 : 3; }
+
+  function weekStart(date) {
+    var d = parseIso(iso(date));
+    var w = d.getDay();
+    d.setDate(d.getDate() - (w === 0 ? 6 : w - 1));
+    return d;
+  }
+
+  function doneThisWeek() {
+    var s = weekStart(new Date()), n = 0;
+    for (var i = 0; i < 7; i++) {
+      var dd = new Date(s); dd.setDate(s.getDate() + i);
+      var o = S.days[iso(dd)];
+      if (o && o.done) n++;
+    }
+    return n;
+  }
+
+  function streak() {
+    var n = 0, d = new Date();
+    for (;;) {
+      var o = S.days[iso(d)];
+      var all = o && SUPPS.every(function (x) { return o.supps[x.id]; });
+      if (!all) {
+        // hoje ainda pode estar a meio: não quebra a sequência
+        if (n === 0 && iso(d) === iso(new Date())) { d.setDate(d.getDate() - 1); continue; }
+        break;
+      }
+      n++;
+      d.setDate(d.getDate() - 1);
+      if (n > 3650) break;
+    }
+    return n;
+  }
+
+  // última carga registada para um exercício, antes de `before`
+  function lastLoad(exName, before) {
+    var keys = Object.keys(S.days).filter(function (k) { return k < before; }).sort().reverse();
+    for (var i = 0; i < keys.length; i++) {
+      var lg = S.days[keys[i]].log;
+      if (lg && lg[exName] && lg[exName].length) {
+        var sets = lg[exName].filter(function (x) { return x && (x.w || x.r); });
+        if (sets.length) return { date: keys[i], sets: sets };
+      }
+    }
+    return null;
+  }
+
+  // ---------- render ----------
+
+  function el(id) { return document.getElementById(id); }
+
+  function renderHeader() {
+    el("phaseTag").textContent = "semana " + weekNum() + " · fase " + phase();
+
+    var s = weekStart(new Date()), html = "";
+    for (var i = 0; i < 7; i++) {
+      var dd = new Date(s); dd.setDate(s.getDate() + i);
+      var k = iso(dd), o = S.days[k];
+      var cls = "daychip";
+      if (plannedFor(k)) cls += " has-strength";
+      if (o && (o.done || (o.prot > 0) || SUPPS.some(function (x) { return o.supps[x.id]; }))) cls += " filled";
+      if (k === iso(new Date())) cls += " is-today";
+      html += '<button class="' + cls + '" data-d="' + k + '">' +
+              '<span class="dow">' + DOW[dd.getDay()] + '</span>' +
+              '<span class="num">' + dd.getDate() + '</span>' +
+              '<span class="dot"></span></button>';
+    }
+    el("weekstrip").innerHTML = html;
+  }
+
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+
+  function renderSupps() {
+    var o = day(viewDate), html = "";
+    SUPPS.forEach(function (x) {
+      html += '<button class="checkrow ' + (o.supps[x.id] ? "on" : "") + '" data-supp="' + x.id + '">' +
+              '<span class="box">' + CHECK + '</span>' +
+              '<span class="rowtext"><span class="rowtitle">' + x.t + '</span><br>' +
+              '<span class="rowsub">' + x.s + '</span></span></button>';
+    });
+    el("suppRows").innerHTML = html;
+    el("streakPill").textContent = "sequência " + streak() + " d";
+  }
+
+  function renderProt() {
+    var o = day(viewDate);
+    var pct = Math.min(100, Math.round((o.prot / PROT_TARGET) * 100));
+    el("protNum").textContent = Math.round(o.prot);
+    var m = el("protMeter");
+    m.firstElementChild.style.width = pct + "%";
+    m.className = "meter" + (o.prot >= PROT_TARGET ? " hit" : "");
+
+    // o que já foi somado hoje, cada um removível
+    var tags = "";
+    o.entries.forEach(function (e, i) {
+      tags += '<button class="tag" data-rm="' + i + '" aria-label="Remover ' + esc(e.n) + '">' +
+              esc(e.n) + ' ' + fmt(e.v) + 'g <i>×</i></button>';
+    });
+    el("protEntries").innerHTML = tags;
+
+    // lista de alimentos, filtrada
+    var q = norm(foodQuery.trim());
+    var shown = FOODS.filter(function (f) {
+      if (S.veganOnly && !f.vg) return false;
+      if (!q) return true;
+      return norm(f.n).indexOf(q) >= 0 || norm(f.g).indexOf(q) >= 0;
+    });
+
+    var out = "", lastGroup = null;
+    shown.forEach(function (f) {
+      var idx = FOODS.indexOf(f);
+      if (f.g !== lastGroup) {
+        out += '<div class="fgroup">' + esc(f.g) + '</div>';
+        lastGroup = f.g;
+      }
+      out += '<button class="frow' + (f.v >= 18 ? " hi" : "") + '" data-food="' + idx + '">' +
+             '<span class="fn">' + esc(f.n) + '</span>' +
+             '<span class="fp">' + esc(f.p) + '</span>' +
+             '<span class="fv">' + fmt(f.v) + ' g</span></button>';
+    });
+    el("foodList").innerHTML = out ||
+      '<div class="empty">Nenhum alimento corresponde a essa procura.</div>';
+
+    var vt = el("veganTog");
+    vt.classList.toggle("on", !!S.veganOnly);
+    vt.setAttribute("aria-pressed", S.veganOnly ? "true" : "false");
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function fmt(n) {
+    return (Math.round(n * 10) / 10).toString().replace(".", ",");
+  }
+
+  function addProt(name, grams) {
+    var o = day(viewDate);
+    o.entries.push({ n: name, v: grams });
+    o.prot = Math.round((o.prot + grams) * 10) / 10;
+    save(); renderProt(); renderHeader();
+  }
+
+  function renderTodayTrain() {
+    var sess = sessionOf(viewDate), o = day(viewDate);
+    var c = el("todayTrainCard");
+    if (!sess) {
+      c.innerHTML = '<div class="card-head"><h2>Hoje: bicicleta</h2>' +
+        '<div class="pill green">' + doneThisWeek() + "/" + weekTarget() + ' esta semana</div></div>' +
+        '<p style="font-size:14px;color:var(--ink-soft);margin:0">' +
+        'Sem força hoje. As deslocações de bicicleta são a sua base aeróbica — ' +
+        'contam e não precisam de registo.</p>';
+      return;
+    }
+    c.innerHTML = '<div class="card-head"><h2>Hoje: ' + SESSIONS[sess].name + '</h2>' +
+      '<div class="pill ' + (o.done ? "green" : "blue") + '">' +
+      (o.done ? "feita" : doneThisWeek() + "/" + weekTarget() + " esta semana") + '</div></div>' +
+      '<p style="font-size:14px;color:var(--ink-soft);margin:0 0 12px">' +
+      SESSIONS[sess].ex.length + ' exercícios · cerca de 40 minutos.</p>' +
+      '<button class="btn wide" id="goTrain">' +
+      (o.done ? "Rever registo" : "Abrir e registar cargas") + '</button>';
+    el("goTrain").addEventListener("click", function () { setView("treino"); });
+  }
+
+  function renderTrain() {
+    var sess = sessionOf(viewDate), o = day(viewDate);
+
+    var pick = "";
+    ["A", "B", "C"].forEach(function (k) {
+      pick += '<button class="chip ' + (sess === k ? "on" : "") + '" data-sess="' + k + '">' +
+              '<span>' + SESSIONS[k].name + '</span><b>' + (plannedFor(viewDate) === k ? "hoje" : "") + '</b></button>';
+    });
+    pick += '<button class="chip ' + (!sess ? "on" : "") + '" data-sess="none"><span>Sem força</span><b></b></button>';
+    el("pickSession").innerHTML = pick;
+
+    if (!sess) {
+      el("trainTitle").textContent = "Sem sessão";
+      el("trainPill").textContent = doneThisWeek() + "/" + weekTarget();
+      el("exList").innerHTML = '<div class="empty">Dia de bicicleta ou descanso.<br>' +
+        'Escolha uma sessão abaixo se quiser treinar hoje.</div>';
+      el("markDone").style.display = "none";
+      return;
+    }
+
+    el("markDone").style.display = "";
+    el("markDone").textContent = o.done ? "Sessão feita ✓ (toque para desmarcar)" : "Marcar sessão como feita";
+    el("trainTitle").textContent = SESSIONS[sess].name;
+    el("trainPill").textContent = doneThisWeek() + "/" + weekTarget() + " esta semana";
+
+    var html = "";
+    SESSIONS[sess].ex.forEach(function (x, xi) {
+      var prev = lastLoad(x.n, viewDate);
+      var cur = o.log[x.n] || [];
+      html += '<div class="ex"><div class="ex-head"><span class="ex-name">' + esc(x.n) + '</span>' +
+              '<span class="ex-target">' + esc(x.t) + '</span></div>';
+
+      if (x.cue) html += '<div class="cue">' + esc(x.cue) + '</div>';
+
+      if (x.prog && x.prog.length) {
+        var li = Math.min(lvlOf(x.n), x.prog.length - 1);
+        html += '<div class="lvlbar">' +
+          '<button class="lvlbtn down" data-lvl="' + xi + '" data-dir="-1"' +
+          (li === 0 ? " disabled" : "") + ' aria-label="Nível anterior">&minus;</button>' +
+          '<span class="lvlname"><span class="lv">nível ' + (li + 1) + ' de ' + x.prog.length + '</span>' +
+          '<span class="lt">' + esc(x.prog[li]) + '</span></span>' +
+          '<button class="lvlbtn up" data-lvl="' + xi + '" data-dir="1"' +
+          (li === x.prog.length - 1 ? " disabled" : "") + ' aria-label="Nível seguinte">+</button>' +
+          '</div>';
+      }
+
+      if (prev) {
+        html += '<div class="ex-last">última: ' + prev.sets.map(function (s) {
+          return (s.w ? s.w + "kg×" : "") + (s.r || "?");
+        }).join("  ·  ") + '</div>';
+      }
+      html += '<div class="sets">';
+      for (var i = 0; i < x.sets; i++) {
+        var v = cur[i] || {};
+        html += '<span class="setbox"><span class="n">' + (i + 1) + '</span>';
+        if (x.load) {
+          html += '<input type="number" inputmode="decimal" placeholder="kg" data-ex="' + xi +
+                  '" data-set="' + i + '" data-f="w" value="' + (v.w != null ? v.w : "") + '" />' +
+                  '<span class="x">×</span>';
+        }
+        html += '<input type="number" inputmode="numeric" placeholder="reps" data-ex="' + xi +
+                '" data-set="' + i + '" data-f="r" value="' + (v.r != null ? v.r : "") + '" />';
+        html += '</span>';
+      }
+      html += '</div></div>';
+    });
+    el("exList").innerHTML = html;
+  }
+
+  function renderMetrics() {
+    var w = S.weights, c = S.waists;
+    if (el("hIn") && document.activeElement !== el("hIn")) el("hIn").value = heightCm();
+
+    if (w.length) {
+      var lw = w[w.length - 1];
+      el("wNow").textContent = lw.v.toFixed(1) + " kg";
+      if (w.length > 1) {
+        var d = lw.v - w[0].v;
+        el("wDelta").textContent = (d >= 0 ? "+" : "") + d.toFixed(1) + " kg desde o início";
+      } else { el("wDelta").textContent = "primeiro registo"; }
+    }
+    if (c.length) {
+      var lc = c[c.length - 1];
+      el("cNow").textContent = lc.v.toFixed(1) + " cm";
+      var r = lc.v / heightCm();
+      el("cDelta").textContent = "cintura/altura " + r.toFixed(2) + (r < 0.5 ? " · dentro" : " · acima de 0,50");
+    }
+
+    var hh = "";
+    w.slice().reverse().slice(0, 12).forEach(function (x) {
+      hh += '<div class="hist-row"><span>' + x.v.toFixed(1) + ' kg</span><span>' + x.d + '</span></div>';
+    });
+    el("wHist").innerHTML = hh || '<div class="empty">Sem registos de peso.</div>';
+
+    // treinos por semana, últimas 6
+    var vh = "", cursor = weekStart(new Date());
+    for (var k = 0; k < 6; k++) {
+      var n = 0, ws = new Date(cursor);
+      for (var i = 0; i < 7; i++) {
+        var dd = new Date(ws); dd.setDate(ws.getDate() + i);
+        var o = S.days[iso(dd)];
+        if (o && o.done) n++;
+      }
+      var lbl = (k === 0 ? "esta semana" : "há " + k + (k === 1 ? " semana" : " semanas"));
+      vh += '<div class="hist-row"><span>' + n + " / " + weekTarget() + ' sessões</span><span>' + lbl + '</span></div>';
+      cursor.setDate(cursor.getDate() - 7);
+    }
+    el("volHist").innerHTML = vh;
+  }
+
+  function renderKit() {
+    el("kitList").innerHTML = LOADS.map(function (s) {
+      return '<div class="kitrow">' + esc(s) + '</div>';
+    }).join("");
+  }
+
+  function renderLabs() {
+    var html = "";
+    LABS.forEach(function (x) {
+      html += '<button class="checkrow ' + (S.labs[x.id] ? "on" : "") + '" data-lab="' + x.id + '">' +
+              '<span class="box">' + CHECK + '</span>' +
+              '<span class="rowtext"><span class="rowtitle">' + x.t + '</span><br>' +
+              '<span class="rowsub">' + x.s + '</span></span></button>';
+    });
+    el("labRows").innerHTML = html;
+  }
+
+  // sessões feitas nas últimas `n` semanas completas, incluindo a atual
+  function doneLastWeeks(n) {
+    var total = 0, cursor = weekStart(new Date());
+    for (var k = 0; k < n; k++) {
+      var ws = new Date(cursor);
+      for (var i = 0; i < 7; i++) {
+        var dd = new Date(ws); dd.setDate(ws.getDate() + i);
+        var o = S.days[iso(dd)];
+        if (o && o.done) total++;
+      }
+      cursor.setDate(cursor.getDate() - 7);
+    }
+    return total;
+  }
+
+  function renderPromo() {
+    var c = el("promoCard");
+    if (!phase2Available()) { c.style.display = "none"; return; }
+    c.style.display = "";
+    var feitas = doneLastWeeks(4), esperadas = 8;
+    var solido = feitas >= 6;
+    c.innerHTML =
+      '<div class="card-head"><h2>Passar à fase 2?</h2>' +
+      '<div class="pill ' + (solido ? "green" : "blue") + '">' + feitas + '/' + esperadas + ' em 4 semanas</div></div>' +
+      '<p style="font-size:14px;color:var(--ink-soft);margin:0 0 12px">' +
+      (solido
+        ? "As duas sessões estão consolidadas. Acrescentar a Força C à sexta é o passo seguinte."
+        : "Fez " + feitas + " das " + esperadas + " sessões previstas. Consolidar as duas primeiro " +
+          "vale mais do que acrescentar uma terceira — o plano não deve ficar à frente da realidade.") +
+      '</p>' +
+      '<button class="btn wide" id="promoYes">Acrescentar Força C (3 sessões)</button>' +
+      '<div style="height:8px"></div>' +
+      '<button class="btn ghost wide" id="promoNo">Manter 2 sessões, perguntar depois</button>';
+    el("promoYes").addEventListener("click", function () {
+      S.phase2 = true; save(); renderAll();
+      toast("Fase 2 ativa: segunda, quarta e sexta.");
+    });
+    el("promoNo").addEventListener("click", function () {
+      c.style.display = "none";
+      toast("Mantemos 2 sessões. Volto a perguntar na próxima semana.");
+    });
+  }
+
+  function renderAll() {
+    renderHeader();
+    renderSupps();
+    renderProt();
+    renderPromo();
+    renderTodayTrain();
+    renderTrain();
+    renderMetrics();
+    renderKit();
+    renderLabs();
+  }
+
+  // ---------- interaction ----------
+
+  function toast(msg) {
+    var t = el("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._h);
+    t._h = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  function setView(v) {
+    var vs = document.querySelectorAll(".view");
+    for (var i = 0; i < vs.length; i++) vs[i].classList.toggle("on", vs[i].id === "v-" + v);
+    var ts = document.querySelectorAll(".tab");
+    for (var j = 0; j < ts.length; j++) ts[j].classList.toggle("on", ts[j].dataset.view === v);
+    window.scrollTo(0, 0);
+  }
+
+  document.querySelectorAll(".tab").forEach(function (b) {
+    b.addEventListener("click", function () { setView(b.dataset.view); });
+  });
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("button");
+    if (!t) return;
+
+    if (t.dataset.d) {
+      viewDate = t.dataset.d;
+      renderAll();
+      return;
+    }
+    if (t.dataset.supp) {
+      var o = day(viewDate);
+      o.supps[t.dataset.supp] = !o.supps[t.dataset.supp];
+      save(); renderSupps(); renderHeader();
+      return;
+    }
+    if (t.dataset.lvl) {
+      var sx = sessionOf(viewDate);
+      if (!sx) return;
+      var ex = SESSIONS[sx].ex[+t.dataset.lvl];
+      if (!ex || !ex.prog) return;
+      if (!S.levels) S.levels = {};
+      var next = Math.max(0, Math.min(ex.prog.length - 1, lvlOf(ex.n) + (+t.dataset.dir)));
+      S.levels[ex.n] = next;
+      save(); renderTrain();
+      toast(ex.n + " · nível " + (next + 1) + ": " + ex.prog[next]);
+      return;
+    }
+    if (t.dataset.food) {
+      var f = FOODS[+t.dataset.food];
+      if (f) { addProt(f.n, f.v); toast(f.n + " · +" + fmt(f.v) + " g"); }
+      return;
+    }
+    if (t.dataset.rm) {
+      var o2 = day(viewDate), ri = +t.dataset.rm, ent = o2.entries[ri];
+      if (ent) {
+        o2.entries.splice(ri, 1);
+        o2.prot = Math.max(0, Math.round((o2.prot - ent.v) * 10) / 10);
+        save(); renderProt(); renderHeader();
+      }
+      return;
+    }
+    if (t.dataset.sess) {
+      var o3 = day(viewDate);
+      o3.sess = t.dataset.sess === "none" ? "none" : t.dataset.sess;
+      if (o3.sess === "none") { o3.sess = null; o3.done = false; }
+      save(); renderTrain(); renderTodayTrain(); renderHeader();
+      return;
+    }
+    if (t.dataset.lab) {
+      S.labs[t.dataset.lab] = !S.labs[t.dataset.lab];
+      save(); renderLabs();
+      return;
+    }
+  });
+
+  el("protAdd").addEventListener("click", function () {
+    var v = parseFloat(el("protExtra").value);
+    if (!isFinite(v) || v <= 0) { toast("Escreva os gramas primeiro."); return; }
+    el("protExtra").value = "";
+    addProt("Outro", v);
+    toast("+" + fmt(v) + " g");
+  });
+
+  el("quickPA").addEventListener("click", function () {
+    addProt("Pequeno-almoço do plano", PA_PLANO);
+    toast("Pequeno-almoço somado · +" + PA_PLANO + " g");
+  });
+
+  el("veganTog").addEventListener("click", function () {
+    S.veganOnly = !S.veganOnly;
+    save(); renderProt();
+    toast(S.veganOnly ? "A mostrar só opções vegan." : "A mostrar todos os alimentos.");
+  });
+
+  el("foodSearch").addEventListener("input", function () {
+    foodQuery = this.value;
+    renderProt();
+  });
+
+  el("markDone").addEventListener("click", function () {
+    var o = day(viewDate);
+    o.done = !o.done;
+    save(); renderTrain(); renderTodayTrain(); renderMetrics(); renderHeader();
+    if (o.done) toast("Sessão registada. " + doneThisWeek() + "/" + weekTarget() + " esta semana.");
+  });
+
+  document.addEventListener("change", function (e) {
+    var i = e.target;
+    if (!i.dataset || i.dataset.ex == null) return;
+    var sess = sessionOf(viewDate);
+    if (!sess) return;
+    var x = SESSIONS[sess].ex[+i.dataset.ex];
+    var o = day(viewDate);
+    if (!o.log[x.n]) o.log[x.n] = [];
+    var si = +i.dataset.set;
+    if (!o.log[x.n][si]) o.log[x.n][si] = {};
+    var v = parseFloat(i.value);
+    o.log[x.n][si][i.dataset.f] = isFinite(v) ? v : null;
+    save();
+  });
+
+  el("wAdd").addEventListener("click", function () {
+    var v = parseFloat(el("wIn").value);
+    if (!isFinite(v) || v < 30 || v > 250) { toast("Peso em kg, por favor."); return; }
+    S.weights.push({ d: iso(new Date()), v: v });
+    S.weights.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
+    el("wIn").value = "";
+    save(); renderMetrics();
+    var n = S.weights.length;
+    if (n > 1) {
+      var prev = S.weights[n - 2].v, diff = v - prev;
+      if (diff < -0.7) toast("Desceu " + Math.abs(diff).toFixed(1) + " kg. Aumente as calorias.");
+      else if (diff > 0.8) toast("Subiu " + diff.toFixed(1) + " kg. Confirme a cintura.");
+      else toast("Registado. Variação normal.");
+    } else { toast("Peso base registado."); }
+  });
+
+  el("cAdd").addEventListener("click", function () {
+    var v = parseFloat(el("cIn").value);
+    if (!isFinite(v) || v < 50 || v > 200) { toast("Cintura em cm, por favor."); return; }
+    S.waists.push({ d: iso(new Date()), v: v });
+    S.waists.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
+    el("cIn").value = "";
+    save(); renderMetrics();
+    toast(v / heightCm() < 0.5 ? "Registado. Cintura/altura dentro de 0,50." : "Acima de 0,50 — vale ajustar as calorias.");
+  });
+
+  // ---------- resumo / exportação ----------
+
+  function summary() {
+    var L = [];
+    L.push("PONTO DE SITUAÇÃO — Caderno de Gaia");
+    L.push("Gerado: " + iso(new Date()) + " · semana " + weekNum() + " (fase " + phase() + ")");
+    L.push("");
+    L.push("SEQUÊNCIA DE SUPLEMENTOS: " + streak() + " dias consecutivos");
+    if (phase2Available()) {
+      L.push("FASE 2 PENDENTE DE DECISÃO — " + doneLastWeeks(4) + "/8 sessões nas últimas 4 semanas");
+    }
+    L.push("");
+
+    L.push("TREINOS POR SEMANA (alvo " + weekTarget() + ")");
+    var cursor = weekStart(new Date());
+    for (var k = 0; k < 6; k++) {
+      var n = 0, ws = new Date(cursor);
+      for (var i = 0; i < 7; i++) {
+        var dd = new Date(ws); dd.setDate(ws.getDate() + i);
+        var o = S.days[iso(dd)];
+        if (o && o.done) n++;
+      }
+      L.push("  " + iso(ws) + ": " + n + "/" + weekTarget());
+      cursor.setDate(cursor.getDate() - 7);
+    }
+    L.push("");
+
+    L.push("PESO");
+    if (!S.weights.length) L.push("  sem registos");
+    S.weights.slice(-10).forEach(function (x) { L.push("  " + x.d + ": " + x.v.toFixed(1) + " kg"); });
+    L.push("");
+    L.push("CINTURA");
+    if (!S.waists.length) L.push("  sem registos");
+    S.waists.slice(-10).forEach(function (x) { L.push("  " + x.d + ": " + x.v.toFixed(1) + " cm"); });
+    L.push("");
+
+    L.push("NÍVEIS DE PROGRESSÃO ATUAIS (treino sem equipamento)");
+    ["A", "B", "C"].forEach(function (sk) {
+      L.push("  [" + SESSIONS[sk].name + "]");
+      SESSIONS[sk].ex.forEach(function (x) {
+        if (!x.prog) return;
+        var li = Math.min(lvlOf(x.n), x.prog.length - 1);
+        L.push("    " + x.n + ": nível " + (li + 1) + "/" + x.prog.length + " — " + x.prog[li]);
+      });
+    });
+    L.push("");
+
+    L.push("CARGAS / REPETIÇÕES — última sessão registada por exercício");
+    var seen = {};
+    Object.keys(S.days).sort().reverse().forEach(function (k) {
+      var lg = S.days[k].log || {};
+      Object.keys(lg).forEach(function (nm) {
+        if (seen[nm]) return;
+        var sets = lg[nm].filter(function (s) { return s && (s.w || s.r); });
+        if (!sets.length) return;
+        seen[nm] = 1;
+        L.push("  " + nm + " (" + k + "): " + sets.map(function (s) {
+          return (s.w ? s.w + "kg×" : "") + (s.r || "?");
+        }).join(", "));
+      });
+    });
+    if (!Object.keys(seen).length) L.push("  sem registos");
+    L.push("");
+
+    L.push("PROTEÍNA — últimos 14 dias (alvo " + PROT_TARGET + " g)");
+    for (var j = 13; j >= 0; j--) {
+      var d2 = new Date(); d2.setDate(d2.getDate() - j);
+      var od = S.days[iso(d2)];
+      L.push("  " + iso(d2) + ": " + (od ? Math.round(od.prot) : 0) + " g" +
+             (od && SUPPS.every(function (s) { return od.supps[s.id]; }) ? "  supl ✓" : ""));
+    }
+    L.push("");
+
+    // padrão alimentar: o que mais usa, para eu poder comentar as escolhas
+    var tally = {};
+    for (var t2 = 0; t2 < 14; t2++) {
+      var d3 = new Date(); d3.setDate(d3.getDate() - t2);
+      var od2 = S.days[iso(d3)];
+      if (!od2 || !od2.entries) continue;
+      od2.entries.forEach(function (e) { tally[e.n] = (tally[e.n] || 0) + 1; });
+    }
+    var names = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; });
+    L.push("ALIMENTOS MAIS USADOS (14 dias)");
+    if (!names.length) L.push("  sem registos");
+    names.slice(0, 12).forEach(function (n) { L.push("  " + tally[n] + "×  " + n); });
+    L.push("");
+    L.push("Filtro vegan na app: " + (S.veganOnly ? "ativo" : "inativo"));
+    L.push("");
+
+    L.push("ANÁLISES");
+    LABS.forEach(function (x) { L.push("  [" + (S.labs[x.id] ? "x" : " ") + "] " + x.t); });
+    L.push("");
+    L.push("Revê a progressão, ajusta cargas e diz-me o que corrigir.");
+    return L.join("\n");
+  }
+
+  el("copyBtn").addEventListener("click", function () {
+    var txt = summary();
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = txt;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); toast("Resumo copiado."); }
+      catch (e) { toast("Não foi possível copiar automaticamente."); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(function () { toast("Resumo copiado. Cole numa conversa."); }, fallback);
+    } else { fallback(); }
+  });
+
+  el("saveBtn").addEventListener("click", function () {
+    var payload = JSON.stringify({ exported: iso(new Date()), week: weekNum(), state: S }, null, 2);
+    try {
+      var blob = new Blob([payload], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "caderno-" + iso(new Date()) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+      toast("Cópia guardada.");
+    } catch (e) {
+      toast("Não foi possível guardar. Use o resumo em texto.");
+    }
+  });
+
+  el("loadFile").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var self = this;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var parsed = JSON.parse(r.result);
+        var st = parsed && parsed.state ? parsed.state : parsed;
+        if (!st || typeof st !== "object" || !st.days) throw new Error("formato");
+        if (!window.confirm("Restaurar esta cópia? O registo atual é substituído.")) { self.value = ""; return; }
+        S = st;
+        if (!S.weights) S.weights = [];
+        if (!S.waists) S.waists = [];
+        if (!S.labs) S.labs = {};
+        if (!S.levels) S.levels = {};
+        save(); renderAll();
+        toast("Registo restaurado.");
+      } catch (e) {
+        toast("Ficheiro inválido.");
+      }
+      self.value = "";
+    };
+    r.onerror = function () { toast("Não foi possível ler o ficheiro."); self.value = ""; };
+    r.readAsText(f);
+  });
+
+  el("hSave").addEventListener("click", function () {
+    var v = parseFloat(el("hIn").value);
+    if (!isFinite(v) || v < 100 || v > 250) { toast("Altura em cm, entre 100 e 250."); return; }
+    S.height = v;
+    save(); renderMetrics();
+    toast("Altura guardada: " + v + " cm.");
+  });
+
+  el("resetBtn").addEventListener("click", function () {
+    if (!window.confirm("Apagar todo o registo? Isto não tem retorno.")) return;
+    S = { start: iso(new Date()), days: {}, weights: [], waists: [], labs: {}, phase2: false, veganOnly: false };
+    save(); renderAll(); toast("Registo apagado.");
+  });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

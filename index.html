@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Caderno de Gaia</title>
+<title>Plano de CB</title>
 <meta name="description" content="Registo diário de suplementos, proteína, treino, peso e cintura.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F5F3EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12181E" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Caderno">
+<meta name="apple-mobile-web-app-title" content="Plano de CB">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>%F0%9F%93%93</text></svg>">
 <style>
@@ -660,7 +660,7 @@
 
 <header>
   <div class="head-inner">
-    <h1 class="brand">Caderno de <span>Gaia</span></h1>
+    <h1 class="brand">Plano de <span>CB</span></h1>
     <div class="phase-tag" id="phaseTag">semana 1 · fase 1</div>
   </div>
   <div class="weekstrip" id="weekstrip"></div>
@@ -868,6 +868,18 @@
 <script>
 (function () {
   "use strict";
+
+  // Se algo rebentar, mostrar em vez de falhar em silêncio.
+  window.addEventListener("error", function (ev) {
+    if (document.getElementById("fatalMsg") || !document.body) return;
+    var d = document.createElement("div");
+    d.id = "fatalMsg";
+    d.setAttribute("style", "margin:12px;padding:13px;border:1px solid #A33;border-radius:8px;" +
+      "background:#fff;color:#A33;font:13px/1.5 -apple-system,system-ui,sans-serif");
+    d.textContent = "A app encontrou um erro e pode não ter carregado tudo: " +
+      (ev.message || "erro desconhecido") + " — mostre esta mensagem ao Claude.";
+    document.body.insertBefore(d, document.body.firstChild);
+  });
 
   var KEY = "caderno-gaia-v1";
   var PROT_TARGET = 125;
@@ -1491,9 +1503,13 @@
     window.scrollTo(0, 0);
   }
 
-  document.querySelectorAll(".tab").forEach(function (b) {
-    b.addEventListener("click", function () { setView(b.dataset.view); });
-  });
+  // for clássico em vez de NodeList.forEach: funciona em browsers mais antigos
+  var tabEls = document.querySelectorAll(".tab");
+  for (var ti = 0; ti < tabEls.length; ti++) {
+    (function (b) {
+      b.addEventListener("click", function () { setView(b.dataset.view); });
+    })(tabEls[ti]);
+  }
 
   document.addEventListener("click", function (e) {
     var t = e.target.closest("button");
@@ -1626,7 +1642,7 @@
 
   function summary() {
     var L = [];
-    L.push("PONTO DE SITUAÇÃO — Caderno de Gaia");
+    L.push("PONTO DE SITUAÇÃO — Plano de CB");
     L.push("Gerado: " + iso(new Date()) + " · semana " + weekNum() + " (fase " + phase() + ")");
     L.push("");
     L.push("SEQUÊNCIA DE SUPLEMENTOS: " + streak() + " dias consecutivos");
@@ -1743,7 +1759,7 @@
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
       a.href = url;
-      a.download = "caderno-" + iso(new Date()) + ".json";
+      a.download = "plano-cb-" + iso(new Date()) + ".json";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

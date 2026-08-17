@@ -1,4 +1,4 @@
-# Caderno
+# Plano de CB
 
 Registo diário de treino e nutrição, numa única página HTML sem dependências.
 
@@ -18,15 +18,32 @@ Todo o registo fica em `localStorage`, no browser onde a app é usada. Não há 
 não há conta, não há pedidos de rede. Limpar os dados de navegação apaga o registo —
 use a cópia de segurança em `.json`.
 
-## Usar no telemóvel
+## Instalar no telemóvel
 
-Abra a página e adicione ao ecrã principal:
+### Android
 
-- **iOS / Safari** — Partilhar → Adicionar ao ecrã principal
-- **Android / Chrome** — menu → Adicionar ao ecrã principal
+No Chrome (ou noutro browser Chromium):
 
-Use sempre a mesma forma de abrir (ícone *ou* browser), porque o armazenamento local
-pode ser separado entre os dois contextos.
+1. Menu dos três pontos
+2. **Instalar aplicação** ou **Adicionar ao ecrã principal**
+3. Confirmar
+
+No Android a app instalada partilha o armazenamento com o browser, na mesma origem —
+pode alternar entre o ícone e o browser sem perder registos.
+
+### iOS
+
+Tem de ser no **Safari**: Partilhar → **Adicionar ao ecrã principal**.
+
+⚠ No iOS, uma página adicionada ao ecrã principal pode ter armazenamento **separado**
+do Safari. Escolha uma das duas formas de abrir e use sempre a mesma, ou os registos
+de uma não aparecem na outra.
+
+## Compatibilidade
+
+Escrito em JavaScript ES5, sem `let`/`const`, arrow functions, template literals nem
+`NodeList.forEach` — para correr em WebViews Android antigos. Erros não tratados são
+mostrados na própria página em vez de falharem em silêncio.
 
 ## Desenvolvimento
 

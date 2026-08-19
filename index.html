@@ -577,7 +577,63 @@
   .tag:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
   .tag i { font-style: normal; opacity: 0.6; font-size: 14px; line-height: 1; }
 
-  .foodtools { display: flex; gap: 7px; margin: 12px 0 8px; }
+  /* entrada livre: nome + gramas */
+  .addrow { display: flex; gap: 7px; }
+  .addrow input {
+    min-width: 0;
+    font: inherit;
+    font-size: 15px;
+    padding: 10px 11px;
+    border: 1px solid var(--edge-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .addrow input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
+  #fName { flex: 1; }
+  #fGrams { width: 66px; font-family: var(--font-data); text-align: center; }
+  #fAdd { flex: none; padding: 10px 16px; font-size: 18px; line-height: 1; }
+
+  .labelrow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 16px 0 8px;
+  }
+
+  .linkbtn {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--azulejo);
+    cursor: pointer;
+  }
+  .linkbtn:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 2px; }
+
+  .chipwrap { display: flex; flex-wrap: wrap; gap: 7px; }
+
+  .chip.mine { justify-content: flex-start; gap: 8px; }
+  .chip.mine.rm { border-color: var(--porto); color: var(--porto); }
+  .chip.mine.rm b { color: var(--porto); }
+
+  .planref {
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid var(--edge);
+  }
+  .planref .refline {
+    font-family: var(--font-data);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-faint);
+    margin-top: 5px;
+  }
+  .planref .refline b { color: var(--ink-soft); font-weight: 600; }
+
+  .foodtools { display: flex; gap: 7px; margin: 16px 0 8px; }
   .foodtools input {
     flex: 1;
     min-width: 0;
@@ -698,22 +754,26 @@
 
       <div class="taglist" id="protEntries"></div>
 
-      <div class="label" style="margin-bottom:7px">blocos do plano</div>
-      <div class="chipgrid" id="mealChips"></div>
+      <div class="addrow">
+        <input id="fName" type="text" placeholder="o que comeu" aria-label="Nome do alimento ou refeição" autocomplete="off" />
+        <input id="fGrams" type="number" inputmode="decimal" placeholder="g" aria-label="Gramas de proteína" />
+        <button class="btn" id="fAdd" aria-label="Somar ao dia">+</button>
+      </div>
 
-      <div class="label" style="margin:14px 0 0">ou somar alimento a alimento</div>
+      <div class="labelrow" id="myLabelRow">
+        <span class="label">o que costuma comer</span>
+        <button class="linkbtn" id="myEditBtn">editar</button>
+      </div>
+      <div class="chipwrap" id="myFoods"></div>
 
       <div class="foodtools">
-        <input id="foodSearch" type="search" placeholder="Procurar alimento…" aria-label="Procurar alimento" />
+        <input id="foodSearch" type="search" placeholder="Procurar na tabela de referência…" aria-label="Procurar na tabela de referência" />
         <button class="vtog" id="veganTog" aria-pressed="false">vegan</button>
       </div>
 
       <div class="foodlist" id="foodList"></div>
 
-      <div class="entry">
-        <input id="protExtra" type="number" inputmode="decimal" placeholder="outro (g)" aria-label="Gramas de proteína a somar manualmente" />
-        <button class="btn ghost" id="protAdd">Somar</button>
-      </div>
+      <div class="planref" id="planRef"></div>
     </div>
 
     <div class="card" id="promoCard" style="display:none"></div>
@@ -1072,6 +1132,8 @@
   var S = load();
   var viewDate = iso(new Date());
   var foodQuery = "";
+  var myKeys = [];      // nomes da lista pessoal, por ordem de utilização
+  var myEdit = false;   // modo de remoção da lista pessoal
 
   // busca insensível a acentos
   function norm(s) {
@@ -1254,15 +1316,38 @@
     });
     el("protEntries").innerHTML = tags;
 
-    // atalhos das quatro refeições do plano
-    var mh = "";
-    for (var mi = 0; mi < MEALS.length; mi++) {
-      mh += '<button class="chip" data-meal="' + MEALS[mi].id + '">' +
-            '<span>' + esc(MEALS[mi].t) + '</span><b>+' + MEALS[mi].g + ' g</b></button>';
+    // lista pessoal: o que ele já registou, mais usado primeiro
+    if (!S.myFoods) S.myFoods = {};
+    myKeys = [];
+    for (var mk in S.myFoods) {
+      if (Object.prototype.hasOwnProperty.call(S.myFoods, mk)) myKeys.push(mk);
     }
-    el("mealChips").innerHTML = mh;
+    myKeys.sort(function (a, b) {
+      var d = (S.myFoods[b].n || 0) - (S.myFoods[a].n || 0);
+      return d !== 0 ? d : (a < b ? -1 : 1);
+    });
+    myKeys = myKeys.slice(0, 16);
 
-    // lista de alimentos, filtrada
+    var mh = "";
+    for (var mi = 0; mi < myKeys.length; mi++) {
+      var mf = S.myFoods[myKeys[mi]];
+      mh += '<button class="chip mine' + (myEdit ? " rm" : "") + '" data-my="' + mi + '">' +
+            '<span>' + esc(myKeys[mi]) + '</span><b>' + (myEdit ? "remover" : fmt(mf.v) + " g") + '</b></button>';
+    }
+    el("myFoods").innerHTML = mh ||
+      '<div class="empty" style="padding:10px 4px;text-align:left">Ainda vazio. O que registar acima aparece aqui, e a um toque nos dias seguintes.</div>';
+    el("myEditBtn").textContent = myEdit ? "concluir" : "editar";
+    el("myEditBtn").style.display = myKeys.length ? "" : "none";
+
+    // referência dos blocos do plano
+    var rl = "";
+    for (var ri = 0; ri < MEALS.length; ri++) {
+      rl += (ri ? " &nbsp;·&nbsp; " : "") + esc(MEALS[ri].t) + " <b>" + MEALS[ri].g + " g</b>";
+    }
+    el("planRef").innerHTML = '<span class="label">blocos do plano, como referência</span>' +
+      '<div class="refline">' + rl + '</div>';
+
+    // tabela de referência: só aparece quando procura
     var q = norm(foodQuery.trim());
     var shown = FOODS.filter(function (f) {
       if (S.veganOnly && !f.vg) return false;
@@ -1282,8 +1367,14 @@
              '<span class="fp">' + esc(f.p) + '</span>' +
              '<span class="fv">' + fmt(f.v) + ' g</span></button>';
     });
-    el("foodList").innerHTML = out ||
-      '<div class="empty">Nenhum alimento corresponde a essa procura.</div>';
+    if (!q) {
+      el("foodList").innerHTML = "";
+      el("foodList").style.display = "none";
+    } else {
+      el("foodList").style.display = "";
+      el("foodList").innerHTML = out ||
+        '<div class="empty">Nada na tabela corresponde a isso. Escreva o nome e os gramas em cima — fica guardado.</div>';
+    }
 
     var vt = el("veganTog");
     vt.classList.toggle("on", !!S.veganOnly);
@@ -1301,7 +1392,20 @@
     var o = day(viewDate);
     o.entries.push({ n: name, v: grams });
     o.prot = Math.round((o.prot + grams) * 10) / 10;
+    remember(name, grams);
     save(); renderProt(); renderHeader();
+  }
+
+  // Tudo o que regista fica guardado para reutilizar. É isto que faz a app
+  // aprender o que ele come, em vez de tentar adivinhar com uma tabela fixa.
+  function remember(name, grams) {
+    if (!S.myFoods) S.myFoods = {};
+    var k = String(name).trim();
+    if (!k) return;
+    var e = S.myFoods[k] || { v: grams, n: 0 };
+    e.v = grams;
+    e.n = (e.n || 0) + 1;
+    S.myFoods[k] = e;
   }
 
   function renderTodayTrain() {
@@ -1560,12 +1664,17 @@
       toast(ex.n + " · nível " + (next + 1) + ": " + ex.prog[next]);
       return;
     }
-    if (t.dataset.meal) {
-      var mid = t.dataset.meal, mm = null;
-      for (var mk = 0; mk < MEALS.length; mk++) {
-        if (MEALS[mk].id === mid) mm = MEALS[mk];
+    if (t.dataset.my) {
+      var mname = myKeys[+t.dataset.my];
+      if (!mname || !S.myFoods[mname]) return;
+      if (myEdit) {
+        delete S.myFoods[mname];
+        save(); renderProt();
+        toast("Removido da lista: " + mname);
+      } else {
+        addProt(mname, S.myFoods[mname].v);
+        toast(mname + " · +" + fmt(S.myFoods[mname].v) + " g");
       }
-      if (mm) { addProt(mm.t + " do plano", mm.g); toast(mm.t + " · +" + mm.g + " g"); }
       return;
     }
     if (t.dataset.food) {
@@ -1596,12 +1705,29 @@
     }
   });
 
-  el("protAdd").addEventListener("click", function () {
-    var v = parseFloat(el("protExtra").value);
-    if (!isFinite(v) || v <= 0) { toast("Escreva os gramas primeiro."); return; }
-    el("protExtra").value = "";
-    addProt("Outro", v);
-    toast("+" + fmt(v) + " g");
+  function submitFree() {
+    var nm = el("fName").value.trim();
+    var v = parseFloat(el("fGrams").value);
+    if (!nm) { toast("Escreva o que comeu."); el("fName").focus(); return; }
+    if (!isFinite(v) || v <= 0) { toast("Faltam os gramas de proteína."); el("fGrams").focus(); return; }
+    el("fName").value = "";
+    el("fGrams").value = "";
+    addProt(nm, v);
+    toast(nm + " · +" + fmt(v) + " g — fica guardado");
+  }
+
+  el("fAdd").addEventListener("click", submitFree);
+
+  el("fName").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.keyCode === 13) { e.preventDefault(); el("fGrams").focus(); }
+  });
+  el("fGrams").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.keyCode === 13) { e.preventDefault(); submitFree(); }
+  });
+
+  el("myEditBtn").addEventListener("click", function () {
+    myEdit = !myEdit;
+    renderProt();
   });
 
   el("veganTog").addEventListener("click", function () {
@@ -1745,6 +1871,18 @@
       od2.entries.forEach(function (e) { tally[e.n] = (tally[e.n] || 0) + 1; });
     }
     var names = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; });
+    L.push("LISTA PESSOAL DE ALIMENTOS (nome · proteína · vezes usado)");
+    var mfk = [];
+    for (var mfn in (S.myFoods || {})) {
+      if (Object.prototype.hasOwnProperty.call(S.myFoods, mfn)) mfk.push(mfn);
+    }
+    mfk.sort(function (a, b) { return (S.myFoods[b].n || 0) - (S.myFoods[a].n || 0); });
+    if (!mfk.length) L.push("  vazia");
+    for (var mfi = 0; mfi < mfk.length; mfi++) {
+      L.push("  " + mfk[mfi] + " · " + fmt(S.myFoods[mfk[mfi]].v) + " g · " + (S.myFoods[mfk[mfi]].n || 0) + "×");
+    }
+    L.push("");
+
     L.push("ALIMENTOS MAIS USADOS (14 dias)");
     if (!names.length) L.push("  sem registos");
     names.slice(0, 12).forEach(function (n) { L.push("  " + tally[n] + "×  " + n); });
@@ -1811,6 +1949,7 @@
         if (!S.waists) S.waists = [];
         if (!S.labs) S.labs = {};
         if (!S.levels) S.levels = {};
+        if (!S.myFoods) S.myFoods = {};
         save(); renderAll();
         toast("Registo restaurado.");
       } catch (e) {

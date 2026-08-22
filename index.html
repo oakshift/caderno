@@ -395,6 +395,21 @@
   #loadLabel { display: block; text-align: center; cursor: pointer; }
   #loadLabel:focus-within { outline: 2px solid var(--azulejo); outline-offset: 2px; }
 
+  .seg { display: flex; gap: 6px; margin-top: 12px; }
+  .segbtn {
+    flex: 1;
+    font: inherit;
+    font-size: 13px;
+    padding: 9px 0;
+    border-radius: 8px;
+    border: 1px solid var(--edge-strong);
+    background: var(--surface);
+    color: var(--ink-faint);
+    cursor: pointer;
+  }
+  .segbtn.on { background: var(--azulejo); border-color: var(--azulejo); color: #fff; }
+  .segbtn:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+
   .hist { margin-top: 12px; display: flex; flex-direction: column; gap: 0; }
   .hist-row {
     display: flex;
@@ -875,6 +890,42 @@
 
     <div class="card">
       <div class="card-head">
+        <h2>Tensão arterial</h2>
+        <div class="pill blue" id="bpPill">0 / 7 dias</div>
+      </div>
+      <div class="statrow">
+        <div class="stat">
+          <span class="label">média de casa</span>
+          <div class="v" id="bpNow">&mdash;</div>
+          <div class="d" id="bpDelta">sem registo</div>
+        </div>
+        <div class="stat">
+          <span class="label">medições hoje</span>
+          <div class="v" id="bpToday">0 / 4</div>
+          <div class="d" id="bpCount">0 medições</div>
+        </div>
+      </div>
+      <div class="seg" id="bpSeg">
+        <button type="button" class="segbtn on" data-per="m" aria-pressed="true">manhã</button>
+        <button type="button" class="segbtn" data-per="n" aria-pressed="false">noite</button>
+      </div>
+      <div class="entry">
+        <input id="bpS" type="number" inputmode="numeric" step="1" placeholder="sistólica" aria-label="Tensão sistólica" />
+        <input id="bpD" type="number" inputmode="numeric" step="1" placeholder="diastólica" aria-label="Tensão diastólica" />
+        <button class="btn" id="bpAdd">Registar</button>
+      </div>
+      <div class="hist" id="bpHist"></div>
+      <div class="note">
+        <strong>Sentado, 5 minutos de descanso</strong>, costas apoiadas, pés no chão,
+        braço à altura do coração e sem falar durante a medição. Duas medições seguidas,
+        com 1&ndash;2 minutos entre elas: de manhã antes do café, à noite antes do jantar.
+        <strong>O primeiro dia não entra na média</strong> &mdash; é sistematicamente o
+        mais alto. Sete dias seguidos e leve a média à consulta.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
         <h2>Histórico</h2>
         <div class="label">peso · kg</div>
       </div>
@@ -1199,7 +1250,7 @@
     { id: "vitd",  t: "25-OH-vitamina D",         s: "define a dose de D3" },
     { id: "lpa",   t: "Lipoproteína(a)",          s: "uma vez na vida" },
     { id: "hemo",  t: "Hemograma repetido",       s: "bem hidratado" },
-    { id: "ta",    t: "Tensão arterial, 7 dias",  s: "em casa, 2× por dia" }
+    { id: "ta",    t: "Tensão arterial, 7 dias",  s: "registe em Métricas, 4× por dia" }
   ];
 
   var DOW = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -1224,10 +1275,13 @@
       var raw = localStorage.getItem(KEY);
       if (raw) {
         var p = JSON.parse(raw);
-        if (p && p.days) return p;
+        if (p && p.days) {
+          if (!p.bps) p.bps = [];
+          return p;
+        }
       }
     } catch (e) {}
-    return { start: iso(new Date()), days: {}, weights: [], waists: [], labs: {}, phase2: false, veganOnly: false };
+    return { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false, veganOnly: false };
   }
 
   function save() {
@@ -1699,6 +1753,7 @@
     renderTodayTrain();
     renderTrain();
     renderMetrics();
+    renderBp();
     renderKit();
     renderLabs();
   }
@@ -1881,6 +1936,126 @@
     toast(v / heightCm() < 0.5 ? "Registado. Cintura/altura dentro de 0,50." : "Acima de 0,50 — vale ajustar as calorias.");
   });
 
+  // ---------- tensão arterial ----------
+  // Protocolo de medição em casa: 7 dias seguidos, duas medições de manhã e duas
+  // à noite. O primeiro dia é excluído da média porque é sistematicamente o mais
+  // alto — é o que as recomendações europeias fazem, e é a média que decide.
+
+  var BP_DAYS = 7, BP_PER_DAY = 4;
+  var bpPer = (new Date()).getHours() < 12 ? "m" : "n";
+
+  function bpList() {
+    if (!S.bps) S.bps = [];
+    return S.bps;
+  }
+
+  function bpByDay() {
+    var map = {}, keys = [];
+    bpList().forEach(function (x) {
+      if (!map[x.d]) { map[x.d] = []; keys.push(x.d); }
+      map[x.d].push(x);
+    });
+    keys.sort();
+    return { map: map, keys: keys };
+  }
+
+  function bpStats() {
+    var g = bpByDay(), keys = g.keys;
+    var use = keys.length > 1 ? keys.slice(1) : keys;
+    var ss = 0, dd = 0, n = 0;
+    use.forEach(function (k) {
+      g.map[k].forEach(function (x) { ss += x.s; dd += x.di; n++; });
+    });
+    return {
+      days: keys.length,
+      first: keys.length ? keys[0] : null,
+      n: n,
+      s: n ? ss / n : 0,
+      di: n ? dd / n : 0,
+      partial: keys.length < 2
+    };
+  }
+
+  function bpVerdict(s, di) {
+    if (s >= 135 || di >= 85) return "acima de 135/85 · leve à consulta";
+    if (s < 120 && di < 80) return "ótima, abaixo de 120/80";
+    return "normal, abaixo de 135/85";
+  }
+
+  function renderBp() {
+    if (!el("bpNow")) return;
+    var g = bpByDay(), st = bpStats(), today = iso(new Date());
+
+    el("bpPill").textContent = st.days + " / " + BP_DAYS + " dias";
+    if (st.n) {
+      el("bpNow").textContent = Math.round(st.s) + "/" + Math.round(st.di);
+      el("bpDelta").textContent = st.partial ? "só o 1.º dia — ainda não conta" : bpVerdict(st.s, st.di);
+    } else {
+      el("bpNow").textContent = "—";
+      el("bpDelta").textContent = "sem registo";
+    }
+
+    var td = g.map[today] ? g.map[today].length : 0;
+    el("bpToday").textContent = td + " / " + BP_PER_DAY;
+    el("bpCount").textContent = bpList().length + (bpList().length === 1 ? " medição no total" : " medições no total");
+
+    var seg = el("bpSeg").getElementsByTagName("button");
+    for (var i = 0; i < seg.length; i++) {
+      var on = seg[i].getAttribute("data-per") === bpPer;
+      seg[i].className = on ? "segbtn on" : "segbtn";
+      seg[i].setAttribute("aria-pressed", on ? "true" : "false");
+    }
+
+    var hh = "";
+    g.keys.slice().reverse().forEach(function (k) {
+      var rows = g.map[k], ss = 0, dd = 0;
+      rows.forEach(function (x) { ss += x.s; dd += x.di; });
+      var lbl = DOW[parseIso(k).getDay()] + " " + k.slice(8) + "/" + k.slice(5, 7);
+      var mark = (k === st.first && g.keys.length > 1) ? " · fora da média" : "";
+      hh += '<div class="hist-row"><span>' + Math.round(ss / rows.length) + "/" + Math.round(dd / rows.length) +
+            '</span><span>' + lbl + " · " + rows.length + "×" + mark + '</span></div>';
+    });
+    el("bpHist").innerHTML = hh || '<div class="empty">Sem medições. Comece de manhã, antes do café.</div>';
+  }
+
+  el("bpSeg").addEventListener("click", function (e) {
+    var b = e.target;
+    if (!b || !b.getAttribute || !b.getAttribute("data-per")) return;
+    bpPer = b.getAttribute("data-per");
+    renderBp();
+  });
+
+  el("bpAdd").addEventListener("click", function () {
+    var s = parseFloat(el("bpS").value), di = parseFloat(el("bpD").value);
+    if (!isFinite(s) || s < 70 || s > 260) { toast("Sistólica (o número maior) entre 70 e 260."); return; }
+    if (!isFinite(di) || di < 40 || di > 160) { toast("Diastólica (o número menor) entre 40 e 160."); return; }
+    if (di >= s) { toast("A sistólica tem de ser maior. Trocou os números?"); return; }
+
+    var now = new Date();
+    bpList().push({
+      d: iso(now), p: bpPer, s: s, di: di,
+      t: pad(now.getHours()) + ":" + pad(now.getMinutes())
+    });
+    S.bps.sort(function (a, b) {
+      if (a.d !== b.d) return a.d < b.d ? -1 : 1;
+      return (a.t || "") < (b.t || "") ? -1 : 1;
+    });
+    el("bpS").value = ""; el("bpD").value = "";
+    save(); renderBp(); renderLabs();
+
+    if (s >= 180 || di >= 110) {
+      toast("Valor alto. Descanse 5 min e repita; se confirmar, fale com o médico hoje.");
+      return;
+    }
+    var g2 = bpByDay(), st2 = bpStats();
+    var td2 = g2.map[iso(now)].length;
+    if (st2.days >= BP_DAYS) {
+      toast("7 dias completos. Média " + Math.round(st2.s) + "/" + Math.round(st2.di) + " — leve-a à consulta.");
+    } else {
+      toast("Registado. " + td2 + "/" + BP_PER_DAY + " hoje · " + st2.days + "/" + BP_DAYS + " dias.");
+    }
+  });
+
   // ---------- resumo / exportação ----------
 
   function summary() {
@@ -1915,6 +2090,23 @@
     L.push("CINTURA");
     if (!S.waists.length) L.push("  sem registos");
     S.waists.slice(-10).forEach(function (x) { L.push("  " + x.d + ": " + x.v.toFixed(1) + " cm"); });
+    L.push("");
+
+    L.push("TENSÃO ARTERIAL (casa · 2 de manhã + 2 à noite · 1.º dia fora da média)");
+    var bpg = bpByDay(), bpst = bpStats();
+    if (!bpg.keys.length) {
+      L.push("  sem registos");
+    } else {
+      bpg.keys.forEach(function (k) {
+        var r = bpg.map[k].map(function (x) {
+          return (x.p === "m" ? "M" : "N") + " " + x.s + "/" + x.di;
+        }).join("  ");
+        L.push("  " + k + ": " + r + (k === bpst.first && bpg.keys.length > 1 ? "   (fora da média)" : ""));
+      });
+      L.push("  " + bpst.days + "/" + BP_DAYS + " dias" +
+             (bpst.n ? "  ·  média " + Math.round(bpst.s) + "/" + Math.round(bpst.di) +
+                       (bpst.partial ? "  (só o 1.º dia, ainda não vale)" : "") : ""));
+    }
     L.push("");
 
     L.push("NÍVEIS DE PROGRESSÃO ATUAIS (treino sem equipamento)");
@@ -2039,6 +2231,7 @@
         S = st;
         if (!S.weights) S.weights = [];
         if (!S.waists) S.waists = [];
+        if (!S.bps) S.bps = [];
         if (!S.labs) S.labs = {};
         if (!S.levels) S.levels = {};
         if (!S.myFoods) S.myFoods = {};
@@ -2063,7 +2256,7 @@
 
   el("resetBtn").addEventListener("click", function () {
     if (!window.confirm("Apagar todo o registo? Isto não tem retorno.")) return;
-    S = { start: iso(new Date()), days: {}, weights: [], waists: [], labs: {}, phase2: false, veganOnly: false };
+    S = { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false, veganOnly: false };
     save(); renderAll(); toast("Registo apagado.");
   });
 

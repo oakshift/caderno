@@ -538,6 +538,33 @@
   }
   .lvlname .lt { font-size: 13.5px; line-height: 1.3; }
 
+  .vidlink {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 11px;
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    background: var(--surface-sunk);
+    color: var(--azulejo);
+    text-decoration: none;
+    font-size: 13.5px;
+  }
+  .vidlink:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+  .vidlink .play { font-size: 10px; line-height: 1; }
+  .vidlink .vq {
+    margin-left: auto;
+    font-family: var(--font-data);
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 46%;
+  }
+
   .kitlist { display: flex; flex-direction: column; gap: 0; }
   .kitrow {
     font-size: 13.5px;
@@ -1016,92 +1043,142 @@
 
   // Sem equipamento: a progressão vem da alavanca e do trabalho unilateral,
   // não de acrescentar quilos. `prog` vai do mais fácil ao mais difícil.
+  // Sem equipamento: a progressão vem da alavanca e do trabalho unilateral,
+  // não de acrescentar quilos. `prog` vai do mais fácil ao mais difícil.
+  // `vq` = termos de pesquisa no YouTube para o movimento; `pv` permite
+  // afinar a pesquisa por nível, quando o nível é outro movimento.
   var SESSIONS = {
     A: { name: "Força A", ex: [
       { n: "Agachamento", t: "3 × 8–15", sets: 3, load: true,
-        cue: "Peito aberto, joelhos a acompanhar a ponta dos pés, descer até à coxa paralela ao chão.",
+        vq: "agachamento livre tecnica correta",
+        cue: "Pés à largura dos ombros. Empurre o rabo para trás como se fosse sentar-se, peito aberto, e desça até a coxa ficar paralela ao chão.",
         prog: ["Sentar e levantar de uma cadeira", "Agachamento livre", "Com pausa de 2 s no fundo",
                "Com mochila carregada", "Afundo estático (split)", "Búlgaro com pé de trás na cadeira",
-               "A uma perna com mão na parede", "Pistol completo"] },
+               "A uma perna com mão na parede", "Pistol completo"],
+        pv: ["agachamento na cadeira iniciante", "agachamento livre tecnica correta", "",
+             "goblet squat com mochila casa", "split squat estatico tecnica", "bulgarian split squat tecnica",
+             "pistol squat progressao parede", "pistol squat tecnica"] },
 
       { n: "Flexões", t: "3 × 8–12", sets: 3, load: false,
-        cue: "Corpo em prancha do calcanhar à cabeça. Cotovelos a ~45°, não abertos em T.",
+        vq: "flexoes tecnica correta",
+        cue: "Corpo em linha reta do calcanhar à cabeça, como uma prancha. Cotovelos a cerca de 45 graus do tronco, não abertos em cruz.",
         prog: ["Na parede", "Mãos na bancada da cozinha", "Mãos numa cadeira", "Joelhos no chão",
                "Completas", "Com pausa de 2 s no fundo", "Pés numa cadeira", "Mãos juntas (diamante)",
-               "Archer (peso deslocado para um lado)"] },
+               "Archer (peso deslocado para um lado)"],
+        pv: ["flexoes na parede iniciante", "flexoes inclinadas tecnica", "flexoes inclinadas tecnica",
+             "flexoes de joelhos tecnica", "flexoes tecnica correta", "",
+             "flexoes declinadas pes elevados", "flexoes diamante tecnica", "archer push up tutorial"] },
 
       { n: "Remada", t: "3 × 8–12", sets: 3, load: true,
-        cue: "Puxe com as omoplatas, não com os bíceps. Apertar as costas no fim de cada repetição.",
+        vq: "inverted row under table home",
+        cue: "Puxe com as omoplatas, não com os braços: imagine que aperta um lápis entre as costas no fim de cada repetição.",
         prog: ["Toalha presa no batente da porta, puxar de pé", "Remada com mochila carregada, tronco inclinado",
                "Remada invertida debaixo de uma mesa robusta, joelhos dobrados",
                "Remada invertida com pernas esticadas", "Com pés elevados numa cadeira",
-               "Barra fixa do parque: puxada assistida com os pés", "Puxada completa"] },
+               "Barra fixa do parque: puxada assistida com os pés", "Puxada completa"],
+        pv: ["door frame row towel exercise", "bent over row mochila casa",
+             "inverted row under table home", "inverted row tecnica correta",
+             "feet elevated inverted row", "assisted pull up with feet", "pull up tecnica correta"] },
 
       { n: "Ponte de glúteos", t: "3 × 12–20", sets: 3, load: true,
-        cue: "Empurrar o chão com os calcanhares e apertar o glúteo no topo. Não arquear a lombar.",
+        vq: "ponte de gluteos tecnica",
+        cue: "Deitado de costas, joelhos dobrados. Empurre o chão com os calcanhares e aperte o rabo no topo. A lombar não deve arquear.",
         prog: ["Ponte no chão", "Com pausa de 3 s no topo", "Pés numa cadeira",
-               "Mochila sobre a bacia", "A uma perna", "A uma perna com pés elevados"] },
+               "Mochila sobre a bacia", "A uma perna", "A uma perna com pés elevados"],
+        pv: ["ponte de gluteos tecnica", "", "hip thrust pes elevados casa",
+             "hip thrust com peso em casa", "ponte de gluteos uma perna", "single leg hip thrust elevated"] },
 
       { n: "Prancha frontal", t: "3 × 30–45 s", sets: 3, load: false,
-        cue: "Costelas para baixo, glúteo apertado. Se a lombar cede, pare — o tempo não vale nada sem forma.",
+        vq: "prancha frontal tecnica correta",
+        cue: "Antebraços no chão, cotovelos por baixo dos ombros. Costelas para baixo e rabo apertado. Se a lombar ceder, pare — o tempo não conta sem forma.",
         prog: ["Nos joelhos", "Completa", "Com elevação alternada de um braço",
-               "Prancha lateral", "Hollow hold"] }
+               "Prancha lateral", "Hollow hold"],
+        pv: ["prancha joelhos iniciante", "prancha frontal tecnica correta",
+             "prancha com elevacao de braco", "prancha lateral tecnica", "hollow hold tecnica"] }
     ]},
 
     B: { name: "Força B", ex: [
       { n: "Agachamento búlgaro", t: "3 × 8–10 / perna", sets: 3, load: true,
-        cue: "Pé de trás numa cadeira. O trabalho é da perna da frente; tronco ligeiramente inclinado.",
+        vq: "bulgarian split squat tecnica",
+        cue: "Só a ponta do pé de trás em cima da cadeira. Dê um passo à frente longo o suficiente para o joelho da frente não avançar muito. Desça a direito, como um elevador — todo o trabalho é da perna da frente.",
         prog: ["Afundo estático, pés no chão", "Afundo com passada atrás", "Búlgaro na cadeira",
-               "Búlgaro com pausa no fundo", "Búlgaro com mochila", "Búlgaro com mochila pesada"] },
+               "Búlgaro com pausa no fundo", "Búlgaro com mochila", "Búlgaro com mochila pesada"],
+        pv: ["split squat estatico tecnica", "afundo passada atras tecnica",
+             "bulgarian split squat tecnica", "", "bulgarian split squat com peso", ""] },
 
       { n: "Empurrar acima da cabeça", t: "3 × 6–12", sets: 3, load: true,
-        cue: "O padrão vertical do ombro. Cabeça passa entre as mãos, não à frente.",
+        vq: "pike push up tecnica",
+        cue: "Posição de V invertido: mãos e pés no chão, bacia bem alta, pernas quase direitas. Baixe o topo da cabeça até junto às mãos — para baixo, não para a frente.",
         prog: ["Press com mochila carregada, de pé", "Flexão em V (pike), pés no chão",
                "Pike com pés numa cadeira", "Pike com pausa no fundo",
-               "Flexão em pirâmide alta", "Contra a parede, invertido"] },
+               "Flexão em pirâmide alta", "Contra a parede, invertido"],
+        pv: ["overhead press com mochila casa", "pike push up tecnica",
+             "elevated pike push up tutorial", "", "", "wall handstand push up progression"] },
 
       { n: "Puxada vertical", t: "3 × 5–12", sets: 3, load: false,
-        cue: "Se houver barra no parque da escola, use-a. É o padrão mais difícil de substituir em casa.",
+        vq: "pull up progressao iniciante",
+        cue: "Se houver barra no parque da escola, use-a. É o padrão mais difícil de substituir em casa — não faz mal ficar semanas no mesmo nível.",
         prog: ["Toalha na porta: puxada isométrica, 20 s", "Remada invertida na mesa",
                "Barra do parque: suspensão passiva 20 s", "Puxada com salto e descida lenta (excêntrica 5 s)",
-               "Puxada assistida com um pé no chão", "Puxada completa", "Puxada com pausa no topo"] },
+               "Puxada assistida com um pé no chão", "Puxada completa", "Puxada com pausa no topo"],
+        pv: ["door frame row towel exercise", "inverted row under table home",
+             "dead hang barra tecnica", "negative pull up tecnica",
+             "assisted pull up with feet", "pull up tecnica correta", ""] },
 
       { n: "Dobradiça / posterior", t: "3 × 8–12", sets: 3, load: true,
-        cue: "Empurrar a bacia atrás com as pernas quase esticadas. Sente-se atrás da coxa, não na lombar.",
+        vq: "peso morto romeno tecnica",
+        cue: "Pernas quase direitas. Empurre a bacia para trás como se fechasse uma gaveta com o rabo, mantendo as costas direitas. Deve sentir atrás da coxa, nunca na lombar.",
         prog: ["Bom-dia sem carga", "Peso morto romeno com mochila", "A uma perna, mão na parede",
-               "A uma perna com mochila", "Nordic curl excêntrico: joelhos no chão, pés presos sob o sofá, descer 5 s"] },
+               "A uma perna com mochila", "Nordic curl excêntrico: joelhos no chão, pés presos sob o sofá, descer 5 s"],
+        pv: ["good morning exercicio tecnica", "peso morto romeno tecnica",
+             "single leg deadlift tecnica", "", "nordic hamstring curl iniciante casa"] },
 
       { n: "Elevação de gémeos", t: "3 × 15–25", sets: 3, load: true,
-        cue: "No bordo de um degrau, amplitude completa: descer o talão abaixo do degrau e subir ao máximo.",
+        vq: "elevacao de gemeos tecnica",
+        cue: "No bordo de um degrau, com o calcanhar a sair fora. Desça o calcanhar abaixo do nível do degrau e suba o mais alto que conseguir.",
         prog: ["Duas pernas no chão", "Duas pernas no degrau", "Com mochila",
-               "A uma perna", "A uma perna com pausa de 2 s no topo"] }
+               "A uma perna", "A uma perna com pausa de 2 s no topo"],
+        pv: ["", "calf raise no degrau tecnica", "", "single leg calf raise tecnica", ""] }
     ]},
 
     C: { name: "Força C", ex: [
       { n: "Agachamento (carga alta)", t: "4 × 6–8", sets: 4, load: true,
-        cue: "A sessão pesada da semana. Menos repetições, mais dificuldade por repetição.",
+        vq: "bulgarian split squat com peso",
+        cue: "A sessão pesada da semana: menos repetições, mais dificuldade por repetição. Escolha a variante em que 6 já custam.",
         prog: ["Búlgaro na cadeira", "Búlgaro com mochila", "Búlgaro com mochila pesada",
-               "Step-up alto numa cadeira", "A uma perna com mão na parede", "Pistol completo"] },
+               "Step-up alto numa cadeira", "A uma perna com mão na parede", "Pistol completo"],
+        pv: ["bulgarian split squat tecnica", "bulgarian split squat com peso", "",
+             "step up alto tecnica", "pistol squat progressao parede", "pistol squat tecnica"] },
 
       { n: "Flexões (variante difícil)", t: "3 × 6–12", sets: 3, load: false,
-        cue: "Escolha a variante em que 6 repetições já custam. Se fizer 15, subiu demasiado devagar.",
+        vq: "flexoes avancadas progressao",
+        cue: "Escolha a variante em que 6 repetições já custam. Se conseguir fazer 15, subiu de nível demasiado devagar.",
         prog: ["Completas com pausa de 2 s", "Pés numa cadeira", "Diamante", "Archer",
-               "Excêntrica lenta a um braço, 5 s"] },
+               "Excêntrica lenta a um braço, 5 s"],
+        pv: ["", "flexoes declinadas pes elevados", "flexoes diamante tecnica",
+             "archer push up tutorial", "one arm push up progression"] },
 
       { n: "Remada invertida", t: "3 × 8–12", sets: 3, load: false,
-        cue: "Debaixo de uma mesa que aguente o seu peso. Quanto mais horizontal o corpo, mais difícil.",
+        vq: "inverted row tecnica correta",
+        cue: "Debaixo de uma mesa que aguente o seu peso. Quanto mais horizontal ficar o corpo, mais difícil é.",
         prog: ["Joelhos dobrados", "Pernas esticadas", "Pés elevados numa cadeira",
-               "Com pausa de 2 s no topo", "A um braço, assistida"] },
+               "Com pausa de 2 s no topo", "A um braço, assistida"],
+        pv: ["inverted row under table home", "inverted row tecnica correta",
+             "feet elevated inverted row", "", "one arm inverted row"] },
 
       { n: "Farmer walks", t: "3 × 30–40 m", sets: 3, load: true,
-        cue: "Dois garrafões de água de 5 L, um em cada mão. Ombros atrás, andar direito.",
+        vq: "farmer walk tecnica",
+        cue: "Dois garrafões de 5 L, um em cada mão. Ombros para trás, tronco direito, passos normais.",
         prog: ["2 garrafões de 5 L", "2 sacos de compras carregados", "Mochila + garrafões",
-               "Distância maior com o mesmo peso"] },
+               "Distância maior com o mesmo peso"],
+        pv: ["farmer walk tecnica", "", "", ""] },
 
       { n: "Saltos verticais", t: "3 × 10", sets: 3, load: false,
-        cue: "Para o osso, não para o músculo. Aterragem suave, joelhos a amortecer. Nunca em fadiga.",
+        vq: "salto vertical aterragem segura",
+        cue: "Para o osso, não para o músculo. Aterragem suave com os joelhos a amortecer. Nunca faça em fadiga.",
         prog: ["Elevação nas pontas dos pés com impulso", "Saltos pequenos no lugar",
-               "Salto vertical máximo", "Salto para cima de um degrau", "Subir escadas a correr"] }
+               "Salto vertical máximo", "Salto para cima de um degrau", "Subir escadas a correr"],
+        pv: ["", "", "salto vertical aterragem segura", "box jump degrau tecnica", ""] }
     ]}
   };
 
@@ -1181,6 +1258,16 @@
   function lvlOf(exName) {
     if (!S.levels) S.levels = {};
     return S.levels[exName] || 0;
+  }
+
+  // Pesquisa no YouTube em vez de vídeo fixo: um ID específico pode ser
+  // removido ou tornado privado, uma pesquisa nunca quebra.
+  function vidQuery(x, li) {
+    if (x.pv && x.pv[li]) return x.pv[li];
+    return x.vq || x.n;
+  }
+  function ytUrl(q) {
+    return "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
   }
 
   function heightCm() {
@@ -1473,6 +1560,11 @@
           '<button class="lvlbtn up" data-lvl="' + xi + '" data-dir="1"' +
           (li === x.prog.length - 1 ? " disabled" : "") + ' aria-label="Nível seguinte">+</button>' +
           '</div>';
+
+        html += '<a class="vidlink" target="_blank" rel="noopener noreferrer" href="' +
+                esc(ytUrl(vidQuery(x, li))) + '">' +
+                '<span class="play" aria-hidden="true">&#9654;</span> ver como se faz' +
+                '<span class="vq">' + esc(vidQuery(x, li)) + '</span></a>';
       }
 
       if (prev) {

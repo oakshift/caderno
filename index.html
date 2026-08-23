@@ -925,9 +925,10 @@
     </div>
 
     <div class="card">
-      <div class="card-head">
-        <h2>Histórico</h2>
-        <div class="label">peso · kg</div>
+      <div class="card-head"><h2>Histórico</h2></div>
+      <div class="seg" id="histSeg">
+        <button type="button" class="segbtn on" data-hist="w" aria-pressed="true">peso</button>
+        <button type="button" class="segbtn" data-hist="c" aria-pressed="false">cintura</button>
       </div>
       <div class="hist" id="wHist"></div>
     </div>
@@ -955,14 +956,18 @@
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>Definições</h2></div>
+      <div class="card-head">
+        <h2>Definições</h2>
+        <div class="label">altura · cm</div>
+      </div>
       <div class="entry">
         <input id="hIn" type="number" inputmode="decimal" step="1" placeholder="altura, cm" aria-label="Altura em centímetros" />
         <button class="btn ghost" id="hSave">Guardar</button>
       </div>
       <p style="font-size:13px;color:var(--ink-soft);margin:10px 0 0">
-        Usada para calcular a razão cintura/altura, que é melhor indicador que o
-        perímetro isolado. Abaixo de 0,50 é o objetivo.
+        <strong>Este campo é a sua altura</strong>, em centímetros. Serve só para
+        calcular a razão cintura/altura, que é melhor indicador que o perímetro
+        isolado. Abaixo de 0,50 é o objetivo. Se estiver certa, não mexa.
       </p>
     </div>
 
@@ -1663,11 +1668,36 @@
       el("cDelta").textContent = "cintura/altura " + r.toFixed(2) + (r < 0.5 ? " · dentro" : " · acima de 0,50");
     }
 
-    var hh = "";
-    w.slice().reverse().slice(0, 12).forEach(function (x) {
-      hh += '<div class="hist-row"><span>' + x.v.toFixed(1) + ' kg</span><span>' + x.d + '</span></div>';
+    if (el("histSeg")) {
+      var hbtn = el("histSeg").getElementsByTagName("button");
+      for (var hb = 0; hb < hbtn.length; hb++) {
+        var hon = hbtn[hb].getAttribute("data-hist") === histTab;
+        hbtn[hb].className = hon ? "segbtn on" : "segbtn";
+        hbtn[hb].setAttribute("aria-pressed", hon ? "true" : "false");
+      }
+    }
+
+    var hh = "", hsrc = histTab === "c" ? c : w;
+    hsrc.slice().reverse().slice(0, 12).forEach(function (x, i, arr) {
+      var main, side;
+      if (histTab === "c") {
+        main = x.v.toFixed(1) + " cm";
+        side = "c/altura " + (x.v / heightCm()).toFixed(2);
+      } else {
+        main = x.v.toFixed(1) + " kg";
+        side = "";
+      }
+      // variação face ao registo anterior no tempo, que na lista invertida é o seguinte
+      var older = arr[i + 1];
+      if (older) {
+        var dv = x.v - older.v;
+        side = (dv >= 0 ? "+" : "") + dv.toFixed(1) + (histTab === "c" ? " cm" : " kg") + (side ? " · " + side : "");
+      }
+      hh += '<div class="hist-row"><span>' + main + '</span><span>' +
+            (side ? side + " · " : "") + x.d + '</span></div>';
     });
-    el("wHist").innerHTML = hh || '<div class="empty">Sem registos de peso.</div>';
+    el("wHist").innerHTML = hh ||
+      '<div class="empty">' + (histTab === "c" ? "Sem registos de cintura. Meça uma vez por mês." : "Sem registos de peso.") + '</div>';
 
     // treinos por semana, últimas 6
     var vh = "", cursor = weekStart(new Date());
@@ -1941,6 +1971,8 @@
   // à noite. O primeiro dia é excluído da média porque é sistematicamente o mais
   // alto — é o que as recomendações europeias fazem, e é a média que decide.
 
+  var histTab = "w";
+
   var BP_DAYS = 7, BP_PER_DAY = 4;
   var bpPer = (new Date()).getHours() < 12 ? "m" : "n";
 
@@ -2017,6 +2049,13 @@
     });
     el("bpHist").innerHTML = hh || '<div class="empty">Sem medições. Comece de manhã, antes do café.</div>';
   }
+
+  el("histSeg").addEventListener("click", function (e) {
+    var h = e.target;
+    if (!h || !h.getAttribute || !h.getAttribute("data-hist")) return;
+    histTab = h.getAttribute("data-hist");
+    renderMetrics();
+  });
 
   el("bpSeg").addEventListener("click", function (e) {
     var b = e.target;

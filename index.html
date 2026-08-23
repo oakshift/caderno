@@ -432,6 +432,14 @@
   }
   .note strong { color: var(--azulejo); }
 
+  .hint {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-faint);
+    margin-top: 10px;
+  }
+  .hint strong { color: var(--ink-soft); font-weight: 600; }
+
   .empty {
     font-size: 13.5px;
     color: var(--ink-faint);
@@ -880,6 +888,13 @@
       <div class="entry">
         <input id="cIn" type="number" inputmode="decimal" step="0.5" placeholder="cintura, cm" aria-label="Perímetro abdominal em centímetros" />
         <button class="btn" id="cAdd">Registar</button>
+      </div>
+      <div class="hint">
+        <strong>Meça sempre nas mesmas condições</strong>, ou os números não se
+        comparam: segunda de manhã, em jejum, depois de urinar e antes de beber, na
+        mesma balança. A cintura em pé, relaxado, à altura do umbigo, no fim de uma
+        expiração normal. Entre uma pesagem à tarde e outra em jejum há meio quilo a
+        um quilo de diferença que não é seu.
       </div>
       <div class="note" id="readout">
         Leia os dois juntos: <strong>peso a subir devagar com cintura estável = massa

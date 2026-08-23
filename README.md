@@ -13,6 +13,8 @@ Registo diário de treino e nutrição, numa única página HTML sem dependênci
   de cada um e a variação face ao registo anterior
 - **Tensão arterial** — sete dias, quatro medições por dia (duas de manhã, duas à
   noite). A média exclui o primeiro dia, que é sistematicamente o mais alto
+- **Compras** — lista que se risca a um toque; o que arruma vai para os habituais e
+  volta a entrar com um toque na semana seguinte
 - **Dados** — exportação em `.json` e restauro
 
 ## Privacidade

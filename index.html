@@ -432,6 +432,54 @@
   }
   .note strong { color: var(--azulejo); }
 
+  .shoplist { display: flex; flex-direction: column; margin-top: 12px; }
+  .shopitem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 2px;
+    border-top: 1px solid var(--edge);
+  }
+  .shopitem:first-child { border-top: 0; }
+  .shopitem .tick {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid var(--edge-strong);
+    background: var(--surface);
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+  }
+  .shopitem .tick:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 2px; }
+  .shopitem.done .tick { background: var(--olive); border-color: var(--olive); }
+  .shopitem .tick svg { width: 14px; height: 14px; display: none; }
+  .shopitem.done .tick svg { display: block; color: #fff; margin: 0 auto; }
+  .shopitem .nm {
+    flex: 1;
+    font-size: 14.5px;
+    text-align: left;
+    background: none;
+    border: 0;
+    color: var(--ink);
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .shopitem.done .nm { text-decoration: line-through; color: var(--ink-faint); }
+  .shopitem .rmv {
+    flex: none;
+    background: none;
+    border: 0;
+    color: var(--ink-faint);
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px 6px;
+    cursor: pointer;
+  }
+  .shopitem .rmv:hover { color: var(--porto); }
+
   .hint {
     font-size: 12px;
     line-height: 1.5;
@@ -461,7 +509,7 @@
     max-width: 560px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
   .tab {
     background: none;
@@ -954,6 +1002,44 @@
     </div>
   </section>
 
+  <!-- ============ COMPRAS ============ -->
+  <section class="view" id="v-compras">
+    <div class="card">
+      <div class="card-head">
+        <h2>Lista de compras</h2>
+        <div class="pill blue" id="shopPill">0 por comprar</div>
+      </div>
+      <div class="addrow">
+        <input id="shopIn" type="text" placeholder="acrescentar à lista" aria-label="Artigo a acrescentar" autocomplete="off" />
+        <button class="btn" id="shopAdd" aria-label="Acrescentar">+</button>
+      </div>
+      <div class="shoplist" id="shopList"></div>
+      <button class="btn ghost wide" id="shopClear" style="margin-top:14px">Arrumar o que já comprou</button>
+      <div class="hint">
+        Toque no artigo para o riscar. "Arrumar" tira da lista o que já comprou e
+        guarda-o nos habituais, aqui em baixo — na semana seguinte volta com um toque.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Habituais</h2>
+        <div class="label">um toque para juntar</div>
+      </div>
+      <div class="chipwrap" id="shopUsual"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Ao ler os rótulos</h2></div>
+      <div class="note">
+        Nada <strong>enriquecido com ferro</strong> — cereais, barras, bebidas
+        vegetais. A levedura nutricional, <strong>não fortificada</strong>. O tofu,
+        de preferência com <strong>sulfato de cálcio</strong> (E516), que é uma das
+        melhores fontes de cálcio que pode ter em casa.
+      </div>
+    </div>
+  </section>
+
   <!-- ============ DADOS ============ -->
   <section class="view" id="v-dados">
     <div class="card">
@@ -1020,6 +1106,10 @@
     <button class="tab" data-view="metricas">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-8 4 5"/><path d="M3 21h18"/></svg>
       Métricas
+    </button>
+    <button class="tab" data-view="compras">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l2.4 12.4a2 2 0 002 1.6h7.7a2 2 0 002-1.6L21 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>
+      Compras
     </button>
     <button class="tab" data-view="dados">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
@@ -1270,6 +1360,33 @@
     { id: "lpa",   t: "Lipoproteína(a)",          s: "uma vez na vida" },
     { id: "hemo",  t: "Hemograma repetido",       s: "bem hidratado" },
     { id: "ta",    t: "Tensão arterial, 7 dias",  s: "registe em Métricas, 4× por dia" }
+  ];
+
+  // Lista inicial, usada uma única vez, se ele nunca tiver mexido nas compras.
+  // A partir daí a lista é dele: o que arruma vai para os habituais e volta a um toque.
+  var SHOP_SEED = [
+    "2 dúzias de ovos",
+    "Skyr ou quark magro, 7",
+    "Soja texturizada, 500 g",
+    "Tofu firme, 2 x 400 g",
+    "Grão em lata, 4",
+    "Lentilhas em lata, 2",
+    "Sardinhas ou atum, 4 latas",
+    "Leite, 4 L",
+    "Bebida de soja enriquecida com cálcio",
+    "Alpro plant protein, 4",
+    "Tremoços",
+    "Amêndoas e nozes, 500 g",
+    "Manteiga de amendoim",
+    "Tahini",
+    "Azeite",
+    "Aveia, 1 kg",
+    "Pão",
+    "Arroz e massa",
+    "Batata",
+    "Levedura nutricional, não fortificada",
+    "Fruta: bananas, ameixas",
+    "Legumes: couve, brócolos, cenoura"
   ];
 
   var DOW = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -1798,6 +1915,7 @@
     renderTrain();
     renderMetrics();
     renderBp();
+    renderShop();
     renderKit();
     renderLabs();
   }
@@ -1978,6 +2096,109 @@
     el("cIn").value = "";
     save(); renderMetrics();
     toast(v / heightCm() < 0.5 ? "Registado. Cintura/altura dentro de 0,50." : "Acima de 0,50 — vale ajustar as calorias.");
+  });
+
+  // ---------- compras ----------
+
+  function shop() {
+    if (!S.shop) {
+      S.shop = { list: [], usual: {} };
+      for (var i = 0; i < SHOP_SEED.length; i++) S.shop.list.push({ n: SHOP_SEED[i], done: false });
+      save();
+    }
+    if (!S.shop.list) S.shop.list = [];
+    if (!S.shop.usual) S.shop.usual = {};
+    return S.shop;
+  }
+
+  function shopAdd(name) {
+    var n = (name || "").replace(/^\s+|\s+$/g, "");
+    if (!n) return false;
+    var L = shop().list;
+    for (var i = 0; i < L.length; i++) {
+      if (L[i].n.toLowerCase() === n.toLowerCase()) {
+        L[i].done = false;
+        return true;
+      }
+    }
+    L.push({ n: n, done: false });
+    return true;
+  }
+
+  function renderShop() {
+    if (!el("shopList")) return;
+    var sh = shop(), L = sh.list, html = "", left = 0;
+
+    for (var i = 0; i < L.length; i++) {
+      if (!L[i].done) left++;
+      html += '<div class="shopitem' + (L[i].done ? " done" : "") + '">' +
+        '<button class="tick" data-shop="' + i + '" aria-label="Riscar ' + esc(L[i].n) + '" aria-pressed="' + (L[i].done ? "true" : "false") + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>' +
+        '</button>' +
+        '<button class="nm" data-shop="' + i + '">' + esc(L[i].n) + '</button>' +
+        '<button class="rmv" data-shoprm="' + i + '" aria-label="Remover ' + esc(L[i].n) + '">&times;</button>' +
+        '</div>';
+    }
+    el("shopList").innerHTML = html || '<div class="empty">Lista vazia. Junte artigos acima ou nos habituais.</div>';
+    el("shopPill").textContent = left + " por comprar";
+
+    // habituais: o que já comprou antes e não está na lista de agora
+    var inList = {};
+    for (var j = 0; j < L.length; j++) inList[L[j].n.toLowerCase()] = 1;
+    var names = [];
+    for (var k in sh.usual) {
+      if (Object.prototype.hasOwnProperty.call(sh.usual, k) && !inList[k.toLowerCase()]) names.push(k);
+    }
+    names.sort(function (a, b) { return sh.usual[b] - sh.usual[a]; });
+    var ch = "";
+    for (var m = 0; m < Math.min(names.length, 14); m++) {
+      ch += '<button class="chip" data-shopusual="' + esc(names[m]) + '">' + esc(names[m]) +
+            ' <b>' + sh.usual[names[m]] + '×</b></button>';
+    }
+    el("shopUsual").innerHTML = ch ||
+      '<div class="empty">Ainda vazio. O que arrumar da lista aparece aqui.</div>';
+  }
+
+  el("shopAdd").addEventListener("click", function () {
+    if (!shopAdd(el("shopIn").value)) { toast("Escreva o que quer juntar."); return; }
+    el("shopIn").value = "";
+    save(); renderShop();
+  });
+
+  el("shopIn").addEventListener("keydown", function (e) {
+    if (e.keyCode === 13) el("shopAdd").click();
+  });
+
+  el("shopClear").addEventListener("click", function () {
+    var sh = shop(), keep = [], n = 0;
+    for (var i = 0; i < sh.list.length; i++) {
+      if (sh.list[i].done) {
+        sh.usual[sh.list[i].n] = (sh.usual[sh.list[i].n] || 0) + 1;
+        n++;
+      } else { keep.push(sh.list[i]); }
+    }
+    if (!n) { toast("Nada riscado para arrumar."); return; }
+    sh.list = keep;
+    save(); renderShop();
+    toast(n + (n === 1 ? " artigo arrumado." : " artigos arrumados."));
+  });
+
+  el("v-compras").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if (!b) return;
+    var sh = shop();
+    if (b.getAttribute("data-shop") != null) {
+      var i = +b.getAttribute("data-shop");
+      if (sh.list[i]) { sh.list[i].done = !sh.list[i].done; save(); renderShop(); }
+      return;
+    }
+    if (b.getAttribute("data-shoprm") != null) {
+      var j = +b.getAttribute("data-shoprm");
+      if (sh.list[j]) { sh.list.splice(j, 1); save(); renderShop(); }
+      return;
+    }
+    var u = b.getAttribute("data-shopusual");
+    if (u) { shopAdd(u); save(); renderShop(); toast("Juntei à lista."); }
   });
 
   // ---------- tensão arterial ----------

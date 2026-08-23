@@ -9,8 +9,11 @@ Registo diário de treino e nutrição, numa única página HTML sem dependênci
   e soma ao total do dia
 - **Treino** — três sessões de força sem equipamento, cada exercício com dica de
   execução e uma escada de progressão (a progressão é por nível, não por carga)
-- **Métricas** — peso, perímetro abdominal e razão cintura/altura
-- **Dados** — resumo em texto para copiar, cópia de segurança em `.json` e restauro
+- **Métricas** — peso, perímetro abdominal e razão cintura/altura, com histórico
+  de cada um e a variação face ao registo anterior
+- **Tensão arterial** — sete dias, quatro medições por dia (duas de manhã, duas à
+  noite). A média exclui o primeiro dia, que é sistematicamente o mais alto
+- **Dados** — exportação em `.json` e restauro
 
 ## Privacidade
 

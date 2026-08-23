@@ -944,12 +944,11 @@
     <div class="card">
       <div class="card-head"><h2>Ponto de situação</h2></div>
       <p style="font-size:14px;color:var(--ink-soft);margin:0 0 12px">
-        Copie o resumo e cole-o numa conversa comigo para eu revisar a progressão,
-        ajustar cargas e comparar com as análises.
+        O ficheiro .json tem o registo todo — suplementos, proteína, treinos, peso,
+        cintura e tensão. Guarde-o e envie-mo para eu rever a progressão, ajustar
+        cargas e comparar com as análises. Serve também de cópia de segurança.
       </p>
-      <button class="btn wide" id="copyBtn">Copiar resumo para o Claude</button>
-      <div style="height:8px"></div>
-      <button class="btn ghost wide" id="saveBtn">Guardar cópia de segurança (.json)</button>
+      <button class="btn wide" id="saveBtn">Guardar ficheiro .json</button>
       <div style="height:8px"></div>
       <label class="btn ghost wide" id="loadLabel" for="loadFile">Restaurar a partir de ficheiro</label>
       <input id="loadFile" type="file" accept=".json,application/json" aria-label="Ficheiro de cópia de segurança">
@@ -2095,148 +2094,7 @@
     }
   });
 
-  // ---------- resumo / exportação ----------
-
-  function summary() {
-    var L = [];
-    L.push("PONTO DE SITUAÇÃO — Plano de treino e alimentação");
-    L.push("Gerado: " + iso(new Date()) + " · semana " + weekNum() + " (fase " + phase() + ")");
-    L.push("");
-    L.push("SEQUÊNCIA DE SUPLEMENTOS: " + streak() + " dias consecutivos");
-    if (phase2Available()) {
-      L.push("FASE 2 PENDENTE DE DECISÃO — " + doneLastWeeks(4) + "/8 sessões nas últimas 4 semanas");
-    }
-    L.push("");
-
-    L.push("TREINOS POR SEMANA (alvo " + weekTarget() + ")");
-    var cursor = weekStart(new Date());
-    for (var k = 0; k < 6; k++) {
-      var n = 0, ws = new Date(cursor);
-      for (var i = 0; i < 7; i++) {
-        var dd = new Date(ws); dd.setDate(ws.getDate() + i);
-        var o = S.days[iso(dd)];
-        if (o && o.done) n++;
-      }
-      L.push("  " + iso(ws) + ": " + n + "/" + weekTarget());
-      cursor.setDate(cursor.getDate() - 7);
-    }
-    L.push("");
-
-    L.push("PESO");
-    if (!S.weights.length) L.push("  sem registos");
-    S.weights.slice(-10).forEach(function (x) { L.push("  " + x.d + ": " + x.v.toFixed(1) + " kg"); });
-    L.push("");
-    L.push("CINTURA");
-    if (!S.waists.length) L.push("  sem registos");
-    S.waists.slice(-10).forEach(function (x) { L.push("  " + x.d + ": " + x.v.toFixed(1) + " cm"); });
-    L.push("");
-
-    L.push("TENSÃO ARTERIAL (casa · 2 de manhã + 2 à noite · 1.º dia fora da média)");
-    var bpg = bpByDay(), bpst = bpStats();
-    if (!bpg.keys.length) {
-      L.push("  sem registos");
-    } else {
-      bpg.keys.forEach(function (k) {
-        var r = bpg.map[k].map(function (x) {
-          return (x.p === "m" ? "M" : "N") + " " + x.s + "/" + x.di;
-        }).join("  ");
-        L.push("  " + k + ": " + r + (k === bpst.first && bpg.keys.length > 1 ? "   (fora da média)" : ""));
-      });
-      L.push("  " + bpst.days + "/" + BP_DAYS + " dias" +
-             (bpst.n ? "  ·  média " + Math.round(bpst.s) + "/" + Math.round(bpst.di) +
-                       (bpst.partial ? "  (só o 1.º dia, ainda não vale)" : "") : ""));
-    }
-    L.push("");
-
-    L.push("NÍVEIS DE PROGRESSÃO ATUAIS (treino sem equipamento)");
-    ["A", "B", "C"].forEach(function (sk) {
-      L.push("  [" + SESSIONS[sk].name + "]");
-      SESSIONS[sk].ex.forEach(function (x) {
-        if (!x.prog) return;
-        var li = Math.min(lvlOf(x.n), x.prog.length - 1);
-        L.push("    " + x.n + ": nível " + (li + 1) + "/" + x.prog.length + " — " + x.prog[li]);
-      });
-    });
-    L.push("");
-
-    L.push("CARGAS / REPETIÇÕES — última sessão registada por exercício");
-    var seen = {};
-    Object.keys(S.days).sort().reverse().forEach(function (k) {
-      var lg = S.days[k].log || {};
-      Object.keys(lg).forEach(function (nm) {
-        if (seen[nm]) return;
-        var sets = lg[nm].filter(function (s) { return s && (s.w || s.r); });
-        if (!sets.length) return;
-        seen[nm] = 1;
-        L.push("  " + nm + " (" + k + "): " + sets.map(function (s) {
-          return (s.w ? s.w + "kg×" : "") + (s.r || "?");
-        }).join(", "));
-      });
-    });
-    if (!Object.keys(seen).length) L.push("  sem registos");
-    L.push("");
-
-    L.push("PROTEÍNA — últimos 14 dias (alvo " + PROT_TARGET + " g)");
-    for (var j = 13; j >= 0; j--) {
-      var d2 = new Date(); d2.setDate(d2.getDate() - j);
-      var od = S.days[iso(d2)];
-      L.push("  " + iso(d2) + ": " + (od ? Math.round(od.prot) : 0) + " g" +
-             (od && SUPPS.every(function (s) { return od.supps[s.id]; }) ? "  supl ✓" : ""));
-    }
-    L.push("");
-
-    // padrão alimentar: o que mais usa, para eu poder comentar as escolhas
-    var tally = {};
-    for (var t2 = 0; t2 < 14; t2++) {
-      var d3 = new Date(); d3.setDate(d3.getDate() - t2);
-      var od2 = S.days[iso(d3)];
-      if (!od2 || !od2.entries) continue;
-      od2.entries.forEach(function (e) { tally[e.n] = (tally[e.n] || 0) + 1; });
-    }
-    var names = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; });
-    L.push("LISTA PESSOAL DE ALIMENTOS (nome · proteína · vezes usado)");
-    var mfk = [];
-    for (var mfn in (S.myFoods || {})) {
-      if (Object.prototype.hasOwnProperty.call(S.myFoods, mfn)) mfk.push(mfn);
-    }
-    mfk.sort(function (a, b) { return (S.myFoods[b].n || 0) - (S.myFoods[a].n || 0); });
-    if (!mfk.length) L.push("  vazia");
-    for (var mfi = 0; mfi < mfk.length; mfi++) {
-      L.push("  " + mfk[mfi] + " · " + fmt(S.myFoods[mfk[mfi]].v) + " g · " + (S.myFoods[mfk[mfi]].n || 0) + "×");
-    }
-    L.push("");
-
-    L.push("ALIMENTOS MAIS USADOS (14 dias)");
-    if (!names.length) L.push("  sem registos");
-    names.slice(0, 12).forEach(function (n) { L.push("  " + tally[n] + "×  " + n); });
-    L.push("");
-    L.push("Filtro vegan na app: " + (S.veganOnly ? "ativo" : "inativo"));
-    L.push("");
-
-    L.push("ANÁLISES");
-    LABS.forEach(function (x) { L.push("  [" + (S.labs[x.id] ? "x" : " ") + "] " + x.t); });
-    L.push("");
-    L.push("Revê a progressão, ajusta cargas e diz-me o que corrigir.");
-    return L.join("\n");
-  }
-
-  el("copyBtn").addEventListener("click", function () {
-    var txt = summary();
-    function fallback() {
-      var ta = document.createElement("textarea");
-      ta.value = txt;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand("copy"); toast("Resumo copiado."); }
-      catch (e) { toast("Não foi possível copiar automaticamente."); }
-      document.body.removeChild(ta);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(txt).then(function () { toast("Resumo copiado. Cole numa conversa."); }, fallback);
-    } else { fallback(); }
-  });
+  // ---------- exportação ----------
 
   el("saveBtn").addEventListener("click", function () {
     var payload = JSON.stringify({ exported: iso(new Date()), week: weekNum(), state: S }, null, 2);

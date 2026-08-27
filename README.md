@@ -5,14 +5,15 @@ Registo diário de treino e nutrição, numa única página HTML sem dependênci
 ## O que faz
 
 - **Suplementos** — quatro tomas diárias com contador de dias seguidos
-- **Proteína** — lista de ~37 alimentos com a proteína por porção real, filtro vegan,
-  e soma ao total do dia
+- **Proteína** — entrada livre; o que regista fica guardado e volta a um toque, sem
+  limite de quantos alimentos acumula
 - **Treino** — três sessões de força sem equipamento, cada exercício com dica de
   execução e uma escada de progressão (a progressão é por nível, não por carga)
 - **Métricas** — peso, perímetro abdominal e razão cintura/altura, com histórico
   de cada um e a variação face ao registo anterior
 - **Tensão arterial** — sete dias, quatro medições por dia (duas de manhã, duas à
-  noite). A média exclui o primeiro dia, que é sistematicamente o mais alto
+  noite), com pulsação opcional. A média exclui o primeiro dia, que é
+  sistematicamente o mais alto
 - **Compras** — lista que se risca a um toque; o que arruma vai para os habituais e
   volta a entrar com um toque na semana seguinte
 - **Dados** — exportação em `.json` e restauro

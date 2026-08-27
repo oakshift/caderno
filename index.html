@@ -172,10 +172,30 @@
   .daychip.has-strength { border-color: var(--azulejo); }
   .daychip.has-strength .dow { color: var(--azulejo); }
   .daychip.filled .dot { background: var(--olive); }
-  .daychip.is-today { background: var(--azulejo); border-color: var(--azulejo); }
-  .daychip.is-today .dow, .daychip.is-today .num { color: #fff; }
-  .daychip.is-today .dot { background: rgba(255,255,255,0.55); }
-  .daychip.is-today.filled .dot { background: #fff; }
+  .daychip.is-today { background: var(--azulejo-soft); border-color: var(--azulejo); }
+  .daychip.is-today .dow { color: var(--azulejo); }
+  .daychip.is-today .num { color: var(--azulejo); font-weight: 600; }
+
+  /* o dia que está a ser visto é o azul cheio: é o que manda no ecrã de baixo */
+  .daychip.is-view { background: var(--azulejo); border-color: var(--azulejo); }
+  .daychip.is-view .dow, .daychip.is-view .num { color: #fff; }
+  .daychip.is-view .dot { background: rgba(255,255,255,0.55); }
+  .daychip.is-view.filled .dot { background: #fff; }
+
+  .viewnote {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 8px 16px 12px;
+    font-family: var(--font-data);
+    font-size: 12px;
+    color: var(--amber);
+  }
+  .viewnote.on { display: flex; }
+  .viewnote b { font-weight: 600; }
 
   /* ---------- cards ---------- */
 
@@ -731,85 +751,6 @@
   }
   .planref .refline b { color: var(--ink-soft); font-weight: 600; }
 
-  .foodtools { display: flex; gap: 7px; margin: 16px 0 8px; }
-  .foodtools input {
-    flex: 1;
-    min-width: 0;
-    font: inherit;
-    font-size: 14.5px;
-    padding: 9px 11px;
-    border: 1px solid var(--edge-strong);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--ink);
-  }
-  .foodtools input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
-
-  .vtog {
-    flex: none;
-    font-family: var(--font-data);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    padding: 0 11px;
-    border-radius: 8px;
-    border: 1px solid var(--edge-strong);
-    background: var(--surface);
-    color: var(--ink-faint);
-    cursor: pointer;
-  }
-  .vtog.on { background: var(--olive); border-color: var(--olive); color: #fff; }
-  .vtog:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
-
-  .foodlist {
-    max-height: 300px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid var(--edge);
-    border-radius: 8px;
-    background: var(--surface-sunk);
-  }
-
-  .fgroup {
-    font-family: var(--font-data);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-faint);
-    padding: 9px 11px 5px;
-    position: sticky;
-    top: 0;
-    background: var(--surface-sunk);
-  }
-
-  .frow {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: 0;
-    border-top: 1px solid var(--edge);
-    padding: 10px 11px;
-    font: inherit;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  .frow:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -2px; }
-  .frow:active { background: var(--azulejo-soft); }
-  .frow .fn { flex: 1; font-size: 14.5px; }
-  .frow .fp { font-family: var(--font-data); font-size: 11px; color: var(--ink-faint); white-space: nowrap; }
-  .frow .fv {
-    font-family: var(--font-data);
-    font-size: 13px;
-    font-variant-numeric: tabular-nums;
-    color: var(--azulejo);
-    white-space: nowrap;
-    min-width: 38px;
-    text-align: right;
-  }
-  .frow.hi .fv { color: var(--olive); font-weight: 600; }
-
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
   }
@@ -823,6 +764,7 @@
     <div class="phase-tag" id="phaseTag">semana 1 · fase 1</div>
   </div>
   <div class="weekstrip" id="weekstrip"></div>
+  <div class="viewnote" id="viewNote"></div>
 </header>
 
 <div class="shell">
@@ -863,13 +805,6 @@
         <button class="linkbtn" id="myEditBtn">editar</button>
       </div>
       <div class="chipwrap" id="myFoods"></div>
-
-      <div class="foodtools">
-        <input id="foodSearch" type="search" placeholder="Procurar na tabela de referência…" aria-label="Procurar na tabela de referência" />
-        <button class="vtog" id="veganTog" aria-pressed="false">vegan</button>
-      </div>
-
-      <div class="foodlist" id="foodList"></div>
 
       <div class="planref" id="planRef"></div>
     </div>
@@ -973,15 +908,17 @@
         <button type="button" class="segbtn" data-per="n" aria-pressed="false">noite</button>
       </div>
       <div class="entry">
-        <input id="bpS" type="number" inputmode="numeric" step="1" placeholder="sistólica" aria-label="Tensão sistólica" />
-        <input id="bpD" type="number" inputmode="numeric" step="1" placeholder="diastólica" aria-label="Tensão diastólica" />
-        <button class="btn" id="bpAdd">Registar</button>
+        <input id="bpS" type="number" inputmode="numeric" step="1" placeholder="sist." aria-label="Tensão sistólica" />
+        <input id="bpD" type="number" inputmode="numeric" step="1" placeholder="diast." aria-label="Tensão diastólica" />
+        <input id="bpP" type="number" inputmode="numeric" step="1" placeholder="pulso" aria-label="Pulsação, batimentos por minuto" />
       </div>
+      <button class="btn wide" id="bpAdd" style="margin-top:8px">Registar</button>
       <div class="hist" id="bpHist"></div>
       <div class="note">
         <strong>Sentado, 5 minutos de descanso</strong>, costas apoiadas, pés no chão,
         braço à altura do coração e sem falar durante a medição. Duas medições seguidas,
         com 1&ndash;2 minutos entre elas: de manhã antes do café, à noite antes do jantar.
+        A <strong>pulsação</strong> entra no mesmo registo, se a máquina a der.
         <strong>O primeiro dia não entra na média</strong> &mdash; é sistematicamente o
         mais alto. Sete dias seguidos e leve a média à consulta.
       </div>
@@ -1144,53 +1081,6 @@
     { id: "d3",    t: "Vitamina D3",         s: "1000 UI · com gordura" },
     { id: "algas", t: "Óleo de algas",       s: "250–500 mg DHA" },
     { id: "creat", t: "Creatina",            s: "3–5 g · qualquer hora" }
-  ];
-
-  // v = gramas de proteína na porção indicada. vg = adequado a dieta vegan.
-  var FOODS = [
-    { g: "Soja e derivados", n: "Seitan",                p: "120 g",         v: 30,  vg: 1 },
-    { g: "Soja e derivados", n: "Soja texturizada",      p: "60 g seca",     v: 30,  vg: 1 },
-    { g: "Soja e derivados", n: "Tempeh",                p: "120 g",         v: 24,  vg: 1 },
-    { g: "Soja e derivados", n: "Tofu extra-firme",      p: "100 g",         v: 19,  vg: 1 },
-    { g: "Soja e derivados", n: "Tofu firme",            p: "100 g",         v: 16,  vg: 1 },
-    { g: "Soja e derivados", n: "Edamame",               p: "150 g",         v: 17,  vg: 1 },
-    { g: "Soja e derivados", n: "Bebida de soja",        p: "250 ml",        v: 8,   vg: 1 },
-
-    { g: "Leguminosas (cozidas)", n: "Tremoços",         p: "150 g",         v: 24,  vg: 1 },
-    { g: "Leguminosas (cozidas)", n: "Lentilhas",        p: "200 g",         v: 18,  vg: 1 },
-    { g: "Leguminosas (cozidas)", n: "Grão-de-bico",     p: "200 g",         v: 18,  vg: 1 },
-    { g: "Leguminosas (cozidas)", n: "Feijão preto",     p: "200 g",         v: 17,  vg: 1 },
-    { g: "Leguminosas (cozidas)", n: "Feijão encarnado", p: "200 g",         v: 17,  vg: 1 },
-    { g: "Leguminosas (cozidas)", n: "Feijão-frade",     p: "200 g",         v: 16,  vg: 1 },
-    { g: "Leguminosas (cozidas)", n: "Ervilhas",         p: "200 g",         v: 11,  vg: 1 },
-
-    { g: "Lácteos e ovos", n: "Skyr",                    p: "200 g",         v: 22,  vg: 0 },
-    { g: "Lácteos e ovos", n: "Queijo quark",            p: "200 g",         v: 22,  vg: 0 },
-    { g: "Lácteos e ovos", n: "Iogurte grego",           p: "150 g",         v: 14,  vg: 0 },
-    { g: "Lácteos e ovos", n: "Requeijão",               p: "100 g",         v: 11,  vg: 0 },
-    { g: "Lácteos e ovos", n: "Leite",                   p: "250 ml",        v: 8.5, vg: 0 },
-    { g: "Lácteos e ovos", n: "Queijo flamengo / Serra", p: "fatia 30 g",    v: 7,   vg: 0 },
-    { g: "Lácteos e ovos", n: "Ovo",                     p: "1 grande",      v: 6.5, vg: 0 },
-
-    { g: "Peixe", n: "Salmão",                           p: "130 g",         v: 27,  vg: 0 },
-    { g: "Peixe", n: "Cavala",                           p: "130 g",         v: 26,  vg: 0 },
-    { g: "Peixe", n: "Atum em lata",                     p: "1 lata",        v: 20,  vg: 0 },
-    { g: "Peixe", n: "Sardinha em lata",                 p: "1 lata",        v: 20,  vg: 0 },
-
-    { g: "Frutos secos e sementes", n: "Sementes de abóbora",  p: "30 g",    v: 9,   vg: 1 },
-    { g: "Frutos secos e sementes", n: "Manteiga de amendoim", p: "30 g",    v: 7.5, vg: 1 },
-    { g: "Frutos secos e sementes", n: "Amêndoas",             p: "30 g",    v: 6,   vg: 1 },
-    { g: "Frutos secos e sementes", n: "Tahini",               p: "30 g",    v: 5,   vg: 1 },
-    { g: "Frutos secos e sementes", n: "Nozes",                p: "30 g",    v: 4.5, vg: 1 },
-
-    { g: "Cereais", n: "Massa integral",                 p: "200 g cozida",  v: 11,  vg: 1 },
-    { g: "Cereais", n: "Aveia",                          p: "80 g seca",     v: 10,  vg: 1 },
-    { g: "Cereais", n: "Quinoa",                         p: "200 g cozida",  v: 9,   vg: 1 },
-    { g: "Cereais", n: "Pão de centeio",                 p: "2 fatias",      v: 6,   vg: 1 },
-    { g: "Cereais", n: "Arroz",                          p: "200 g cozido",  v: 5,   vg: 1 },
-
-    { g: "Extras", n: "Proteína em pó",                  p: "1 medida 30 g", v: 24,  vg: 1 },
-    { g: "Extras", n: "Levedura nutricional",            p: "2 c. sopa",     v: 5,   vg: 1 }
   ];
 
   // Atalhos: os quatro blocos do plano, com a proteína prevista para cada um.
@@ -1395,16 +1285,8 @@
 
   var S = load();
   var viewDate = iso(new Date());
-  var foodQuery = "";
   var myKeys = [];      // nomes da lista pessoal, por ordem de utilização
   var myEdit = false;   // modo de remoção da lista pessoal
-
-  // busca insensível a acentos
-  function norm(s) {
-    return s.toLowerCase()
-      .replace(/[áàâã]/g, "a").replace(/[éê]/g, "e").replace(/[í]/g, "i")
-      .replace(/[óòôõ]/g, "o").replace(/[úü]/g, "u").replace(/[ç]/g, "c");
-  }
 
   function load() {
     try {
@@ -1417,7 +1299,7 @@
         }
       }
     } catch (e) {}
-    return { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false, veganOnly: false };
+    return { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false };
   }
 
   function save() {
@@ -1555,12 +1437,26 @@
       if (plannedFor(k)) cls += " has-strength";
       if (o && (o.done || (o.prot > 0) || SUPPS.some(function (x) { return o.supps[x.id]; }))) cls += " filled";
       if (k === iso(new Date())) cls += " is-today";
+      if (k === viewDate) cls += " is-view";
       html += '<button class="' + cls + '" data-d="' + k + '">' +
               '<span class="dow">' + DOW[dd.getDay()] + '</span>' +
               '<span class="num">' + dd.getDate() + '</span>' +
               '<span class="dot"></span></button>';
     }
     el("weekstrip").innerHTML = html;
+
+    // Sem isto perde-se de vista em que dia está a registar.
+    var vn = el("viewNote"), hoje = iso(new Date());
+    if (viewDate === hoje) {
+      vn.className = "viewnote";
+      vn.innerHTML = "";
+    } else {
+      var vd = parseIso(viewDate);
+      vn.className = "viewnote on";
+      vn.innerHTML = '<span>a registar em <b>' + DOW[vd.getDay()] + ", " + pad(vd.getDate()) +
+                     "/" + pad(vd.getMonth() + 1) + '</b>, não em hoje</span>' +
+                     '<button class="linkbtn" data-backtoday="1">voltar a hoje</button>';
+    }
   }
 
   var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
@@ -1603,8 +1499,6 @@
       var d = (S.myFoods[b].n || 0) - (S.myFoods[a].n || 0);
       return d !== 0 ? d : (a < b ? -1 : 1);
     });
-    myKeys = myKeys.slice(0, 16);
-
     var mh = "";
     for (var mi = 0; mi < myKeys.length; mi++) {
       var mf = S.myFoods[myKeys[mi]];
@@ -1624,38 +1518,6 @@
     el("planRef").innerHTML = '<span class="label">blocos do plano, como referência</span>' +
       '<div class="refline">' + rl + '</div>';
 
-    // tabela de referência: só aparece quando procura
-    var q = norm(foodQuery.trim());
-    var shown = FOODS.filter(function (f) {
-      if (S.veganOnly && !f.vg) return false;
-      if (!q) return true;
-      return norm(f.n).indexOf(q) >= 0 || norm(f.g).indexOf(q) >= 0;
-    });
-
-    var out = "", lastGroup = null;
-    shown.forEach(function (f) {
-      var idx = FOODS.indexOf(f);
-      if (f.g !== lastGroup) {
-        out += '<div class="fgroup">' + esc(f.g) + '</div>';
-        lastGroup = f.g;
-      }
-      out += '<button class="frow' + (f.v >= 18 ? " hi" : "") + '" data-food="' + idx + '">' +
-             '<span class="fn">' + esc(f.n) + '</span>' +
-             '<span class="fp">' + esc(f.p) + '</span>' +
-             '<span class="fv">' + fmt(f.v) + ' g</span></button>';
-    });
-    if (!q) {
-      el("foodList").innerHTML = "";
-      el("foodList").style.display = "none";
-    } else {
-      el("foodList").style.display = "";
-      el("foodList").innerHTML = out ||
-        '<div class="empty">Nada na tabela corresponde a isso. Escreva o nome e os gramas em cima — fica guardado.</div>';
-    }
-
-    var vt = el("veganTog");
-    vt.classList.toggle("on", !!S.veganOnly);
-    vt.setAttribute("aria-pressed", S.veganOnly ? "true" : "false");
   }
 
   function esc(s) {
@@ -1950,6 +1812,11 @@
     var t = e.target.closest("button");
     if (!t) return;
 
+    if (t.dataset.backtoday) {
+      viewDate = iso(new Date());
+      renderAll();
+      return;
+    }
     if (t.dataset.d) {
       viewDate = t.dataset.d;
       renderAll();
@@ -1984,11 +1851,6 @@
         addProt(mname, S.myFoods[mname].v);
         toast(mname + " · +" + fmt(S.myFoods[mname].v) + " g");
       }
-      return;
-    }
-    if (t.dataset.food) {
-      var f = FOODS[+t.dataset.food];
-      if (f) { addProt(f.n, f.v); toast(f.n + " · +" + fmt(f.v) + " g"); }
       return;
     }
     if (t.dataset.rm) {
@@ -2036,17 +1898,6 @@
 
   el("myEditBtn").addEventListener("click", function () {
     myEdit = !myEdit;
-    renderProt();
-  });
-
-  el("veganTog").addEventListener("click", function () {
-    S.veganOnly = !S.veganOnly;
-    save(); renderProt();
-    toast(S.veganOnly ? "A mostrar só opções vegan." : "A mostrar todos os alimentos.");
-  });
-
-  el("foodSearch").addEventListener("input", function () {
-    foodQuery = this.value;
     renderProt();
   });
 
@@ -2229,9 +2080,12 @@
   function bpStats() {
     var g = bpByDay(), keys = g.keys;
     var use = keys.length > 1 ? keys.slice(1) : keys;
-    var ss = 0, dd = 0, n = 0;
+    var ss = 0, dd = 0, n = 0, pp = 0, pn = 0;
     use.forEach(function (k) {
-      g.map[k].forEach(function (x) { ss += x.s; dd += x.di; n++; });
+      g.map[k].forEach(function (x) {
+        ss += x.s; dd += x.di; n++;
+        if (x.pl) { pp += x.pl; pn++; }
+      });
     });
     return {
       days: keys.length,
@@ -2239,6 +2093,7 @@
       n: n,
       s: n ? ss / n : 0,
       di: n ? dd / n : 0,
+      pl: pn ? pp / pn : 0,
       partial: keys.length < 2
     };
   }
@@ -2264,7 +2119,9 @@
 
     var td = g.map[today] ? g.map[today].length : 0;
     el("bpToday").textContent = td + " / " + BP_PER_DAY;
-    el("bpCount").textContent = bpList().length + (bpList().length === 1 ? " medição no total" : " medições no total");
+    el("bpCount").textContent = st.pl
+      ? "pulso médio " + Math.round(st.pl)
+      : bpList().length + (bpList().length === 1 ? " medição no total" : " medições no total");
 
     var seg = el("bpSeg").getElementsByTagName("button");
     for (var i = 0; i < seg.length; i++) {
@@ -2275,12 +2132,16 @@
 
     var hh = "";
     g.keys.slice().reverse().forEach(function (k) {
-      var rows = g.map[k], ss = 0, dd = 0;
-      rows.forEach(function (x) { ss += x.s; dd += x.di; });
+      var rows = g.map[k], ss = 0, dd = 0, pp = 0, pn = 0;
+      rows.forEach(function (x) {
+        ss += x.s; dd += x.di;
+        if (x.pl) { pp += x.pl; pn++; }
+      });
       var lbl = DOW[parseIso(k).getDay()] + " " + k.slice(8) + "/" + k.slice(5, 7);
       var mark = (k === st.first && g.keys.length > 1) ? " · fora da média" : "";
+      var puls = pn ? " · " + Math.round(pp / pn) + " bpm" : "";
       hh += '<div class="hist-row"><span>' + Math.round(ss / rows.length) + "/" + Math.round(dd / rows.length) +
-            '</span><span>' + lbl + " · " + rows.length + "×" + mark + '</span></div>';
+            puls + '</span><span>' + lbl + " · " + rows.length + "×" + mark + '</span></div>';
     });
     el("bpHist").innerHTML = hh || '<div class="empty">Sem medições. Comece de manhã, antes do café.</div>';
   }
@@ -2305,16 +2166,24 @@
     if (!isFinite(di) || di < 40 || di > 160) { toast("Diastólica (o número menor) entre 40 e 160."); return; }
     if (di >= s) { toast("A sistólica tem de ser maior. Trocou os números?"); return; }
 
+    // a pulsação é opcional: quem tem máquina que não a dá deixa em branco
+    var pl = parseFloat(el("bpP").value);
+    if (el("bpP").value !== "" && (!isFinite(pl) || pl < 30 || pl > 200)) {
+      toast("Pulsação entre 30 e 200, ou deixe em branco."); return;
+    }
+
     var now = new Date();
-    bpList().push({
+    var rec = {
       d: iso(now), p: bpPer, s: s, di: di,
       t: pad(now.getHours()) + ":" + pad(now.getMinutes())
-    });
+    };
+    if (isFinite(pl) && el("bpP").value !== "") rec.pl = pl;
+    bpList().push(rec);
     S.bps.sort(function (a, b) {
       if (a.d !== b.d) return a.d < b.d ? -1 : 1;
       return (a.t || "") < (b.t || "") ? -1 : 1;
     });
-    el("bpS").value = ""; el("bpD").value = "";
+    el("bpS").value = ""; el("bpD").value = ""; el("bpP").value = "";
     save(); renderBp(); renderLabs();
 
     if (s >= 180 || di >= 110) {
@@ -2389,7 +2258,7 @@
 
   el("resetBtn").addEventListener("click", function () {
     if (!window.confirm("Apagar todo o registo? Isto não tem retorno.")) return;
-    S = { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false, veganOnly: false };
+    S = { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false };
     save(); renderAll(); toast("Registo apagado.");
   });
 

@@ -6,7 +6,8 @@ Registo diário de treino e nutrição, numa única página HTML sem dependênci
 
 - **Suplementos** — quatro tomas diárias com contador de dias seguidos
 - **Proteína** — entrada livre; o que regista fica guardado e volta a um toque, sem
-  limite de quantos alimentos acumula
+  limite de quantos alimentos acumula. Acima de 8, aparece um filtro que procura na
+  lista dele, sem acentos nem maiúsculas
 - **Treino** — três sessões de força sem equipamento, cada exercício com dica de
   execução e uma escada de progressão (a progressão é por nível, não por carga)
 - **Métricas** — peso, perímetro abdominal e razão cintura/altura, com histórico

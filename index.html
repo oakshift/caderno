@@ -452,6 +452,21 @@
   }
   .note strong { color: var(--azulejo); }
 
+  .myfilter {
+    display: none;
+    width: 100%;
+    font-size: 14px;
+    padding: 9px 11px;
+    margin-bottom: 9px;
+    border: 1px solid var(--edge-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .myfilter.on { display: block; }
+  .myfilter:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
+
   .shoplist { display: flex; flex-direction: column; margin-top: 12px; }
   .shopitem {
     display: flex;
@@ -804,6 +819,7 @@
         <span class="label">o que costuma comer</span>
         <button class="linkbtn" id="myEditBtn">editar</button>
       </div>
+      <input id="myFilter" class="myfilter" type="search" placeholder="procurar nos seus alimentos…" aria-label="Procurar na sua lista de alimentos" autocomplete="off" />
       <div class="chipwrap" id="myFoods"></div>
 
       <div class="planref" id="planRef"></div>
@@ -1285,7 +1301,8 @@
 
   var S = load();
   var viewDate = iso(new Date());
-  var myKeys = [];      // nomes da lista pessoal, por ordem de utilização
+  var myKeys = [];      // nomes visíveis da lista pessoal, na ordem em que são desenhados
+  var myQuery = "";     // filtro sobre a lista dele, não sobre uma tabela de fora
   var myEdit = false;   // modo de remoção da lista pessoal
 
   function load() {
@@ -1499,16 +1516,26 @@
       var d = (S.myFoods[b].n || 0) - (S.myFoods[a].n || 0);
       return d !== 0 ? d : (a < b ? -1 : 1);
     });
+
+    // o filtro só aparece quando a lista já é grande ao ponto de o justificar
+    var myTotal = myKeys.length;
+    var mq = norm(myQuery.replace(/^\s+|\s+$/g, ""));
+    if (mq) {
+      myKeys = myKeys.filter(function (k) { return norm(k).indexOf(mq) >= 0; });
+    }
+    el("myFilter").className = "myfilter" + (myTotal > 8 ? " on" : "");
+
     var mh = "";
     for (var mi = 0; mi < myKeys.length; mi++) {
       var mf = S.myFoods[myKeys[mi]];
       mh += '<button class="chip mine' + (myEdit ? " rm" : "") + '" data-my="' + mi + '">' +
             '<span>' + esc(myKeys[mi]) + '</span><b>' + (myEdit ? "remover" : fmt(mf.v) + " g") + '</b></button>';
     }
-    el("myFoods").innerHTML = mh ||
-      '<div class="empty" style="padding:10px 4px;text-align:left">Ainda vazio. O que registar acima aparece aqui, e a um toque nos dias seguintes.</div>';
+    el("myFoods").innerHTML = mh || '<div class="empty" style="padding:10px 4px;text-align:left">' +
+      (mq ? "Nada na sua lista corresponde a isso. Escreva o nome e os gramas em cima — fica guardado."
+          : "Ainda vazio. O que registar acima aparece aqui, e a um toque nos dias seguintes.") + '</div>';
     el("myEditBtn").textContent = myEdit ? "concluir" : "editar";
-    el("myEditBtn").style.display = myKeys.length ? "" : "none";
+    el("myEditBtn").style.display = myTotal ? "" : "none";
 
     // referência dos blocos do plano
     var rl = "";
@@ -1518,6 +1545,13 @@
     el("planRef").innerHTML = '<span class="label">blocos do plano, como referência</span>' +
       '<div class="refline">' + rl + '</div>';
 
+  }
+
+  // busca insensível a acentos: "amendoas" encontra "amêndoas"
+  function norm(s) {
+    return String(s).toLowerCase()
+      .replace(/[áàâã]/g, "a").replace(/[éê]/g, "e").replace(/[í]/g, "i")
+      .replace(/[óòôõ]/g, "o").replace(/[úü]/g, "u").replace(/[ç]/g, "c");
   }
 
   function esc(s) {
@@ -2009,6 +2043,11 @@
     el("shopUsual").innerHTML = ch ||
       '<div class="empty">Ainda vazio. O que arrumar da lista aparece aqui.</div>';
   }
+
+  el("myFilter").addEventListener("input", function () {
+    myQuery = this.value;
+    renderProt();
+  });
 
   el("shopAdd").addEventListener("click", function () {
     if (!shopAdd(el("shopIn").value)) { toast("Escreva o que quer juntar."); return; }

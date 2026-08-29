@@ -1068,11 +1068,16 @@
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>Análises a repetir</h2></div>
+      <div class="card-head">
+        <h2>Exames a pedir</h2>
+        <div class="label">consulta 04-09</div>
+      </div>
       <div class="rows" id="labRows"></div>
       <div class="note">
-        Faça a <strong>homocisteína</strong> antes de regularizar a B12, se ainda der.
-        A <strong>Lp(a)</strong> é uma vez na vida. Leve a tensão medida em casa.
+        Os quatro primeiros são da <strong>fibrilhação auricular</strong> e são para
+        pedir na consulta. Comece por corrigir o relatório: <strong>diz que é
+        assintomático e não é</strong>. A tensão saiu da lista — o MAPA de 25-08
+        resolveu-a, e foi normal. A <strong>Lp(a)</strong> é uma vez na vida.
       </div>
     </div>
 
@@ -1302,13 +1307,19 @@
     "Barra do parque da escola — puxadas, quando lá deixar o seu filho"
   ];
 
+  // Ordenados por prioridade: os quatro primeiros são da fibrilhação auricular
+  // documentada a 20-08-2026 e são para pedir na consulta. A tensão saiu da lista:
+  // ficou resolvida pelo MAPA de 25-08-2026, normal.
   var LABS = [
-    { id: "homo",  t: "Homocisteína",             s: "estado funcional da B12" },
+    { id: "eco",   t: "Ecocardiograma",           s: "o exame central da fibrilhação" },
+    { id: "monit", t: "Monitorização 7 a 14 dias", s: "saber a carga real de arritmia" },
+    { id: "sono",  t: "Estudo do sono",           s: "explicaria a FA noturna e o hematócrito" },
+    { id: "iono",  t: "Potássio e magnésio",      s: "rotina na fibrilhação auricular" },
+    { id: "homo",  t: "Homocisteína",             s: "agora já sob B12: serve de controlo" },
     { id: "trans", t: "Saturação da transferrina", s: "jejum, sem ferro 3 dias" },
     { id: "vitd",  t: "25-OH-vitamina D",         s: "define a dose de D3" },
     { id: "lpa",   t: "Lipoproteína(a)",          s: "uma vez na vida" },
-    { id: "hemo",  t: "Hemograma repetido",       s: "bem hidratado" },
-    { id: "ta",    t: "Tensão arterial, 7 dias",  s: "registe em Métricas, 4× por dia" }
+    { id: "hemo",  t: "Hemograma repetido",       s: "hidratado; vigiar o hematócrito" }
   ];
 
   // Lista inicial, usada uma única vez, se ele nunca tiver mexido nas compras.

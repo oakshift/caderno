@@ -452,6 +452,33 @@
   }
   .note strong { color: var(--azulejo); }
 
+  .sxopen {
+    background: var(--azulejo-soft);
+    border-radius: 8px;
+    padding: 12px 13px;
+    margin-bottom: 12px;
+  }
+  .sxopen .since {
+    font-family: var(--font-data);
+    font-size: 19px;
+    color: var(--azulejo);
+    font-variant-numeric: tabular-nums;
+  }
+  .sxopen .lbl { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 4px; }
+
+  .sxchip {
+    background: var(--surface-sunk);
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    padding: 8px 11px;
+    font: inherit;
+    font-size: 13.5px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .sxchip.on { background: var(--azulejo); border-color: var(--azulejo); color: #fff; }
+  .sxchip:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+
   .myfilter {
     display: none;
     width: 100%;
@@ -937,6 +964,22 @@
         A <strong>pulsação</strong> entra no mesmo registo, se a máquina a der.
         <strong>O primeiro dia não entra na média</strong> &mdash; é sistematicamente o
         mais alto. Sete dias seguidos e leve a média à consulta.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Sintomas</h2>
+        <div class="pill blue" id="sxPill">0 episódios</div>
+      </div>
+      <div id="sxNow"></div>
+      <div class="chipwrap" id="sxTags"></div>
+      <div class="hist" id="sxHist"></div>
+      <div class="hint">
+        Toque no que sente e o episódio começa a contar; toque em <strong>já passou</strong>
+        quando acabar. <strong>Se puder, meça a tensão durante o episódio</strong> — a
+        pulsação e a irregularidade no momento em que sente são o dado mais valioso a
+        levar à consulta.
       </div>
     </div>
 
@@ -1811,6 +1854,7 @@
     renderTrain();
     renderMetrics();
     renderBp();
+    renderSx();
     renderShop();
     renderKit();
     renderLabs();
@@ -1981,6 +2025,127 @@
     el("cIn").value = "";
     save(); renderMetrics();
     toast(v / heightCm() < 0.5 ? "Registado. Cintura/altura dentro de 0,50." : "Acima de 0,50 — vale ajustar as calorias.");
+  });
+
+  // ---------- sintomas ----------
+  // O relatório do Holter deu-o como assintomático, o que não corresponde ao que ele
+  // descreve. Isto existe para levar à consulta o que o exame não registou: o que
+  // sente, a que horas começa e quanto dura.
+
+  var SX_TAGS = ["descompassado", "acelerado", "falhas", "cansaço", "falta de ar", "tonturas"];
+
+  function sxList() {
+    if (!S.sx) S.sx = [];
+    return S.sx;
+  }
+
+  function sxOpen() {
+    var L = sxList();
+    for (var i = L.length - 1; i >= 0; i--) {
+      if (!L[i].f) return L[i];
+    }
+    return null;
+  }
+
+  function sxStamp(d) {
+    return iso(d) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  function sxStart(tag) {
+    var now = new Date();
+    var e = { i: sxStamp(now), f: null, tg: [] };
+    if (tag) e.tg.push(tag);
+    sxList().push(e);
+    return e;
+  }
+
+  // "2026-08-30 03:20" -> Date, sem depender de Date.parse com formatos estranhos
+  function sxDate(stamp) {
+    var a = stamp.split(" "), d = parseIso(a[0]), h = (a[1] || "00:00").split(":");
+    d.setHours(+h[0], +h[1], 0, 0);
+    return d;
+  }
+
+  function sxDur(e, until) {
+    var end = e.f ? sxDate(e.f) : (until || new Date());
+    var min = Math.round((end - sxDate(e.i)) / 60000);
+    return min < 0 ? 0 : min;
+  }
+
+  function sxFmt(min) {
+    if (min < 60) return min + " min";
+    var h = Math.floor(min / 60), m = min % 60;
+    return h + " h" + (m ? " " + pad(m) : "");
+  }
+
+  function renderSx() {
+    if (!el("sxNow")) return;
+    var L = sxList(), op = sxOpen();
+
+    if (op) {
+      el("sxNow").innerHTML =
+        '<div class="sxopen">' +
+        '<div class="lbl">a decorrer desde ' + esc(op.i.slice(11)) + ' de ' +
+        DOW[sxDate(op.i).getDay()] + '</div>' +
+        '<div class="since">' + sxFmt(sxDur(op)) + '</div>' +
+        '</div>' +
+        '<button class="btn wide" data-sxend="1">Já passou</button>';
+    } else {
+      el("sxNow").innerHTML = '<button class="btn wide" data-sxstart="1">Começou agora</button>';
+    }
+
+    var ch = "";
+    for (var i = 0; i < SX_TAGS.length; i++) {
+      var on = op && op.tg && op.tg.indexOf(SX_TAGS[i]) >= 0;
+      ch += '<button class="sxchip' + (on ? " on" : "") + '" data-sxtag="' + esc(SX_TAGS[i]) + '">' +
+            esc(SX_TAGS[i]) + '</button>';
+    }
+    el("sxTags").innerHTML = ch;
+
+    var hh = "", shown = 0;
+    for (var j = L.length - 1; j >= 0 && shown < 12; j--, shown++) {
+      var e = L[j];
+      var quando = DOW[sxDate(e.i).getDay()] + " " + e.i.slice(8, 10) + "/" + e.i.slice(5, 7) +
+                   " · " + e.i.slice(11);
+      var quanto = e.f ? sxFmt(sxDur(e)) : "a decorrer";
+      var tg = (e.tg && e.tg.length) ? e.tg.join(", ") : "sem nota";
+      hh += '<div class="hist-row"><span>' + esc(tg) + ' · ' + quanto +
+            '</span><span>' + quando + '</span></div>';
+    }
+    el("sxHist").innerHTML = hh || '<div class="empty">Sem episódios registados.</div>';
+    el("sxPill").textContent = L.length + (L.length === 1 ? " episódio" : " episódios");
+  }
+
+  el("v-metricas").addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest("button") : null;
+    if (!b) return;
+
+    if (b.getAttribute("data-sxstart")) {
+      sxStart(null); save(); renderSx();
+      toast("A contar. Se puder, meça a tensão agora.");
+      return;
+    }
+    if (b.getAttribute("data-sxend")) {
+      var op = sxOpen();
+      if (op) {
+        op.f = sxStamp(new Date());
+        save(); renderSx();
+        toast("Episódio de " + sxFmt(sxDur(op)) + " registado.");
+      }
+      return;
+    }
+    var tag = b.getAttribute("data-sxtag");
+    if (tag) {
+      var o = sxOpen();
+      if (!o) {
+        sxStart(tag);
+        toast("A contar: " + tag + ". Se puder, meça a tensão agora.");
+      } else {
+        var k = o.tg.indexOf(tag);
+        if (k >= 0) o.tg.splice(k, 1); else o.tg.push(tag);
+      }
+      save(); renderSx();
+    }
   });
 
   // ---------- compras ----------

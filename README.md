@@ -17,8 +17,6 @@ Registo diário de treino e nutrição, numa única página HTML sem dependênci
   sistematicamente o mais alto
 - **Sintomas** — um toque no que sente começa a contar o episódio, outro fecha-o; fica
   a hora de início, a duração e o que sentiu
-- **Compras** — lista que se risca a um toque; o que arruma vai para os habituais e
-  volta a entrar com um toque na semana seguinte
 - **Dados** — exportação em `.json` e restauro
 
 ## Privacidade

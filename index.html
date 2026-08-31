@@ -171,6 +171,9 @@
   .daychip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--edge-strong); }
   .daychip.has-strength { border-color: var(--azulejo); }
   .daychip.has-strength .dow { color: var(--azulejo); }
+  .daychip.has-yoga { border-color: var(--olive); border-style: dashed; }
+  .daychip.has-yoga .dow { color: var(--olive); }
+  .daychip.yoga-done { border-style: solid; }
   .daychip.filled .dot { background: var(--olive); }
   .daychip.is-today { background: var(--azulejo-soft); border-color: var(--azulejo); }
   .daychip.is-today .dow { color: var(--azulejo); }
@@ -832,6 +835,20 @@
     </div>
     <div class="card">
       <div class="card-head">
+        <h2>Ioga</h2>
+        <div class="pill green" id="yogaPill">0 esta semana</div>
+      </div>
+      <div class="rows" id="yogaRow"></div>
+      <div class="note">
+        <strong>Quarta-feira, 25-30 minutos.</strong> Hatha, yin ou mobilidade suave —
+        nada de ioga quente nem de práticas atléticas enquanto a fibrilhação não estiver
+        esclarecida. Trabalha a extensão torácica e os flexores da anca, que é a metade
+        que a força não faz.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
         <h2>Material que já tem em casa</h2>
         <div class="label">sem ginásio</div>
       </div>
@@ -1322,6 +1339,22 @@
     return null;
   }
 
+  // O ioga tem lugar marcado à quarta na fase 1, mas pode ser registado em
+  // qualquer dia: a app regista o que ele faz, não o que devia ter feito.
+  function yogaDay(d) {
+    return phase() === 1 && parseIso(d).getDay() === 3;
+  }
+
+  function yogaThisWeek() {
+    var s = weekStart(new Date()), n = 0;
+    for (var i = 0; i < 7; i++) {
+      var dd = new Date(s); dd.setDate(s.getDate() + i);
+      var o = S.days[iso(dd)];
+      if (o && o.yoga) n++;
+    }
+    return n;
+  }
+
   function sessionOf(d) {
     var o = day(d);
     return o.sess || plannedFor(d);
@@ -1389,6 +1422,8 @@
       var k = iso(dd), o = S.days[k];
       var cls = "daychip";
       if (plannedFor(k)) cls += " has-strength";
+      if (yogaDay(k)) cls += " has-yoga";
+      if (o && o.yoga) cls += " yoga-done";
       if (o && (o.done || (o.prot > 0) || SUPPS.some(function (x) { return o.supps[x.id]; }))) cls += " filled";
       if (k === iso(new Date())) cls += " is-today";
       if (k === viewDate) cls += " is-view";
@@ -1679,6 +1714,18 @@
     el("volHist").innerHTML = vh;
   }
 
+  function renderYoga() {
+    if (!el("yogaRow")) return;
+    var o = day(viewDate), n = yogaThisWeek();
+    var quando = yogaDay(viewDate) ? "dia de ioga" : "fora do dia marcado, conta na mesma";
+    el("yogaRow").innerHTML =
+      '<button class="checkrow ' + (o.yoga ? "on" : "") + '" data-yoga="1">' +
+      '<span class="box">' + CHECK + '</span>' +
+      '<span class="rowtext"><span class="rowtitle">Ioga feito neste dia</span><br>' +
+      '<span class="rowsub">' + quando + '</span></span></button>';
+    el("yogaPill").textContent = n + " esta semana";
+  }
+
   function renderKit() {
     el("kitList").innerHTML = LOADS.map(function (s) {
       return '<div class="kitrow">' + esc(s) + '</div>';
@@ -1746,6 +1793,7 @@
     renderPromo();
     renderTodayTrain();
     renderTrain();
+    renderYoga();
     renderMetrics();
     renderBp();
     renderSx();
@@ -1840,6 +1888,13 @@
       save(); renderTrain(); renderTodayTrain(); renderHeader();
       return;
     }
+    if (t.dataset.yoga) {
+      var oy = day(viewDate);
+      oy.yoga = !oy.yoga;
+      save(); renderYoga(); renderHeader();
+      toast(oy.yoga ? "Ioga registado." : "Ioga desmarcado.");
+      return;
+    }
     if (t.dataset.lab) {
       S.labs[t.dataset.lab] = !S.labs[t.dataset.lab];
       save(); renderLabs();
@@ -1865,6 +1920,11 @@
   });
   el("fGrams").addEventListener("keydown", function (e) {
     if (e.key === "Enter" || e.keyCode === 13) { e.preventDefault(); submitFree(); }
+  });
+
+  el("myFilter").addEventListener("input", function () {
+    myQuery = this.value;
+    renderProt();
   });
 
   el("myEditBtn").addEventListener("click", function () {

@@ -310,8 +310,10 @@
           <label class="fl">Repositório dos dados<input type="text" id="cfgRepo" placeholder="utilizador/caderno-dados"></label>
           <label class="fl">Token do GitHub<input type="password" id="cfgToken" placeholder="github_pat_…"></label>
           <p class="small muted">O token fica guardado só neste telemóvel.</p>
+          <div class="note" id="cfgRelatorio" hidden></div>
           <div class="actions">
             <button class="btn primary" type="submit">Guardar e ligar</button>
+            <button class="btn" type="button" id="cfgProcurar">Usar o token de outra app</button>
             <button class="btn" type="button" id="cfgDesligar">Desligar</button>
           </div>
         </form>
@@ -723,24 +725,36 @@ async function carregar(){
 
 /* As outras apps no mesmo site guardam o token em `<app>-cfg`. Se um deles já tiver
    acesso a caderno-dados, usa-se esse e não é preciso criar outro. */
+// Devolve o que encontrou, uma linha por app, para se perceber porque não ligou.
 async function procurarToken(){
-  if (online()) return false;
+  const relatorio = [];
+  if (online()) return {ok: true, relatorio};
   const vistos = {};
   let chaves = [];
-  try { chaves = Object.keys(localStorage); } catch (e) { return false; }
+  try { chaves = Object.keys(localStorage); } catch (e) { return {ok: false, relatorio: ["Este browser não deixa ler o armazenamento."]}; }
   for (const k of chaves){
     if (!/-cfg$/.test(k) || k === "caderno-cfg") continue;
-    const c = ls.get(k);
-    if (!c || !c.token || vistos[c.token]) continue;
-    vistos[c.token] = 1;
+    const c = ls.get(k), app = k.replace(/-cfg$/, "");
+    if (!c || !c.token) { relatorio.push(app + ": sem token guardado neste browser."); continue; }
+    if (vistos[c.token]) { relatorio.push(app + ": o mesmo token de " + vistos[c.token] + "."); continue; }
+    vistos[c.token] = app;
     const tenta = {repo: cfg.repo || DEFAULT_REPO, token: c.token};
     try { await gh("GET", null, tenta); }
-    catch (e) { if (e.status !== 404 || !(await repoVisivel(tenta))) continue; }
+    catch (e) {
+      if (e.status === 404 && await repoVisivel(tenta)) { /* repositório vazio: serve */ }
+      else {
+        relatorio.push(app + ": " + (e.status === 401 ? "o token expirou ou foi apagado." :
+          e.status === 404 || e.status === 403 ? "o token ainda não tem acesso a " + tenta.repo + "." :
+          "sem resposta do GitHub (" + (e.status || "rede") + ")."));
+        continue;
+      }
+    }
     cfg = tenta; ls.set("caderno-cfg", cfg);
-    toast("Ligado ao GitHub com o token que já tinha.");
-    return true;
+    toast("Ligado ao GitHub com o token de " + app + ".");
+    return {ok: true, relatorio};
   }
-  return false;
+  if (!relatorio.length) relatorio.push("Não há tokens de outras apps neste browser. Se usa o Descomplica noutro browser, abra esta app nesse.");
+  return {ok: false, relatorio};
 }
 async function repoVisivel(c){
   try { const r = await fetch("https://api.github.com/repos/" + c.repo, {headers: {"Authorization": "Bearer " + c.token}}); return r.ok; }
@@ -985,6 +999,7 @@ function renderAjustes(){
     : "Os dados estão <strong>só neste telemóvel</strong>. Ligue ao GitHub para os guardar no repositório privado <code>caderno-dados</code>.";
   if (document.activeElement !== el("cfgRepo")) el("cfgRepo").value = cfg.repo || DEFAULT_REPO;
   el("cfgDesligar").hidden = !cfg.token;
+  el("cfgProcurar").hidden = online();
   el("cfgAjuda").open = !online();
   el("medEdit").innerHTML = S.meds.map((m, i) =>
     '<div class="medrow"><span><strong>' + esc(m.nome) + "</strong>" + (m.dose || m.hora ? '<br><span class="small muted">' + esc([m.dose, m.hora].filter(Boolean).join(" · ")) + "</span>" : "") +
@@ -1090,6 +1105,16 @@ el("fCfg").addEventListener("submit", async ev => {
   cfg = {repo, token}; ls.set("caderno-cfg", cfg); el("cfgToken").value = "";
   renderAjustes();
   await carregar();
+});
+el("cfgProcurar").addEventListener("click", async () => {
+  const b = el("cfgProcurar"); b.disabled = true; b.textContent = "A procurar…";
+  const r = await procurarToken();
+  b.disabled = false; b.textContent = "Usar o token de outra app";
+  const box = el("cfgRelatorio");
+  box.hidden = r.ok;
+  box.innerHTML = r.relatorio.map(esc).join("<br>");
+  renderAjustes();
+  if (r.ok) await carregar();
 });
 el("cfgDesligar").addEventListener("click", () => {
   cfg = {repo: cfg.repo, token: ""}; ls.set("caderno-cfg", cfg);

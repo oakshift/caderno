@@ -1,62 +1,30 @@
-# Plano de treino e alimentação
+# Plano de treino e medicação
 
-Registo diário de treino e nutrição, numa única página HTML sem dependências.
+Registo diário de medicação e treino, numa única página HTML sem dependências.
 
 ## O que faz
 
-- **Suplementos** — quatro tomas diárias com contador de dias seguidos
-- **Proteína** — entrada livre; o que regista fica guardado e volta a um toque, sem
-  limite de quantos alimentos acumula. Acima de 8, aparece um filtro que procura na
-  lista dele, sem acentos nem maiúsculas
-- **Treino** — três sessões de força sem equipamento, cada exercício com dica de
-  execução e uma escada de progressão (a progressão é por nível, não por carga)
-- **Métricas** — peso, perímetro abdominal e razão cintura/altura, com histórico
-  de cada um e a variação face ao registo anterior
-- **Tensão arterial** — sete dias, quatro medições por dia (duas de manhã, duas à
-  noite), com pulsação opcional. A média exclui o primeiro dia, que é
-  sistematicamente o mais alto
-- **Sintomas** — um toque no que sente começa a contar o episódio, outro fecha-o; fica
-  a hora de início, a duração e o que sentiu
-- **Dados** — exportação em `.json` e restauro
+- **Hoje** — a medicação do dia, um toque por item ou "Tomei tudo"; o treino marcado
+  para hoje, ou quantos faltam na semana; e os últimos sete dias, para registar o que
+  ficou por registar
+- **Treino** — sessões de força sem equipamento, cada exercício com dica de execução,
+  vídeo e uma escada de níveis (a progressão é por nível, não por carga)
+- **Progresso** — treinos por semana, dias com a medicação toda, nível de cada
+  exercício e histórico das subidas, peso
+- **Ajustes** — lista de medicação, dias de treino, lembretes em `.ics` para o
+  calendário, ligação ao GitHub
 
-## Privacidade
+Carregar e manter premido o ícone da app mostra o atalho **Tomei tudo**.
 
-Todo o registo fica em `localStorage`, no browser onde a app é usada. Não há servidor,
-não há conta, não há pedidos de rede. Limpar os dados de navegação apaga o registo —
-use a cópia de segurança em `.json`.
+## Onde ficam os dados
+
+Num repositório **privado** à parte (`caderno-dados`, ficheiro `dados.json`), lido e
+escrito pela app com um token do GitHub guardado só no browser. Cada registo é um
+commit. Sem rede, os registos ficam no telemóvel e seguem quando houver ligação.
+
+À primeira abertura, a app importa sozinha o registo da versão anterior que estiver no
+mesmo browser (medicação, treinos, níveis e peso; a alimentação fica de fora).
 
 ## Instalar no telemóvel
 
-### Android
-
-No Chrome (ou noutro browser Chromium):
-
-1. Menu dos três pontos
-2. **Instalar aplicação** ou **Adicionar ao ecrã principal**
-3. Confirmar
-
-No Android a app instalada partilha o armazenamento com o browser, na mesma origem —
-pode alternar entre o ícone e o browser sem perder registos.
-
-### iOS
-
-Tem de ser no **Safari**: Partilhar → **Adicionar ao ecrã principal**.
-
-⚠ No iOS, uma página adicionada ao ecrã principal pode ter armazenamento **separado**
-do Safari. Escolha uma das duas formas de abrir e use sempre a mesma, ou os registos
-de uma não aparecem na outra.
-
-## Compatibilidade
-
-Escrito em JavaScript ES5, sem `let`/`const`, arrow functions, template literals nem
-`NodeList.forEach` — para correr em WebViews Android antigos. Erros não tratados são
-mostrados na própria página em vez de falharem em silêncio.
-
-## Desenvolvimento
-
-Não há build. `index.html` é o projeto inteiro — HTML, CSS e JavaScript num ficheiro.
-Para testar localmente:
-
-```sh
-python3 -m http.server 8000
-```
+No Chrome: menu dos três pontos → **Instalar aplicação** ou **Adicionar ao ecrã principal**.

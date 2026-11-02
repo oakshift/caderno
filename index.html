@@ -3,2316 +3,1177 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Plano de treino e alimentação</title>
-<meta name="description" content="Registo diário de suplementos, proteína, treino, peso e cintura.">
+<title>Plano de treino e medicação</title>
+<meta name="description" content="Registo diário de medicação e treino, guardado num repositório privado do GitHub.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F5F3EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12181E" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Plano">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon.svg">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>%F0%9F%93%93</text></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<!-- Só o GitHub (dados) pode ser contactado. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src https://api.github.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <style>
   html { -webkit-text-size-adjust: 100%; }
-  body, h1, h2, p { margin: 0; }
-  button, input { font-family: inherit; }
+  body, h1, h2, h3, p, ol, ul { margin: 0; }
+  button, input, select { font: inherit; color: inherit; }
   :root {
     --ground: #F5F3EF;
     --surface: #FFFFFF;
-    --surface-sunk: #EDEAE4;
+    --sunk: #EDEAE4;
     --edge: #DAD5CC;
-    --edge-strong: #C3BCB0;
     --ink: #1A2530;
-    --ink-soft: #55504A;
-    --ink-faint: #837C72;
+    --soft: #55504A;
+    --faint: #6F685F;
     --azulejo: #17539A;
     --azulejo-soft: #E4EBF5;
-    --olive: #5C6E33;
+    --olive: #4F6029;
     --olive-soft: #E9EDDD;
-    --amber: #A9691A;
-    --porto: #7A2A33;
-    --radius: 10px;
-    --shadow: 0 1px 2px rgba(26, 37, 48, 0.06);
+    --amber: #95590F;
+    --amber-soft: #F6EBDB;
+    --on-accent: #FFFFFF;
+    --radius: 12px;
     --font-display: ui-serif, Georgia, "Times New Roman", serif;
-    --font-ui: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", sans-serif;
-    --font-data: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+    --font-ui: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+    --font-data: ui-monospace, "SF Mono", Menlo, "Roboto Mono", monospace;
   }
-
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --ground: #12181E;
-      --surface: #1A222A;
-      --surface-sunk: #151C23;
-      --edge: #2B353F;
-      --edge-strong: #3D4954;
-      --ink: #E8E4DD;
-      --ink-soft: #ADA69C;
-      --ink-faint: #7E7669;
-      --azulejo: #6BA3E0;
-      --azulejo-soft: #1C2B3D;
-      --olive: #A3B86A;
-      --olive-soft: #222A18;
-      --amber: #D69A4E;
-      --porto: #C9757D;
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --ground: #12181E; --surface: #1A222A; --sunk: #151C23; --edge: #2B353F;
+      --ink: #E8E4DD; --soft: #ADA69C; --faint: #948B7E;
+      --azulejo: #6BA3E0; --azulejo-soft: #1C2B3D; --olive: #A3B86A; --olive-soft: #222A18;
+      --amber: #D69A4E; --amber-soft: #2E2416; --on-accent: #0E141A;
     }
   }
-
   :root[data-theme="dark"] {
-    --ground: #12181E;
-    --surface: #1A222A;
-    --surface-sunk: #151C23;
-    --edge: #2B353F;
-    --edge-strong: #3D4954;
-    --ink: #E8E4DD;
-    --ink-soft: #ADA69C;
-    --ink-faint: #7E7669;
-    --azulejo: #6BA3E0;
-    --azulejo-soft: #1C2B3D;
-    --olive: #A3B86A;
-    --olive-soft: #222A18;
-    --amber: #D69A4E;
-    --porto: #C9757D;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --ground: #12181E; --surface: #1A222A; --sunk: #151C23; --edge: #2B353F;
+    --ink: #E8E4DD; --soft: #ADA69C; --faint: #948B7E;
+    --azulejo: #6BA3E0; --azulejo-soft: #1C2B3D; --olive: #A3B86A; --olive-soft: #222A18;
+    --amber: #D69A4E; --amber-soft: #2E2416; --on-accent: #0E141A;
   }
-
-  * { box-sizing: border-box; }
 
   body {
-    margin: 0;
-    background: var(--ground);
-    color: var(--ink);
-    font-family: var(--font-ui);
-    font-size: 16px;
-    line-height: 1.5;
-    -webkit-text-size-adjust: 100%;
-    padding-bottom: 84px;
+    background: var(--ground); color: var(--ink);
+    font: 16px/1.45 var(--font-ui);
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
   }
-
-  .shell {
-    max-width: 560px;
-    margin: 0 auto;
-    padding: 0 16px;
+  .wrap {
+    max-width: 560px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: calc(14px + env(safe-area-inset-top, 0px)) 24px;
+    display: grid; gap: 14px;
   }
+  header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  header.top h1 { font: 600 22px/1.2 var(--font-display); }
+  #status { font-size: 12px; color: var(--faint); text-align: right; }
+  #status.ok { color: var(--olive); }
+  #status.bad { color: var(--amber); }
 
-  /* ---------- header ---------- */
-
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: var(--ground);
-    border-bottom: 1px solid var(--edge);
-  }
-
-  .head-inner {
-    max-width: 560px;
-    margin: 0 auto;
-    padding: 14px 16px 12px;
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 4px 12px;
-    flex-wrap: wrap;
-  }
-
-  .brand {
-    font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    margin: 0;
-    text-wrap: balance;
-  }
-
-  .brand span { color: var(--azulejo); }
-
-  .phase-tag {
-    font-family: var(--font-data);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--ink-faint);
-    white-space: nowrap;
-  }
-
-  /* ---------- week strip ---------- */
-
-  .weekstrip {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    max-width: 560px;
-    margin: 0 auto;
-    padding: 0 16px 12px;
-  }
-
-  .daychip {
-    border: 1px solid var(--edge);
-    background: var(--surface);
-    border-radius: 8px;
-    padding: 6px 2px 7px;
-    text-align: center;
-    font-family: var(--font-data);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    align-items: center;
-  }
-
-  .daychip:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
-  .daychip .dow { font-size: 10px; text-transform: uppercase; color: var(--ink-faint); letter-spacing: 0.04em; }
-  .daychip .num { font-size: 14px; font-variant-numeric: tabular-nums; }
-  .daychip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--edge-strong); }
-  .daychip.has-strength { border-color: var(--azulejo); }
-  .daychip.has-strength .dow { color: var(--azulejo); }
-  .daychip.has-yoga { border-color: var(--olive); border-style: dashed; }
-  .daychip.has-yoga .dow { color: var(--olive); }
-  .daychip.yoga-done { border-style: solid; }
-  .daychip.filled .dot { background: var(--olive); }
-  .daychip.is-today { background: var(--azulejo-soft); border-color: var(--azulejo); }
-  .daychip.is-today .dow { color: var(--azulejo); }
-  .daychip.is-today .num { color: var(--azulejo); font-weight: 600; }
-
-  /* o dia que está a ser visto é o azul cheio: é o que manda no ecrã de baixo */
-  .daychip.is-view { background: var(--azulejo); border-color: var(--azulejo); }
-  .daychip.is-view .dow, .daychip.is-view .num { color: #fff; }
-  .daychip.is-view .dot { background: rgba(255,255,255,0.55); }
-  .daychip.is-view.filled .dot { background: #fff; }
-
-  .viewnote {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    max-width: 560px;
-    margin: 0 auto;
-    padding: 8px 16px 12px;
-    font-family: var(--font-data);
-    font-size: 12px;
-    color: var(--amber);
-  }
-  .viewnote.on { display: flex; }
-  .viewnote b { font-weight: 600; }
-
-  /* ---------- cards ---------- */
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--edge);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 16px;
-    margin-bottom: 14px;
-  }
-
-  .card-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 600;
-    margin: 0;
-    letter-spacing: -0.005em;
-  }
-
-  .label {
-    font-family: var(--font-data);
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-faint);
-  }
-
-  .pill {
-    font-family: var(--font-data);
-    font-size: 11px;
-    letter-spacing: 0.03em;
-    padding: 3px 8px;
-    border-radius: 20px;
-    white-space: nowrap;
-  }
-  .pill.blue { background: var(--azulejo-soft); color: var(--azulejo); }
-  .pill.green { background: var(--olive-soft); color: var(--olive); }
-
-  /* ---------- checkable rows ---------- */
-
-  .rows { display: flex; flex-direction: column; gap: 8px; }
-
-  .checkrow {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    width: 100%;
-    text-align: left;
-    background: var(--surface-sunk);
-    border: 1px solid transparent;
-    border-radius: 8px;
-    padding: 11px 12px;
-    font: inherit;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  .checkrow:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
-
-  .box {
-    flex: none;
-    width: 21px; height: 21px;
-    border: 1.5px solid var(--edge-strong);
-    border-radius: 5px;
-    background: var(--surface);
-    display: grid;
-    place-items: center;
-  }
-  .box svg { width: 13px; height: 13px; opacity: 0; }
-  .checkrow.on { background: var(--olive-soft); border-color: var(--olive); }
-  .checkrow.on .box { background: var(--olive); border-color: var(--olive); }
-  .checkrow.on .box svg { opacity: 1; }
-
-  .rowtext { flex: 1; min-width: 0; }
-  .rowtitle { font-size: 15px; }
-  .rowsub { font-size: 12.5px; color: var(--ink-faint); font-family: var(--font-data); }
-
-  /* ---------- protein ---------- */
-
-  .meter {
-    height: 8px;
-    background: var(--surface-sunk);
-    border-radius: 20px;
-    overflow: hidden;
-    margin: 4px 0 12px;
-  }
-  .meter > i {
-    display: block;
-    height: 100%;
-    background: var(--azulejo);
-    border-radius: 20px;
-    transition: width 0.2s ease;
-  }
-  .meter.hit > i { background: var(--olive); }
-
-  .bignum {
-    font-family: var(--font-data);
-    font-size: 27px;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-  }
-  .bignum small { font-size: 14px; color: var(--ink-faint); letter-spacing: 0; }
-
-  .chipgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-  .chip {
-    background: var(--surface-sunk);
-    border: 1px solid var(--edge);
-    border-radius: 8px;
-    padding: 9px 10px;
-    font: inherit;
-    font-size: 13.5px;
-    color: var(--ink);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    gap: 6px;
-    align-items: center;
-  }
-  .chip:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
-  .chip b { font-family: var(--font-data); font-size: 12px; color: var(--azulejo); }
-  .chip.on { background: var(--olive-soft); border-color: var(--olive); }
-  .chip.on b { color: var(--olive); }
-
-  /* ---------- exercises ---------- */
-
-  .ex { border-top: 1px solid var(--edge); padding: 13px 0 4px; }
-  .ex:first-of-type { border-top: 0; padding-top: 4px; }
-
-  .ex-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  .ex-name { font-size: 15px; font-weight: 500; }
-  .ex-target { font-family: var(--font-data); font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
-
-  .ex-last {
-    font-family: var(--font-data);
-    font-size: 11.5px;
-    color: var(--amber);
-    margin-top: 3px;
-  }
-
-  .sets { display: flex; gap: 7px; margin-top: 9px; flex-wrap: wrap; }
-
-  .setbox { display: flex; align-items: center; gap: 3px; }
-  .setbox .n {
-    font-family: var(--font-data);
-    font-size: 10px;
-    color: var(--ink-faint);
-    width: 12px;
-  }
-  .setbox input {
-    width: 44px;
-    font-family: var(--font-data);
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
-    text-align: center;
-    padding: 7px 2px;
-    border: 1px solid var(--edge-strong);
-    border-radius: 6px;
-    background: var(--surface);
-    color: var(--ink);
-  }
-  .setbox input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; border-color: var(--azulejo); }
-  .setbox .x { font-family: var(--font-data); font-size: 11px; color: var(--ink-faint); }
-
-  /* ---------- metrics ---------- */
-
-  .statrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .stat {
-    background: var(--surface-sunk);
-    border-radius: 8px;
-    padding: 11px 12px;
-  }
-  .stat .label { display: block; margin-bottom: 3px; }
-  .stat .v { font-family: var(--font-data); font-size: 21px; font-variant-numeric: tabular-nums; }
-  .stat .d { font-family: var(--font-data); font-size: 11.5px; color: var(--ink-faint); }
-
-  .entry { display: flex; gap: 8px; align-items: stretch; margin-top: 10px; }
-  .entry input {
-    flex: 1;
-    min-width: 0;
-    font-family: var(--font-data);
-    font-size: 15px;
-    padding: 10px 11px;
-    border: 1px solid var(--edge-strong);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--ink);
-  }
-  .entry input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
+  .card { background: var(--surface); border: 1px solid var(--edge); border-radius: var(--radius); padding: 16px; display: grid; gap: 12px; }
+  .card h2 { font: 600 17px/1.25 var(--font-display); }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .muted { color: var(--faint); }
+  .small { font-size: 14px; }
+  .num { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+  a { color: var(--azulejo); }
 
   .btn {
-    font: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid var(--azulejo);
-    background: var(--azulejo);
-    color: #fff;
-    cursor: pointer;
-    white-space: nowrap;
+    min-height: 44px; padding: 10px 16px; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--edge); background: var(--surface); font-weight: 600;
   }
-  .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-  .btn.ghost { background: transparent; color: var(--azulejo); }
-  .btn.wide { width: 100%; justify-content: center; }
-  .btn.danger { border-color: var(--porto); color: var(--porto); background: transparent; }
+  .btn.primary { background: var(--azulejo); border-color: var(--azulejo); color: var(--on-accent); }
+  .btn.done { background: var(--olive); border-color: var(--olive); color: var(--on-accent); }
+  .btn.big { width: 100%; min-height: 54px; font-size: 17px; }
+  .btn.link { border: 0; background: none; color: var(--azulejo); padding: 8px 4px; min-height: 0; font-weight: 600; }
+  .btn:focus-visible, .tick:focus-visible, .chip:focus-visible, .day:focus-visible, .tab:focus-visible { outline: 3px solid var(--azulejo); outline-offset: 2px; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
-  #loadFile { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-  #loadLabel { display: block; text-align: center; cursor: pointer; }
-  #loadLabel:focus-within { outline: 2px solid var(--azulejo); outline-offset: 2px; }
-
-  .seg { display: flex; gap: 6px; margin-top: 12px; }
-  .segbtn {
-    flex: 1;
-    font: inherit;
-    font-size: 13px;
-    padding: 9px 0;
-    border-radius: 8px;
-    border: 1px solid var(--edge-strong);
-    background: var(--surface);
-    color: var(--ink-faint);
-    cursor: pointer;
+  /* Semana: sete dias, um ponto por medicação completa e um anel por treino. */
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .day {
+    display: grid; justify-items: center; gap: 3px; padding: 7px 0 8px; border-radius: 10px;
+    border: 1px solid transparent; background: none; cursor: pointer;
   }
-  .segbtn.on { background: var(--azulejo); border-color: var(--azulejo); color: #fff; }
-  .segbtn:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+  .day .dw { font-size: 12px; color: var(--faint); }
+  .day .dn { font: 600 15px/1 var(--font-data); }
+  .day .marks { display: flex; gap: 3px; height: 9px; }
+  .day .m { width: 8px; height: 8px; border-radius: 50%; }
+  .day .m.med { background: var(--olive); }
+  .day .m.medp { background: none; border: 2px solid var(--olive); width: 4px; height: 4px; }
+  .day .m.tr { background: var(--azulejo); border-radius: 2px; }
+  .day .m.plan { border: 2px solid var(--azulejo); border-radius: 2px; width: 4px; height: 4px; }
+  .day.sel { background: var(--surface); border-color: var(--edge); }
+  .day.today .dn { color: var(--azulejo); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--faint); }
+  .legend i { display: inline-block; width: 8px; height: 8px; margin-right: 5px; vertical-align: 1px; }
 
-  .hist { margin-top: 12px; display: flex; flex-direction: column; gap: 0; }
-  .hist-row {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--font-data);
-    font-size: 12.5px;
-    padding: 7px 0;
-    border-top: 1px solid var(--edge);
-    font-variant-numeric: tabular-nums;
+  .ticks { display: grid; gap: 8px; }
+  .tick {
+    display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 12px; text-align: left;
+    border: 1px solid var(--edge); border-radius: 10px; background: var(--surface); cursor: pointer; width: 100%;
   }
-  .hist-row span:last-child { color: var(--ink-faint); }
+  .tick .box { flex: none; width: 26px; height: 26px; border-radius: 7px; border: 2px solid var(--edge); display: grid; place-items: center; }
+  .tick .box svg { width: 16px; height: 16px; visibility: hidden; }
+  .tick.on { background: var(--olive-soft); border-color: var(--olive); }
+  .tick.on .box { background: var(--olive); border-color: var(--olive); color: var(--on-accent); }
+  .tick.on .box svg { visibility: visible; }
+  .tick .t { font-weight: 600; }
+  .tick .s { font-size: 13px; color: var(--faint); }
 
-  .note {
-    font-size: 13px;
-    color: var(--ink-soft);
-    background: var(--azulejo-soft);
-    border-radius: 8px;
-    padding: 11px 12px;
-    margin-top: 12px;
-  }
-  .note strong { color: var(--azulejo); }
+  .note { padding: 10px 12px; border-radius: 10px; background: var(--amber-soft); color: var(--ink); font-size: 14px; }
+  .note.calm { background: var(--azulejo-soft); }
+  .note.good { background: var(--olive-soft); }
+  .pending { display: grid; gap: 8px; }
 
-  .sxopen {
-    background: var(--azulejo-soft);
-    border-radius: 8px;
-    padding: 12px 13px;
-    margin-bottom: 12px;
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    min-height: 40px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--edge);
+    background: var(--surface); cursor: pointer; font-size: 15px;
   }
-  .sxopen .since {
-    font-family: var(--font-data);
-    font-size: 19px;
-    color: var(--azulejo);
-    font-variant-numeric: tabular-nums;
-  }
-  .sxopen .lbl { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 4px; }
+  .chip.on { background: var(--azulejo); border-color: var(--azulejo); color: var(--on-accent); }
 
-  .sxchip {
-    background: var(--surface-sunk);
-    border: 1px solid var(--edge);
-    border-radius: 8px;
-    padding: 8px 11px;
-    font: inherit;
-    font-size: 13.5px;
-    color: var(--ink);
-    cursor: pointer;
-  }
-  .sxchip.on { background: var(--azulejo); border-color: var(--azulejo); color: #fff; }
-  .sxchip:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
+  .seg { display: inline-flex; border: 1px solid var(--edge); border-radius: 10px; overflow: hidden; }
+  .seg button { min-height: 40px; padding: 6px 16px; border: 0; background: var(--surface); cursor: pointer; font-weight: 600; }
+  .seg button + button { border-left: 1px solid var(--edge); }
+  .seg button.on { background: var(--azulejo); color: var(--on-accent); }
 
-  .myfilter {
-    display: none;
-    width: 100%;
-    font-size: 14px;
-    padding: 9px 11px;
-    margin-bottom: 9px;
-    border: 1px solid var(--edge-strong);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--ink);
-    font-family: inherit;
-  }
-  .myfilter.on { display: block; }
-  .myfilter:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
+  /* Treino */
+  .ex { border-top: 1px solid var(--edge); padding-top: 12px; display: grid; gap: 8px; }
+  .ex:first-of-type { border-top: 0; padding-top: 0; }
+  .ex h3 { font-size: 16px; }
+  .ex .lvl { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; }
+  .ex .lvl button { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--edge); background: var(--sunk); font-size: 20px; cursor: pointer; }
+  .ex .lvl .now { text-align: center; font-weight: 600; }
+  .ex .lvl .now small { display: block; font-weight: 400; color: var(--faint); font-size: 12px; }
+  .ex .cue { font-size: 14px; color: var(--soft); }
+  .pips { display: flex; gap: 3px; justify-content: center; margin-top: 3px; }
+  .pips i { width: 14px; height: 4px; border-radius: 2px; background: var(--edge); }
+  .pips i.on { background: var(--azulejo); }
 
-  .hint {
-    font-size: 12px;
-    line-height: 1.5;
-    color: var(--ink-faint);
-    margin-top: 10px;
-  }
-  .hint strong { color: var(--ink-soft); font-weight: 600; }
+  /* Progresso */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat { background: var(--sunk); border-radius: 10px; padding: 10px; }
+  .stat b { display: block; font: 600 22px/1.1 var(--font-data); }
+  .stat span { font-size: 12px; color: var(--faint); }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--faint); font: 11px var(--font-ui); }
+  .grid30 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 300px; }
+  .grid30 b { font-size: 11px; font-weight: 400; color: var(--faint); text-align: center; }
+  .grid30 i { aspect-ratio: 1; border-radius: 4px; background: var(--sunk); max-width: 100%; }
+  .grid30 i.p { background: var(--olive-soft); outline: 1px solid var(--olive); outline-offset: -1px; }
+  .grid30 i.f { background: var(--olive); }
+  .grid30 i.x { visibility: hidden; }
+  .levels { display: grid; gap: 6px; }
+  .levels .row { font-size: 14px; }
+  .bar { height: 6px; background: var(--sunk); border-radius: 3px; overflow: hidden; flex: none; width: 34%; }
+  .bar i { display: block; height: 100%; background: var(--azulejo); }
+  .hist { display: grid; gap: 4px; font-size: 14px; }
 
-  .empty {
-    font-size: 13.5px;
-    color: var(--ink-faint);
-    text-align: center;
-    padding: 18px 6px;
+  /* Ajustes */
+  form.f, .fields { display: grid; gap: 10px; }
+  label.fl { display: grid; gap: 4px; font-size: 14px; color: var(--soft); }
+  input[type=text], input[type=password], input[type=number], input[type=time], select {
+    min-height: 44px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--edge); background: var(--ground); color: var(--ink); width: 100%; box-sizing: border-box;
   }
+  .medrow { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--edge); }
+  .medrow:first-child { border-top: 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  details summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+  ol.steps { padding-left: 20px; display: grid; gap: 4px; margin-top: 8px; }
+  code { font-family: var(--font-data); font-size: 13px; background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
 
-  /* ---------- tabs ---------- */
-
-  nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--edge);
-    z-index: 30;
-    padding-bottom: env(safe-area-inset-bottom, 0);
+  nav.tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: var(--surface); border-top: 1px solid var(--edge);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px);
   }
-  .nav-inner {
-    max-width: 560px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .tab {
-    background: none;
-    border: 0;
-    padding: 10px 4px 12px;
-    font: inherit;
-    font-size: 11px;
-    font-family: var(--font-data);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ink-faint);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    border-top: 2px solid transparent;
-    margin-top: -1px;
-  }
-  .tab svg { width: 19px; height: 19px; }
-  .tab.on { color: var(--azulejo); border-top-color: var(--azulejo); }
-  .tab:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -3px; }
+  .tab { min-height: 60px; border: 0; background: none; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--faint); display: grid; place-items: center; gap: 2px; padding: 6px 0; }
+  .tab svg { width: 22px; height: 22px; }
+  .tab.on { color: var(--azulejo); }
+  .view[hidden] { display: none; }
 
-  .view { display: none; padding-top: 4px; }
-  .view.on { display: block; }
-
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 78px;
-    transform: translate(-50%, 12px);
-    background: var(--ink);
-    color: var(--ground);
-    font-size: 13.5px;
-    padding: 9px 15px;
-    border-radius: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-    z-index: 40;
-    max-width: calc(100% - 32px);
-    text-align: center;
+  #toast {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+    background: var(--ink); color: var(--ground); padding: 10px 16px; border-radius: 10px; font-size: 14px;
+    max-width: calc(100% - 32px); z-index: 9; box-sizing: border-box;
   }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-  /* ---------- progressão de exercício ---------- */
-
-  .cue {
-    font-size: 12.5px;
-    line-height: 1.45;
-    color: var(--ink-soft);
-    margin-top: 4px;
-  }
-
-  .lvlbar {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    margin-top: 9px;
-    border: 1px solid var(--edge-strong);
-    border-radius: 8px;
-    overflow: hidden;
-    background: var(--surface-sunk);
-  }
-
-  .lvlbtn {
-    flex: none;
-    width: 38px;
-    border: 0;
-    background: var(--surface);
-    color: var(--azulejo);
-    font-size: 17px;
-    line-height: 1;
-    cursor: pointer;
-    font-family: var(--font-ui);
-  }
-  .lvlbtn:disabled { color: var(--edge-strong); cursor: default; }
-  .lvlbtn:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -2px; }
-  .lvlbtn.up { border-left: 1px solid var(--edge-strong); }
-  .lvlbtn.down { border-right: 1px solid var(--edge-strong); }
-
-  .lvlname {
-    flex: 1;
-    min-width: 0;
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    justify-content: center;
-  }
-  .lvlname .lv {
-    font-family: var(--font-data);
-    font-size: 9.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--ink-faint);
-  }
-  .lvlname .lt { font-size: 13.5px; line-height: 1.3; }
-
-  .vidlink {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-    padding: 8px 11px;
-    border: 1px solid var(--edge);
-    border-radius: 8px;
-    background: var(--surface-sunk);
-    color: var(--azulejo);
-    text-decoration: none;
-    font-size: 13.5px;
-  }
-  .vidlink:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
-  .vidlink .play { font-size: 10px; line-height: 1; }
-  .vidlink .vq {
-    margin-left: auto;
-    font-family: var(--font-data);
-    font-size: 10.5px;
-    color: var(--ink-faint);
-    text-align: right;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 46%;
-  }
-
-  .kitlist { display: flex; flex-direction: column; gap: 0; }
-  .kitrow {
-    font-size: 13.5px;
-    color: var(--ink-soft);
-    padding: 9px 0;
-    border-top: 1px solid var(--edge);
-    display: flex;
-    gap: 9px;
-  }
-  .kitrow:first-child { border-top: 0; }
-  .kitrow::before {
-    content: "";
-    flex: none;
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--azulejo);
-    margin-top: 8px;
-  }
-
-  /* ---------- food picker ---------- */
-
-  .taglist { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--olive-soft);
-    color: var(--olive);
-    border: 1px solid var(--olive);
-    border-radius: 20px;
-    padding: 4px 6px 4px 10px;
-    font-family: var(--font-data);
-    font-size: 11.5px;
-    cursor: pointer;
-  }
-  .tag:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 1px; }
-  .tag i { font-style: normal; opacity: 0.6; font-size: 14px; line-height: 1; }
-
-  /* entrada livre: nome + gramas */
-  .addrow { display: flex; gap: 7px; }
-  .addrow input {
-    min-width: 0;
-    font: inherit;
-    font-size: 15px;
-    padding: 10px 11px;
-    border: 1px solid var(--edge-strong);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--ink);
-  }
-  .addrow input:focus-visible { outline: 2px solid var(--azulejo); outline-offset: -1px; }
-  #fName { flex: 1; }
-  #fGrams { width: 66px; font-family: var(--font-data); text-align: center; }
-  #fAdd { flex: none; padding: 10px 16px; font-size: 18px; line-height: 1; }
-
-  .labelrow {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    margin: 16px 0 8px;
-  }
-
-  .linkbtn {
-    background: none;
-    border: 0;
-    padding: 0;
-    font: inherit;
-    font-size: 12.5px;
-    color: var(--azulejo);
-    cursor: pointer;
-  }
-  .linkbtn:focus-visible { outline: 2px solid var(--azulejo); outline-offset: 2px; }
-
-  .chipwrap { display: flex; flex-wrap: wrap; gap: 7px; }
-
-  .chip.mine { justify-content: flex-start; gap: 8px; }
-  .chip.mine.rm { border-color: var(--porto); color: var(--porto); }
-  .chip.mine.rm b { color: var(--porto); }
-
-  .planref {
-    margin-top: 16px;
-    padding-top: 13px;
-    border-top: 1px solid var(--edge);
-  }
-  .planref .refline {
-    font-family: var(--font-data);
-    font-size: 12px;
-    line-height: 1.7;
-    color: var(--ink-faint);
-    margin-top: 5px;
-  }
-  .planref .refline b { color: var(--ink-soft); font-weight: 600; }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
-  }
+  #fatal { margin: 12px; padding: 12px; border: 1px solid var(--amber); border-radius: 10px; background: var(--surface); color: var(--amber); font-size: 14px; }
+  @media (prefers-reduced-motion: no-preference) { .tick, .chip, .btn { transition: background-color .15s, border-color .15s; } }
 </style>
 </head>
 <body>
-
-<header>
-  <div class="head-inner">
-    <h1 class="brand">Plano de <span>treino e alimentação</span></h1>
-    <div class="phase-tag" id="phaseTag">semana 1 · fase 1</div>
-  </div>
-  <div class="weekstrip" id="weekstrip"></div>
-  <div class="viewnote" id="viewNote"></div>
-</header>
-
-<div class="shell">
+<div class="wrap">
+  <header class="top">
+    <h1 id="titulo">Hoje</h1>
+    <div id="status">Só neste telemóvel</div>
+  </header>
 
   <!-- ============ HOJE ============ -->
-  <section class="view on" id="v-hoje">
+  <section class="view" id="v-hoje">
+    <div class="wrap" style="padding:0">
+      <div class="card" style="gap:8px">
+        <div class="week" id="semana"></div>
+        <div class="legend"><span><i style="background:var(--olive);border-radius:50%"></i>medicação</span><span><i style="background:var(--azulejo);border-radius:2px"></i>treino feito</span><span><i style="border:2px solid var(--azulejo);width:4px;height:4px;border-radius:2px"></i>treino marcado</span></div>
+      </div>
 
-    <div class="card">
-      <div class="card-head">
-        <h2>Suplementos</h2>
-        <div class="pill blue" id="streakPill">sequência 0 d</div>
+      <div class="card pending" id="porRegistar" hidden></div>
+
+      <div class="card">
+        <div class="row"><h2 id="medTitulo">Medicação</h2><span class="small muted" id="medSeq"></span></div>
+        <div class="ticks" id="meds"></div>
+        <button class="btn primary big" id="tudo" type="button">Tomei tudo</button>
       </div>
-      <div class="rows" id="suppRows"></div>
-      <div class="note">
-        Tome os quatro <strong>à mesma refeição, com gordura</strong> — a D3 e o óleo
-        precisam dela para serem absorvidos. A consistência diária é o que conta.
-      </div>
+
+      <div class="card" id="treinoHoje"></div>
     </div>
-
-    <div class="card">
-      <div class="card-head">
-        <h2>Proteína</h2>
-        <div class="label">alvo 125 g</div>
-      </div>
-      <div class="bignum"><span id="protNum">0</span><small> / 125 g</small></div>
-      <div class="meter" id="protMeter"><i style="width:0%"></i></div>
-
-      <div class="taglist" id="protEntries"></div>
-
-      <div class="addrow">
-        <input id="fName" type="text" placeholder="o que comeu" aria-label="Nome do alimento ou refeição" autocomplete="off" />
-        <input id="fGrams" type="number" inputmode="decimal" placeholder="g" aria-label="Gramas de proteína" />
-        <button class="btn" id="fAdd" aria-label="Somar ao dia">+</button>
-      </div>
-
-      <div class="labelrow" id="myLabelRow">
-        <span class="label">o que costuma comer</span>
-        <button class="linkbtn" id="myEditBtn">editar</button>
-      </div>
-      <input id="myFilter" class="myfilter" type="search" placeholder="procurar nos seus alimentos…" aria-label="Procurar na sua lista de alimentos" autocomplete="off" />
-      <div class="chipwrap" id="myFoods"></div>
-
-      <div class="planref" id="planRef"></div>
-    </div>
-
-    <div class="card" id="promoCard" style="display:none"></div>
-
-    <div class="card" id="todayTrainCard"></div>
-
   </section>
 
   <!-- ============ TREINO ============ -->
-  <section class="view" id="v-treino">
-    <div class="card">
-      <div class="card-head">
-        <h2 id="trainTitle">Treino</h2>
-        <div class="pill blue" id="trainPill"></div>
+  <section class="view" id="v-treino" hidden>
+    <div class="wrap" style="padding:0">
+      <div class="card">
+        <div class="row">
+          <div class="seg" id="sessSeg"></div>
+          <span class="small muted" id="sessData"></span>
+        </div>
+        <p class="small muted">Os botões ‹ › mudam o nível do exercício. Suba quando fizer o máximo de repetições em todas as séries com boa forma.</p>
+        <div id="exList" style="display:grid;gap:12px"></div>
       </div>
-      <div id="exList"></div>
-      <button class="btn wide" id="markDone" style="margin-top:14px">Marcar sessão como feita</button>
-      <div class="note">
-        Deixe <strong>1–2 repetições na reserva</strong>. Sem pesos, a progressão é
-        de <strong>nível</strong>: quando fizer o topo do intervalo em todas as
-        séries, com boa forma, suba um nível com o <strong>+</strong>. Se no nível
-        novo não chegar ao mínimo, desça e fique mais uma semana.
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><h2>Escolher sessão</h2></div>
-      <div class="chipgrid" id="pickSession"></div>
-    </div>
-    <div class="card">
-      <div class="card-head">
-        <h2>Ioga</h2>
-        <div class="pill green" id="yogaPill">0 esta semana</div>
-      </div>
-      <div class="rows" id="yogaRow"></div>
-      <div class="note">
-        <strong>Quarta-feira, 25-30 minutos.</strong> Hatha, yin ou mobilidade suave —
-        nada de ioga quente nem de práticas atléticas enquanto a fibrilhação não estiver
-        esclarecida. Trabalha a extensão torácica e os flexores da anca, que é a metade
-        que a força não faz.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <h2>Material que já tem em casa</h2>
-        <div class="label">sem ginásio</div>
-      </div>
-      <div class="kitlist" id="kitList"></div>
-      <div class="note">
-        Se algum dia comprar uma coisa só, compre uma <strong>barra de porta para
-        puxadas</strong> (15–25 €). Puxar é o único padrão que a casa não substitui bem.
+      <div class="card" id="treinoFim"></div>
+      <div class="card">
+        <details>
+          <summary>Material de casa que serve de carga</summary>
+          <ul class="small" id="cargas" style="padding-left:18px;margin-top:8px;display:grid;gap:4px"></ul>
+        </details>
       </div>
     </div>
   </section>
 
-  <!-- ============ MÉTRICAS ============ -->
-  <section class="view" id="v-metricas">
-    <div class="card">
-      <div class="card-head"><h2>Peso e cintura</h2></div>
-      <div class="statrow">
-        <div class="stat">
-          <span class="label">peso</span>
-          <div class="v" id="wNow">—</div>
-          <div class="d" id="wDelta">sem registo</div>
+  <!-- ============ PROGRESSO ============ -->
+  <section class="view" id="v-progresso" hidden>
+    <div class="wrap" style="padding:0">
+      <div class="card">
+        <h2>Resumo</h2>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="card">
+        <div class="row"><h2>Treinos por semana</h2><span class="small muted">últimas 12</span></div>
+        <div id="grafTreinos"></div>
+      </div>
+      <div class="card">
+        <div class="row"><h2>Medicação</h2><span class="small muted">últimos 28 dias</span></div>
+        <div class="grid30" id="grafMeds"></div>
+        <div class="legend"><span><i style="background:var(--olive)"></i>tudo</span><span><i style="background:var(--olive-soft);outline:1px solid var(--olive)"></i>parte</span><span><i style="background:var(--sunk)"></i>nada registado</span></div>
+      </div>
+      <div class="card">
+        <h2>Níveis dos exercícios</h2>
+        <div class="levels" id="niveis"></div>
+        <details>
+          <summary>Histórico de subidas de nível</summary>
+          <div class="hist" id="subidas" style="margin-top:8px"></div>
+        </details>
+      </div>
+      <div class="card">
+        <div class="row"><h2>Peso</h2><span class="small muted">segunda de manhã, em jejum</span></div>
+        <div class="two">
+          <input type="number" id="pesoIn" inputmode="decimal" step="0.1" placeholder="kg" aria-label="Peso em kg">
+          <button class="btn" id="pesoAdd" type="button">Registar</button>
         </div>
-        <div class="stat">
-          <span class="label">cintura</span>
-          <div class="v" id="cNow">—</div>
-          <div class="d" id="cDelta">sem registo</div>
-        </div>
+        <div class="hist" id="pesos"></div>
       </div>
-      <div class="entry">
-        <input id="wIn" type="number" inputmode="decimal" step="0.1" placeholder="peso, kg" aria-label="Peso em quilogramas" />
-        <button class="btn" id="wAdd">Registar</button>
-      </div>
-      <div class="entry">
-        <input id="cIn" type="number" inputmode="decimal" step="0.5" placeholder="cintura, cm" aria-label="Perímetro abdominal em centímetros" />
-        <button class="btn" id="cAdd">Registar</button>
-      </div>
-      <div class="hint">
-        <strong>Meça sempre nas mesmas condições</strong>, ou os números não se
-        comparam: segunda de manhã, em jejum, depois de urinar e antes de beber, na
-        mesma balança. A cintura em pé, relaxado, à altura do umbigo, no fim de uma
-        expiração normal. Entre uma pesagem à tarde e outra em jejum há meio quilo a
-        um quilo de diferença que não é seu.
-      </div>
-      <div class="note" id="readout">
-        Leia os dois juntos: <strong>peso a subir devagar com cintura estável = massa
-        muscular.</strong> Ambos a subir = excedente calórico, corte ~200 kcal.
-        Peso a descer = coma mais.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <h2>Tensão arterial</h2>
-        <div class="pill blue" id="bpPill">0 / 7 dias</div>
-      </div>
-      <div class="statrow">
-        <div class="stat">
-          <span class="label">média de casa</span>
-          <div class="v" id="bpNow">&mdash;</div>
-          <div class="d" id="bpDelta">sem registo</div>
-        </div>
-        <div class="stat">
-          <span class="label">medições hoje</span>
-          <div class="v" id="bpToday">0 / 4</div>
-          <div class="d" id="bpCount">0 medições</div>
-        </div>
-      </div>
-      <div class="seg" id="bpSeg">
-        <button type="button" class="segbtn on" data-per="m" aria-pressed="true">manhã</button>
-        <button type="button" class="segbtn" data-per="n" aria-pressed="false">noite</button>
-      </div>
-      <div class="entry">
-        <input id="bpS" type="number" inputmode="numeric" step="1" placeholder="sist." aria-label="Tensão sistólica" />
-        <input id="bpD" type="number" inputmode="numeric" step="1" placeholder="diast." aria-label="Tensão diastólica" />
-        <input id="bpP" type="number" inputmode="numeric" step="1" placeholder="pulso" aria-label="Pulsação, batimentos por minuto" />
-      </div>
-      <button class="btn wide" id="bpAdd" style="margin-top:8px">Registar</button>
-      <div class="hist" id="bpHist"></div>
-      <div class="note">
-        <strong>Sentado, 5 minutos de descanso</strong>, costas apoiadas, pés no chão,
-        braço à altura do coração e sem falar durante a medição. Duas medições seguidas,
-        com 1&ndash;2 minutos entre elas: de manhã antes do café, à noite antes do jantar.
-        A <strong>pulsação</strong> entra no mesmo registo, se a máquina a der.
-        <strong>O primeiro dia não entra na média</strong> &mdash; é sistematicamente o
-        mais alto. Sete dias seguidos e leve a média à consulta.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <h2>Sintomas</h2>
-        <div class="pill blue" id="sxPill">0 episódios</div>
-      </div>
-      <div id="sxNow"></div>
-      <div class="chipwrap" id="sxTags"></div>
-      <div class="hist" id="sxHist"></div>
-      <div class="hint">
-        Toque no que sente e o episódio começa a contar; toque em <strong>já passou</strong>
-        quando acabar. <strong>Se puder, meça a tensão durante o episódio</strong> — a
-        pulsação e a irregularidade no momento em que sente são o dado mais valioso a
-        levar à consulta.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Histórico</h2></div>
-      <div class="seg" id="histSeg">
-        <button type="button" class="segbtn on" data-hist="w" aria-pressed="true">peso</button>
-        <button type="button" class="segbtn" data-hist="c" aria-pressed="false">cintura</button>
-      </div>
-      <div class="hist" id="wHist"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Treinos por semana</h2></div>
-      <div class="hist" id="volHist"></div>
     </div>
   </section>
 
-  <!-- ============ DADOS ============ -->
-  <section class="view" id="v-dados">
-    <div class="card">
-      <div class="card-head"><h2>Ponto de situação</h2></div>
-      <p style="font-size:14px;color:var(--ink-soft);margin:0 0 12px">
-        O ficheiro .json tem o registo todo — suplementos, proteína, treinos, peso,
-        cintura e tensão. Guarde-o e envie-mo para eu rever a progressão, ajustar
-        cargas e comparar com as análises. Serve também de cópia de segurança.
-      </p>
-      <button class="btn wide" id="saveBtn">Guardar ficheiro .json</button>
-      <div style="height:8px"></div>
-      <label class="btn ghost wide" id="loadLabel" for="loadFile">Restaurar a partir de ficheiro</label>
-      <input id="loadFile" type="file" accept=".json,application/json" aria-label="Ficheiro de cópia de segurança">
-    </div>
+  <!-- ============ AJUSTES ============ -->
+  <section class="view" id="v-ajustes" hidden>
+    <div class="wrap" style="padding:0">
+      <div class="card">
+        <h2>Onde se guardam os dados</h2>
+        <p class="small" id="cfgEstado"></p>
+        <form class="f" id="fCfg" autocomplete="off">
+          <details id="cfgAjuda">
+            <summary>Como ligar ao GitHub</summary>
+            <p class="small" style="margin-top:8px">Se já tem um token para outra app (Descomplica, Horta, Cozinha), pode acrescentar-lhe este repositório em vez de criar outro:</p>
+            <ol class="steps small">
+              <li>Abra <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">github.com/settings/personal-access-tokens</a>.</li>
+              <li>Abra o token que já usa e carregue em <em>Edit</em>. Em <em>Repository access</em>, acrescente <code>caderno-dados</code> e guarde. A app encontra-o sozinha.</li>
+              <li>Ou crie um novo: <em>Generate new token</em>, <em>Only select repositories</em> → <code>caderno-dados</code>, e em <em>Repository permissions → Contents</em> escolha <em>Read and write</em>. Cole-o abaixo.</li>
+            </ol>
+          </details>
+          <label class="fl">Repositório dos dados<input type="text" id="cfgRepo" placeholder="utilizador/caderno-dados"></label>
+          <label class="fl">Token do GitHub<input type="password" id="cfgToken" placeholder="github_pat_…"></label>
+          <p class="small muted">O token fica guardado só neste telemóvel.</p>
+          <div class="actions">
+            <button class="btn primary" type="submit">Guardar e ligar</button>
+            <button class="btn" type="button" id="cfgDesligar">Desligar</button>
+          </div>
+        </form>
+      </div>
 
-    <div class="card">
-      <div class="card-head">
-        <h2>Definições</h2>
-        <div class="label">altura · cm</div>
+      <div class="card">
+        <h2>Medicação</h2>
+        <p class="small muted">O que aparece em Hoje. A hora é a do lembrete no calendário; sem hora, usa a da medicação em Lembretes.</p>
+        <div id="medEdit"></div>
+        <form class="f" id="fMed" autocomplete="off">
+          <div class="two">
+            <input type="text" id="medNome" placeholder="Nome" aria-label="Nome">
+            <input type="text" id="medDose" placeholder="Dose" aria-label="Dose">
+          </div>
+          <label class="fl">Hora da toma (opcional)<input type="time" id="medHora"></label>
+          <button class="btn" type="submit">Acrescentar</button>
+        </form>
       </div>
-      <div class="entry">
-        <input id="hIn" type="number" inputmode="decimal" step="1" placeholder="altura, cm" aria-label="Altura em centímetros" />
-        <button class="btn ghost" id="hSave">Guardar</button>
-      </div>
-      <p style="font-size:13px;color:var(--ink-soft);margin:10px 0 0">
-        <strong>Este campo é a sua altura</strong>, em centímetros. Serve só para
-        calcular a razão cintura/altura, que é melhor indicador que o perímetro
-        isolado. Abaixo de 0,50 é o objetivo. Se estiver certa, não mexa.
-      </p>
-    </div>
 
-    <div class="card">
-      <div class="card-head">
-        <h2>Exames a pedir</h2>
-        <div class="label">consulta 04-09</div>
+      <div class="card">
+        <h2>Dias de treino</h2>
+        <p class="small muted">As sessões seguem a ordem dos dias: o primeiro é a Força A, o segundo a B, o terceiro a C.</p>
+        <div class="chips" id="diasTreino"></div>
+        <p class="small" id="diasNota"></p>
       </div>
-      <div class="rows" id="labRows"></div>
-      <div class="note">
-        Os quatro primeiros são da <strong>fibrilhação auricular</strong> e são para
-        pedir na consulta. Comece por corrigir o relatório: <strong>diz que é
-        assintomático e não é</strong>. A tensão saiu da lista — o MAPA de 25-08
-        resolveu-a, e foi normal. A <strong>Lp(a)</strong> é uma vez na vida.
-      </div>
-    </div>
 
-    <div class="card">
-      <div class="card-head"><h2>Os seus dados</h2></div>
-      <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 12px">
-        Tudo fica guardado apenas neste telemóvel, no armazenamento local do browser.
-        Nada é enviado para servidor nenhum. Se limpar os dados do browser, perde o
-        registo — guarde o ficheiro .json de vez em quando.
-      </p>
-      <button class="btn danger wide" id="resetBtn">Apagar todo o registo</button>
+      <div class="card">
+        <h2>Lembretes</h2>
+        <p class="small">O lembrete mais fiável é o calendário do telemóvel: avisa à hora certa mesmo com esta app fechada.</p>
+        <div class="two">
+          <label class="fl">Medicação às<input type="time" id="horaMed" value="08:00"></label>
+          <label class="fl">Treino às<input type="time" id="horaTreino" value="18:00"></label>
+        </div>
+        <button class="btn primary" type="button" id="ics">Criar lembretes (.ics)</button>
+        <details>
+          <summary>Como pôr no Proton Calendar</summary>
+          <ol class="steps small">
+            <li>No <a href="https://calendar.proton.me/" target="_blank" rel="noopener">Proton Calendar</a>, crie um calendário chamado <code>Plano</code>.</li>
+            <li>Aqui, carregue em <em>Criar lembretes</em> e guarde o ficheiro <code>plano.ics</code>.</li>
+            <li>No Proton: <em>Definições → Calendários → Importar</em>, escolha <code>plano.ics</code> e o calendário <code>Plano</code>.</li>
+            <li>Cada aviso traz o endereço desta app: um toque e está a registar.</li>
+          </ol>
+          <p class="small muted" style="margin-top:6px">Se mudar os dias ou as horas: apague o calendário <code>Plano</code>, crie-o de novo e volte a importar.</p>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2>Registo antigo</h2>
+        <p class="small" id="impEstado"></p>
+        <label class="fl">Juntar uma cópia <code>.json</code> exportada da versão anterior
+          <input type="file" id="impFile" accept=".json,application/json">
+        </label>
+      </div>
     </div>
   </section>
-
 </div>
 
-<nav>
-  <div class="nav-inner">
-    <button class="tab on" data-view="hoje">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Hoje
-    </button>
-    <button class="tab" data-view="treino">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11"/></svg>
-      Treino
-    </button>
-    <button class="tab" data-view="metricas">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-8 4 5"/><path d="M3 21h18"/></svg>
-      Métricas
-    </button>
-    <button class="tab" data-view="dados">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
-      Dados
-    </button>
-  </div>
+<nav class="tabs" aria-label="Secções">
+  <button class="tab on" data-view="hoje" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14l2.5 2.5L16 12"/></svg>Hoje</button>
+  <button class="tab" data-view="treino" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Treino</button>
+  <button class="tab" data-view="progresso" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18M6 16v-4M11 16V8M16 16v-6M21 16V5"/></svg>Progresso</button>
+  <button class="tab" data-view="ajustes" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ajustes</button>
 </nav>
-
-<div class="toast" id="toast"></div>
+<div id="toast" hidden></div>
 
 <script>
-(function () {
-  "use strict";
+"use strict";
+// Se algo rebentar, mostrar em vez de falhar em silêncio.
+window.addEventListener("error", ev => {
+  if (document.getElementById("fatal") || !document.body) return;
+  const d = document.createElement("div");
+  d.id = "fatal";
+  d.textContent = "A app encontrou um erro e pode não ter carregado tudo: " + (ev.message || "erro desconhecido") + " — mostre esta mensagem ao Claude.";
+  document.body.insertBefore(d, document.body.firstChild);
+});
 
-  // Se algo rebentar, mostrar em vez de falhar em silêncio.
-  window.addEventListener("error", function (ev) {
-    if (document.getElementById("fatalMsg") || !document.body) return;
-    var d = document.createElement("div");
-    d.id = "fatalMsg";
-    d.setAttribute("style", "margin:12px;padding:13px;border:1px solid #A33;border-radius:8px;" +
-      "background:#fff;color:#A33;font:13px/1.5 -apple-system,system-ui,sans-serif");
-    d.textContent = "A app encontrou um erro e pode não ter carregado tudo: " +
-      (ev.message || "erro desconhecido") + " — mostre esta mensagem ao Claude.";
-    document.body.insertBefore(d, document.body.firstChild);
+const DEFAULT_REPO = "oakshift/caderno-dados";
+const FILE = "dados.json";
+const APP_URL = "https://oakshift.github.io/caderno/";
+const OLD_KEY = "caderno-gaia-v1";   // registo da versão anterior, no mesmo browser
+const DOW = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const DOW_LONG = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+
+const MEDS_INICIAIS = [
+  {id: "b12",   nome: "B12 metilcobalamina", dose: "1000 µg"},
+  {id: "d3",    nome: "Vitamina D3",         dose: "1000 UI · com gordura"},
+  {id: "algas", nome: "Óleo de algas",       dose: "250–500 mg DHA"},
+  {id: "creat", nome: "Creatina",            dose: "3–5 g"}
+];
+
+// Sem equipamento: a progressão vem da alavanca e do trabalho unilateral,
+// não de acrescentar quilos. `prog` vai do mais fácil ao mais difícil.
+// `vq` = termos de pesquisa no YouTube para o movimento; `pv` afina por nível.
+const SESSIONS = {
+  A: { name: "Força A", ex: [
+    { n: "Agachamento", t: "3 × 8–15", sets: 3, load: true,
+      vq: "agachamento livre tecnica correta",
+      cue: "Pés à largura dos ombros. Empurre o rabo para trás como se fosse sentar-se, peito aberto, e desça até a coxa ficar paralela ao chão.",
+      prog: ["Sentar e levantar de uma cadeira", "Agachamento livre", "Com pausa de 2 s no fundo",
+             "Com mochila carregada", "Afundo estático (split)", "Búlgaro com pé de trás na cadeira",
+             "A uma perna com mão na parede", "Pistol completo"],
+      pv: ["agachamento na cadeira iniciante", "agachamento livre tecnica correta", "",
+           "goblet squat com mochila casa", "split squat estatico tecnica", "bulgarian split squat tecnica",
+           "pistol squat progressao parede", "pistol squat tecnica"] },
+
+    { n: "Flexões", t: "3 × 8–12", sets: 3, load: false,
+      vq: "flexoes tecnica correta",
+      cue: "Corpo em linha reta do calcanhar à cabeça, como uma prancha. Cotovelos a cerca de 45 graus do tronco, não abertos em cruz.",
+      prog: ["Na parede", "Mãos na bancada da cozinha", "Mãos numa cadeira", "Joelhos no chão",
+             "Completas", "Com pausa de 2 s no fundo", "Pés numa cadeira", "Mãos juntas (diamante)",
+             "Archer (peso deslocado para um lado)"],
+      pv: ["flexoes na parede iniciante", "flexoes inclinadas tecnica", "flexoes inclinadas tecnica",
+           "flexoes de joelhos tecnica", "flexoes tecnica correta", "",
+           "flexoes declinadas pes elevados", "flexoes diamante tecnica", "archer push up tutorial"] },
+
+    { n: "Remada", t: "3 × 8–12", sets: 3, load: true,
+      vq: "inverted row under table home",
+      cue: "Puxe com as omoplatas, não com os braços: imagine que aperta um lápis entre as costas no fim de cada repetição.",
+      prog: ["Toalha presa no batente da porta, puxar de pé", "Remada com mochila carregada, tronco inclinado",
+             "Remada invertida debaixo de uma mesa robusta, joelhos dobrados",
+             "Remada invertida com pernas esticadas", "Com pés elevados numa cadeira",
+             "Barra fixa do parque: puxada assistida com os pés", "Puxada completa"],
+      pv: ["door frame row towel exercise", "bent over row mochila casa",
+           "inverted row under table home", "inverted row tecnica correta",
+           "feet elevated inverted row", "assisted pull up with feet", "pull up tecnica correta"] },
+
+    { n: "Ponte de glúteos", t: "3 × 12–20", sets: 3, load: true,
+      vq: "ponte de gluteos tecnica",
+      cue: "Deitado de costas, joelhos dobrados. Empurre o chão com os calcanhares e aperte o rabo no topo. A lombar não deve arquear.",
+      prog: ["Ponte no chão", "Com pausa de 3 s no topo", "Pés numa cadeira",
+             "Mochila sobre a bacia", "A uma perna", "A uma perna com pés elevados"],
+      pv: ["ponte de gluteos tecnica", "", "hip thrust pes elevados casa",
+           "hip thrust com peso em casa", "ponte de gluteos uma perna", "single leg hip thrust elevated"] },
+
+    { n: "Prancha frontal", t: "3 × 30–45 s", sets: 3, load: false,
+      vq: "prancha frontal tecnica correta",
+      cue: "Antebraços no chão, cotovelos por baixo dos ombros. Costelas para baixo e rabo apertado. Se a lombar ceder, pare — o tempo não conta sem forma.",
+      prog: ["Nos joelhos", "Completa", "Com elevação alternada de um braço",
+             "Prancha lateral", "Hollow hold"],
+      pv: ["prancha joelhos iniciante", "prancha frontal tecnica correta",
+           "prancha com elevacao de braco", "prancha lateral tecnica", "hollow hold tecnica"] }
+  ]},
+
+  B: { name: "Força B", ex: [
+    { n: "Agachamento búlgaro", t: "3 × 8–10 / perna", sets: 3, load: true,
+      vq: "bulgarian split squat tecnica",
+      cue: "Só a ponta do pé de trás em cima da cadeira. Dê um passo à frente longo o suficiente para o joelho da frente não avançar muito. Desça a direito, como um elevador — todo o trabalho é da perna da frente.",
+      prog: ["Afundo estático, pés no chão", "Afundo com passada atrás", "Búlgaro na cadeira",
+             "Búlgaro com pausa no fundo", "Búlgaro com mochila", "Búlgaro com mochila pesada"],
+      pv: ["split squat estatico tecnica", "afundo passada atras tecnica",
+           "bulgarian split squat tecnica", "", "bulgarian split squat com peso", ""] },
+
+    { n: "Empurrar acima da cabeça", t: "3 × 6–12", sets: 3, load: true,
+      vq: "pike push up tecnica",
+      cue: "Posição de V invertido: mãos e pés no chão, bacia bem alta, pernas quase direitas. Baixe o topo da cabeça até junto às mãos — para baixo, não para a frente.",
+      prog: ["Press com mochila carregada, de pé", "Flexão em V (pike), pés no chão",
+             "Pike com pés numa cadeira", "Pike com pausa no fundo",
+             "Flexão em pirâmide alta", "Contra a parede, invertido"],
+      pv: ["overhead press com mochila casa", "pike push up tecnica",
+           "elevated pike push up tutorial", "", "", "wall handstand push up progression"] },
+
+    { n: "Puxada vertical", t: "3 × 5–12", sets: 3, load: false,
+      vq: "pull up progressao iniciante",
+      cue: "Se houver barra no parque da escola, use-a. É o padrão mais difícil de substituir em casa — não faz mal ficar semanas no mesmo nível.",
+      prog: ["Toalha na porta: puxada isométrica, 20 s", "Remada invertida na mesa",
+             "Barra do parque: suspensão passiva 20 s", "Puxada com salto e descida lenta (excêntrica 5 s)",
+             "Puxada assistida com um pé no chão", "Puxada completa", "Puxada com pausa no topo"],
+      pv: ["door frame row towel exercise", "inverted row under table home",
+           "dead hang barra tecnica", "negative pull up tecnica",
+           "assisted pull up with feet", "pull up tecnica correta", ""] },
+
+    { n: "Dobradiça / posterior", t: "3 × 8–12", sets: 3, load: true,
+      vq: "peso morto romeno tecnica",
+      cue: "Pernas quase direitas. Empurre a bacia para trás como se fechasse uma gaveta com o rabo, mantendo as costas direitas. Deve sentir atrás da coxa, nunca na lombar.",
+      prog: ["Bom-dia sem carga", "Peso morto romeno com mochila", "A uma perna, mão na parede",
+             "A uma perna com mochila", "Nordic curl excêntrico: joelhos no chão, pés presos sob o sofá, descer 5 s"],
+      pv: ["good morning exercicio tecnica", "peso morto romeno tecnica",
+           "single leg deadlift tecnica", "", "nordic hamstring curl iniciante casa"] },
+
+    { n: "Elevação de gémeos", t: "3 × 15–25", sets: 3, load: true,
+      vq: "elevacao de gemeos tecnica",
+      cue: "No bordo de um degrau, com o calcanhar a sair fora. Desça o calcanhar abaixo do nível do degrau e suba o mais alto que conseguir.",
+      prog: ["Duas pernas no chão", "Duas pernas no degrau", "Com mochila",
+             "A uma perna", "A uma perna com pausa de 2 s no topo"],
+      pv: ["", "calf raise no degrau tecnica", "", "single leg calf raise tecnica", ""] }
+  ]},
+
+  C: { name: "Força C", ex: [
+    { n: "Agachamento (carga alta)", t: "4 × 6–8", sets: 4, load: true,
+      vq: "bulgarian split squat com peso",
+      cue: "A sessão pesada da semana: menos repetições, mais dificuldade por repetição. Escolha a variante em que 6 já custam.",
+      prog: ["Búlgaro na cadeira", "Búlgaro com mochila", "Búlgaro com mochila pesada",
+             "Step-up alto numa cadeira", "A uma perna com mão na parede", "Pistol completo"],
+      pv: ["bulgarian split squat tecnica", "bulgarian split squat com peso", "",
+           "step up alto tecnica", "pistol squat progressao parede", "pistol squat tecnica"] },
+
+    { n: "Flexões (variante difícil)", t: "3 × 6–12", sets: 3, load: false,
+      vq: "flexoes avancadas progressao",
+      cue: "Escolha a variante em que 6 repetições já custam. Se conseguir fazer 15, subiu de nível demasiado devagar.",
+      prog: ["Completas com pausa de 2 s", "Pés numa cadeira", "Diamante", "Archer",
+             "Excêntrica lenta a um braço, 5 s"],
+      pv: ["", "flexoes declinadas pes elevados", "flexoes diamante tecnica",
+           "archer push up tutorial", "one arm push up progression"] },
+
+    { n: "Remada invertida", t: "3 × 8–12", sets: 3, load: false,
+      vq: "inverted row tecnica correta",
+      cue: "Debaixo de uma mesa que aguente o seu peso. Quanto mais horizontal ficar o corpo, mais difícil é.",
+      prog: ["Joelhos dobrados", "Pernas esticadas", "Pés elevados numa cadeira",
+             "Com pausa de 2 s no topo", "A um braço, assistida"],
+      pv: ["inverted row under table home", "inverted row tecnica correta",
+           "feet elevated inverted row", "", "one arm inverted row"] },
+
+    { n: "Farmer walks", t: "3 × 30–40 m", sets: 3, load: true,
+      vq: "farmer walk tecnica",
+      cue: "Dois garrafões de 5 L, um em cada mão. Ombros para trás, tronco direito, passos normais.",
+      prog: ["2 garrafões de 5 L", "2 sacos de compras carregados", "Mochila + garrafões",
+             "Distância maior com o mesmo peso"],
+      pv: ["farmer walk tecnica", "", "", ""] },
+
+    { n: "Saltos verticais", t: "3 × 10", sets: 3, load: false,
+      vq: "salto vertical aterragem segura",
+      cue: "Para o osso, não para o músculo. Aterragem suave com os joelhos a amortecer. Nunca faça em fadiga.",
+      prog: ["Elevação nas pontas dos pés com impulso", "Saltos pequenos no lugar",
+             "Salto vertical máximo", "Salto para cima de um degrau", "Subir escadas a correr"],
+      pv: ["", "", "salto vertical aterragem segura", "box jump degrau tecnica", ""] }
+  ]}
+};
+
+const LOADS = [
+  "Mochila com livros — 8 a 20 kg, e ajusta-se aos poucos",
+  "Garrafas de água na mochila — 1 L = 1 kg, fácil de calibrar",
+  "Garrafões de 5 L — têm asa, servem para farmer walks e agachamento abraçado",
+  "Saco de arroz ou batatas — 5 a 10 kg",
+  "Toalha e o batente de uma porta — para todos os padrões de puxar",
+  "Uma cadeira robusta — búlgaro, pés elevados, step-up",
+  "Uma mesa que aguente o seu peso — remada invertida",
+  "Barra do parque da escola — puxadas, quando lá deixar o seu filho"
+];
+
+const COMO = [["facil", "Fácil"], ["certo", "Na medida"], ["dificil", "Difícil"]];
+
+/* ---------- datas ---------- */
+const pad = n => (n < 10 ? "0" : "") + n;
+const iso = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const parseIso = s => { const a = s.split("-"); return new Date(+a[0], +a[1] - 1, +a[2]); };
+const hoje = () => iso(new Date());
+const addDias = (s, n) => { const d = parseIso(s); d.setDate(d.getDate() + n); return iso(d); };
+const segundaDe = s => { const d = parseIso(s), w = d.getDay(); d.setDate(d.getDate() - (w === 0 ? 6 : w - 1)); return iso(d); };
+const dataCurta = s => { const d = parseIso(s); return DOW[d.getDay()] + " " + d.getDate() + "/" + (d.getMonth() + 1); };
+
+/* ---------- dados ---------- */
+function vazio(){
+  return {v: 1, inicio: hoje(), meds: MEDS_INICIAIS.map(m => ({...m})), dias: [1, 4],
+          tomas: {}, treinos: {}, ioga: {}, niveis: {}, subidas: [], pesos: []};
+}
+function completo(d){
+  const v = vazio();
+  for (const k of Object.keys(v)) if (d[k] === undefined || d[k] === null) d[k] = v[k];
+  return d;
+}
+
+const ls = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k){ try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+let cfg = ls.get("caderno-cfg") || {repo: DEFAULT_REPO, token: ""};
+let S = completo(ls.get("caderno-cache") || vazio());
+let fila = ls.get("caderno-fila") || [];
+const online = () => !!(cfg.token && cfg.repo);
+
+/* Cada registo é uma operação com argumentos simples. Todas fixam um valor (nenhuma
+   alterna), por isso aplicar a mesma duas vezes dá o mesmo resultado: é o que deixa
+   guardá-las enquanto não há rede e reaplicá-las depois sobre a cópia mais recente. */
+const OPS = {
+  toma(d, {dia, id, on}){
+    const l = (d.tomas[dia] || []).filter(x => x !== id);
+    if (on) l.push(id);
+    if (l.length) d.tomas[dia] = l; else delete d.tomas[dia];
+  },
+  tomasDia(d, {dia, ids}){ if (ids.length) d.tomas[dia] = ids.slice(); else delete d.tomas[dia]; },
+  treino(d, {dia, s}){ if (s) d.treinos[dia] = {...(d.treinos[dia] || {}), s}; else delete d.treinos[dia]; },
+  como(d, {dia, como}){ if (d.treinos[dia]) d.treinos[dia].como = como; },
+  ioga(d, {dia, on}){ if (on) d.ioga[dia] = true; else delete d.ioga[dia]; },
+  nivel(d, {ex, n, dia}){
+    const antes = d.niveis[ex] || 0;
+    if (antes === n) return;
+    d.niveis[ex] = n;
+    // só as subidas contam como história; uma descida apaga a subida desse dia, se houver
+    d.subidas = d.subidas.filter(x => !(x.ex === ex && x.d === dia && x.n > n));
+    if (n > antes) d.subidas.push({d: dia, ex, n});
+  },
+  meds(d, {meds}){ d.meds = meds.map(m => ({...m})); },
+  dias(d, {dias}){ d.dias = dias.slice().sort((a, b) => (a || 7) - (b || 7)); },
+  peso(d, {dia, kg}){
+    d.pesos = d.pesos.filter(x => x.d !== dia);
+    if (kg) d.pesos.push({d: dia, v: kg});
+    d.pesos.sort((a, b) => a.d < b.d ? -1 : 1);
+  },
+  importar(d, {velho}){ juntarVelho(d, velho); }
+};
+
+/* A versão anterior guardava tudo num objeto `days`; aqui só interessam a medicação,
+   o treino, o ioga, os níveis e o peso. Junta sem nunca apagar o que já existe. */
+function juntarVelho(d, o){
+  if (!o || !o.days) return;
+  if (o.start && o.start < d.inicio) d.inicio = o.start;
+  for (const k of Object.keys(o.days)){
+    const x = o.days[k] || {};
+    const ids = Object.keys(x.supps || {}).filter(id => x.supps[id]);
+    if (ids.length && !d.tomas[k]) d.tomas[k] = ids;
+    if (x.done && !d.treinos[k]){
+      const t = {s: x.sess || sessaoPlaneada(k, [1, 4]) || "A"};
+      if (x.log && Object.keys(x.log).length) t.log = x.log;
+      d.treinos[k] = t;
+    }
+    if (x.yoga) d.ioga[k] = true;
+  }
+  for (const ex of Object.keys(o.levels || {})) if (d.niveis[ex] === undefined) d.niveis[ex] = o.levels[ex];
+  for (const w of (o.weights || [])) if (w && w.d && w.v && !d.pesos.some(p => p.d === w.d)) d.pesos.push({d: w.d, v: w.v});
+  d.pesos.sort((a, b) => a.d < b.d ? -1 : 1);
+  if (o.phase2 && d.dias.length === 2 && !d.importado) d.dias = [1, 3, 5];
+  d.importado = hoje();
+}
+
+/* ---------- GitHub ---------- */
+const b64enc = str => { const b = new TextEncoder().encode(str); let bin = ""; for (let i = 0; i < b.length; i += 0x8000) bin += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(bin); };
+const b64dec = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+
+class GhError extends Error { constructor(status, msg){ super(msg); this.status = status; } }
+async function gh(method, body, c){
+  c = c || cfg;
+  const r = await fetch("https://api.github.com/repos/" + c.repo + "/contents/" + FILE, {
+    method, cache: "no-store",
+    headers: Object.assign({"Authorization": "Bearer " + c.token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"},
+                           body ? {"Content-Type": "application/json"} : {}),
+    body: body ? JSON.stringify(body) : undefined
   });
-
-  var KEY = "caderno-gaia-v1";
-  var PROT_TARGET = 125;
-
-  var SUPPS = [
-    { id: "b12",   t: "B12 metilcobalamina", s: "1000 µg · diária" },
-    { id: "d3",    t: "Vitamina D3",         s: "1000 UI · com gordura" },
-    { id: "algas", t: "Óleo de algas",       s: "250–500 mg DHA" },
-    { id: "creat", t: "Creatina",            s: "3–5 g · qualquer hora" }
-  ];
-
-  // Atalhos: os quatro blocos do plano, com a proteína prevista para cada um.
-  var MEALS = [
-    { id: "pa", t: "Pequeno-almoço", g: 38 },
-    { id: "al", t: "Almoço",         g: 40 },
-    { id: "me", t: "Merenda",        g: 23 },
-    { id: "ja", t: "Jantar",         g: 35 }
-  ];
-
-  // Sem equipamento: a progressão vem da alavanca e do trabalho unilateral,
-  // não de acrescentar quilos. `prog` vai do mais fácil ao mais difícil.
-  // Sem equipamento: a progressão vem da alavanca e do trabalho unilateral,
-  // não de acrescentar quilos. `prog` vai do mais fácil ao mais difícil.
-  // `vq` = termos de pesquisa no YouTube para o movimento; `pv` permite
-  // afinar a pesquisa por nível, quando o nível é outro movimento.
-  var SESSIONS = {
-    A: { name: "Força A", ex: [
-      { n: "Agachamento", t: "3 × 8–15", sets: 3, load: true,
-        vq: "agachamento livre tecnica correta",
-        cue: "Pés à largura dos ombros. Empurre o rabo para trás como se fosse sentar-se, peito aberto, e desça até a coxa ficar paralela ao chão.",
-        prog: ["Sentar e levantar de uma cadeira", "Agachamento livre", "Com pausa de 2 s no fundo",
-               "Com mochila carregada", "Afundo estático (split)", "Búlgaro com pé de trás na cadeira",
-               "A uma perna com mão na parede", "Pistol completo"],
-        pv: ["agachamento na cadeira iniciante", "agachamento livre tecnica correta", "",
-             "goblet squat com mochila casa", "split squat estatico tecnica", "bulgarian split squat tecnica",
-             "pistol squat progressao parede", "pistol squat tecnica"] },
-
-      { n: "Flexões", t: "3 × 8–12", sets: 3, load: false,
-        vq: "flexoes tecnica correta",
-        cue: "Corpo em linha reta do calcanhar à cabeça, como uma prancha. Cotovelos a cerca de 45 graus do tronco, não abertos em cruz.",
-        prog: ["Na parede", "Mãos na bancada da cozinha", "Mãos numa cadeira", "Joelhos no chão",
-               "Completas", "Com pausa de 2 s no fundo", "Pés numa cadeira", "Mãos juntas (diamante)",
-               "Archer (peso deslocado para um lado)"],
-        pv: ["flexoes na parede iniciante", "flexoes inclinadas tecnica", "flexoes inclinadas tecnica",
-             "flexoes de joelhos tecnica", "flexoes tecnica correta", "",
-             "flexoes declinadas pes elevados", "flexoes diamante tecnica", "archer push up tutorial"] },
-
-      { n: "Remada", t: "3 × 8–12", sets: 3, load: true,
-        vq: "inverted row under table home",
-        cue: "Puxe com as omoplatas, não com os braços: imagine que aperta um lápis entre as costas no fim de cada repetição.",
-        prog: ["Toalha presa no batente da porta, puxar de pé", "Remada com mochila carregada, tronco inclinado",
-               "Remada invertida debaixo de uma mesa robusta, joelhos dobrados",
-               "Remada invertida com pernas esticadas", "Com pés elevados numa cadeira",
-               "Barra fixa do parque: puxada assistida com os pés", "Puxada completa"],
-        pv: ["door frame row towel exercise", "bent over row mochila casa",
-             "inverted row under table home", "inverted row tecnica correta",
-             "feet elevated inverted row", "assisted pull up with feet", "pull up tecnica correta"] },
-
-      { n: "Ponte de glúteos", t: "3 × 12–20", sets: 3, load: true,
-        vq: "ponte de gluteos tecnica",
-        cue: "Deitado de costas, joelhos dobrados. Empurre o chão com os calcanhares e aperte o rabo no topo. A lombar não deve arquear.",
-        prog: ["Ponte no chão", "Com pausa de 3 s no topo", "Pés numa cadeira",
-               "Mochila sobre a bacia", "A uma perna", "A uma perna com pés elevados"],
-        pv: ["ponte de gluteos tecnica", "", "hip thrust pes elevados casa",
-             "hip thrust com peso em casa", "ponte de gluteos uma perna", "single leg hip thrust elevated"] },
-
-      { n: "Prancha frontal", t: "3 × 30–45 s", sets: 3, load: false,
-        vq: "prancha frontal tecnica correta",
-        cue: "Antebraços no chão, cotovelos por baixo dos ombros. Costelas para baixo e rabo apertado. Se a lombar ceder, pare — o tempo não conta sem forma.",
-        prog: ["Nos joelhos", "Completa", "Com elevação alternada de um braço",
-               "Prancha lateral", "Hollow hold"],
-        pv: ["prancha joelhos iniciante", "prancha frontal tecnica correta",
-             "prancha com elevacao de braco", "prancha lateral tecnica", "hollow hold tecnica"] }
-    ]},
-
-    B: { name: "Força B", ex: [
-      { n: "Agachamento búlgaro", t: "3 × 8–10 / perna", sets: 3, load: true,
-        vq: "bulgarian split squat tecnica",
-        cue: "Só a ponta do pé de trás em cima da cadeira. Dê um passo à frente longo o suficiente para o joelho da frente não avançar muito. Desça a direito, como um elevador — todo o trabalho é da perna da frente.",
-        prog: ["Afundo estático, pés no chão", "Afundo com passada atrás", "Búlgaro na cadeira",
-               "Búlgaro com pausa no fundo", "Búlgaro com mochila", "Búlgaro com mochila pesada"],
-        pv: ["split squat estatico tecnica", "afundo passada atras tecnica",
-             "bulgarian split squat tecnica", "", "bulgarian split squat com peso", ""] },
-
-      { n: "Empurrar acima da cabeça", t: "3 × 6–12", sets: 3, load: true,
-        vq: "pike push up tecnica",
-        cue: "Posição de V invertido: mãos e pés no chão, bacia bem alta, pernas quase direitas. Baixe o topo da cabeça até junto às mãos — para baixo, não para a frente.",
-        prog: ["Press com mochila carregada, de pé", "Flexão em V (pike), pés no chão",
-               "Pike com pés numa cadeira", "Pike com pausa no fundo",
-               "Flexão em pirâmide alta", "Contra a parede, invertido"],
-        pv: ["overhead press com mochila casa", "pike push up tecnica",
-             "elevated pike push up tutorial", "", "", "wall handstand push up progression"] },
-
-      { n: "Puxada vertical", t: "3 × 5–12", sets: 3, load: false,
-        vq: "pull up progressao iniciante",
-        cue: "Se houver barra no parque da escola, use-a. É o padrão mais difícil de substituir em casa — não faz mal ficar semanas no mesmo nível.",
-        prog: ["Toalha na porta: puxada isométrica, 20 s", "Remada invertida na mesa",
-               "Barra do parque: suspensão passiva 20 s", "Puxada com salto e descida lenta (excêntrica 5 s)",
-               "Puxada assistida com um pé no chão", "Puxada completa", "Puxada com pausa no topo"],
-        pv: ["door frame row towel exercise", "inverted row under table home",
-             "dead hang barra tecnica", "negative pull up tecnica",
-             "assisted pull up with feet", "pull up tecnica correta", ""] },
-
-      { n: "Dobradiça / posterior", t: "3 × 8–12", sets: 3, load: true,
-        vq: "peso morto romeno tecnica",
-        cue: "Pernas quase direitas. Empurre a bacia para trás como se fechasse uma gaveta com o rabo, mantendo as costas direitas. Deve sentir atrás da coxa, nunca na lombar.",
-        prog: ["Bom-dia sem carga", "Peso morto romeno com mochila", "A uma perna, mão na parede",
-               "A uma perna com mochila", "Nordic curl excêntrico: joelhos no chão, pés presos sob o sofá, descer 5 s"],
-        pv: ["good morning exercicio tecnica", "peso morto romeno tecnica",
-             "single leg deadlift tecnica", "", "nordic hamstring curl iniciante casa"] },
-
-      { n: "Elevação de gémeos", t: "3 × 15–25", sets: 3, load: true,
-        vq: "elevacao de gemeos tecnica",
-        cue: "No bordo de um degrau, com o calcanhar a sair fora. Desça o calcanhar abaixo do nível do degrau e suba o mais alto que conseguir.",
-        prog: ["Duas pernas no chão", "Duas pernas no degrau", "Com mochila",
-               "A uma perna", "A uma perna com pausa de 2 s no topo"],
-        pv: ["", "calf raise no degrau tecnica", "", "single leg calf raise tecnica", ""] }
-    ]},
-
-    C: { name: "Força C", ex: [
-      { n: "Agachamento (carga alta)", t: "4 × 6–8", sets: 4, load: true,
-        vq: "bulgarian split squat com peso",
-        cue: "A sessão pesada da semana: menos repetições, mais dificuldade por repetição. Escolha a variante em que 6 já custam.",
-        prog: ["Búlgaro na cadeira", "Búlgaro com mochila", "Búlgaro com mochila pesada",
-               "Step-up alto numa cadeira", "A uma perna com mão na parede", "Pistol completo"],
-        pv: ["bulgarian split squat tecnica", "bulgarian split squat com peso", "",
-             "step up alto tecnica", "pistol squat progressao parede", "pistol squat tecnica"] },
-
-      { n: "Flexões (variante difícil)", t: "3 × 6–12", sets: 3, load: false,
-        vq: "flexoes avancadas progressao",
-        cue: "Escolha a variante em que 6 repetições já custam. Se conseguir fazer 15, subiu de nível demasiado devagar.",
-        prog: ["Completas com pausa de 2 s", "Pés numa cadeira", "Diamante", "Archer",
-               "Excêntrica lenta a um braço, 5 s"],
-        pv: ["", "flexoes declinadas pes elevados", "flexoes diamante tecnica",
-             "archer push up tutorial", "one arm push up progression"] },
-
-      { n: "Remada invertida", t: "3 × 8–12", sets: 3, load: false,
-        vq: "inverted row tecnica correta",
-        cue: "Debaixo de uma mesa que aguente o seu peso. Quanto mais horizontal ficar o corpo, mais difícil é.",
-        prog: ["Joelhos dobrados", "Pernas esticadas", "Pés elevados numa cadeira",
-               "Com pausa de 2 s no topo", "A um braço, assistida"],
-        pv: ["inverted row under table home", "inverted row tecnica correta",
-             "feet elevated inverted row", "", "one arm inverted row"] },
-
-      { n: "Farmer walks", t: "3 × 30–40 m", sets: 3, load: true,
-        vq: "farmer walk tecnica",
-        cue: "Dois garrafões de 5 L, um em cada mão. Ombros para trás, tronco direito, passos normais.",
-        prog: ["2 garrafões de 5 L", "2 sacos de compras carregados", "Mochila + garrafões",
-               "Distância maior com o mesmo peso"],
-        pv: ["farmer walk tecnica", "", "", ""] },
-
-      { n: "Saltos verticais", t: "3 × 10", sets: 3, load: false,
-        vq: "salto vertical aterragem segura",
-        cue: "Para o osso, não para o músculo. Aterragem suave com os joelhos a amortecer. Nunca faça em fadiga.",
-        prog: ["Elevação nas pontas dos pés com impulso", "Saltos pequenos no lugar",
-               "Salto vertical máximo", "Salto para cima de um degrau", "Subir escadas a correr"],
-        pv: ["", "", "salto vertical aterragem segura", "box jump degrau tecnica", ""] }
-    ]}
-  };
-
-  var LOADS = [
-    "Mochila com livros — 8 a 20 kg, e ajusta-se aos poucos",
-    "Garrafas de água na mochila — 1 L = 1 kg, fácil de calibrar",
-    "Garrafões de 5 L — têm asa, servem para farmer walks e agachamento abraçado",
-    "Saco de arroz ou batatas — 5 a 10 kg",
-    "Toalha e o batente de uma porta — para todos os padrões de puxar",
-    "Uma cadeira robusta — búlgaro, pés elevados, step-up",
-    "Uma mesa que aguente o seu peso — remada invertida",
-    "Barra do parque da escola — puxadas, quando lá deixar o seu filho"
-  ];
-
-  // Ordenados por prioridade: os quatro primeiros são da fibrilhação auricular
-  // documentada a 20-08-2026 e são para pedir na consulta. A tensão saiu da lista:
-  // ficou resolvida pelo MAPA de 25-08-2026, normal.
-  var LABS = [
-    { id: "eco",   t: "Ecocardiograma",           s: "o exame central da fibrilhação" },
-    { id: "monit", t: "Monitorização 7 a 14 dias", s: "saber a carga real de arritmia" },
-    { id: "sono",  t: "Estudo do sono",           s: "explicaria a FA noturna e o hematócrito" },
-    { id: "iono",  t: "Potássio e magnésio",      s: "rotina na fibrilhação auricular" },
-    { id: "homo",  t: "Homocisteína",             s: "agora já sob B12: serve de controlo" },
-    { id: "trans", t: "Saturação da transferrina", s: "jejum, sem ferro 3 dias" },
-    { id: "vitd",  t: "25-OH-vitamina D",         s: "define a dose de D3" },
-    { id: "lpa",   t: "Lipoproteína(a)",          s: "uma vez na vida" },
-    { id: "hemo",  t: "Hemograma repetido",       s: "hidratado; vigiar o hematócrito" }
-  ];
-
-  var DOW = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-  // ---------- state ----------
-
-  var S = load();
-  var viewDate = iso(new Date());
-  var myKeys = [];      // nomes visíveis da lista pessoal, na ordem em que são desenhados
-  var myQuery = "";     // filtro sobre a lista dele, não sobre uma tabela de fora
-  var myEdit = false;   // modo de remoção da lista pessoal
-
-  function load() {
-    try {
-      var raw = localStorage.getItem(KEY);
-      if (raw) {
-        var p = JSON.parse(raw);
-        if (p && p.days) {
-          if (!p.bps) p.bps = [];
-          return p;
-        }
-      }
-    } catch (e) {}
-    return { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false };
-  }
-
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(S)); }
-    catch (e) { toast("Não foi possível guardar neste browser."); }
-  }
-
-  function iso(d) {
-    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
-  }
-  function pad(n) { return (n < 10 ? "0" : "") + n; }
-  function parseIso(s) {
-    var a = s.split("-");
-    return new Date(+a[0], +a[1] - 1, +a[2]);
-  }
-
-  function day(d) {
-    if (!S.days[d]) S.days[d] = { supps: {}, prot: 0, entries: [], sess: null, done: false, log: {} };
-    var o = S.days[d];
-    if (!o.supps) o.supps = {};
-    if (!o.entries) o.entries = [];
-    if (!o.log) o.log = {};
-    return o;
-  }
-
-  // O nível de progressão é global por exercício, não por dia:
-  // uma vez subido, mantém-se nas sessões seguintes.
-  function lvlOf(exName) {
-    if (!S.levels) S.levels = {};
-    return S.levels[exName] || 0;
-  }
-
-  // Pesquisa no YouTube em vez de vídeo fixo: um ID específico pode ser
-  // removido ou tornado privado, uma pesquisa nunca quebra.
-  function vidQuery(x, li) {
-    if (x.pv && x.pv[li]) return x.pv[li];
-    return x.vq || x.n;
-  }
-  function ytUrl(q) {
-    return "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
-  }
-
-  function heightCm() {
-    return (S.height && S.height > 100 && S.height < 250) ? S.height : 193;
-  }
-
-  function weekNum() {
-    var diff = parseIso(iso(new Date())) - parseIso(S.start);
-    return Math.floor(diff / 604800000) + 1;
-  }
-  // A fase 2 nunca avança sozinha: exige confirmação explícita a partir da semana 5.
-  function phase() { return (weekNum() >= 5 && S.phase2) ? 2 : 1; }
-  function phase2Available() { return weekNum() >= 5 && !S.phase2; }
-
-  // Fase 1: Seg=A, Qui=B.  Fase 2: Seg=A, Qua=B, Sex=C.
-  function plannedFor(d) {
-    var w = parseIso(d).getDay();
-    if (phase() === 1) {
-      if (w === 1) return "A";
-      if (w === 4) return "B";
-    } else {
-      if (w === 1) return "A";
-      if (w === 3) return "B";
-      if (w === 5) return "C";
-    }
-    return null;
-  }
-
-  // O ioga tem lugar marcado à quarta na fase 1, mas pode ser registado em
-  // qualquer dia: a app regista o que ele faz, não o que devia ter feito.
-  function yogaDay(d) {
-    return phase() === 1 && parseIso(d).getDay() === 3;
-  }
-
-  function yogaThisWeek() {
-    var s = weekStart(new Date()), n = 0;
-    for (var i = 0; i < 7; i++) {
-      var dd = new Date(s); dd.setDate(s.getDate() + i);
-      var o = S.days[iso(dd)];
-      if (o && o.yoga) n++;
-    }
-    return n;
-  }
-
-  function sessionOf(d) {
-    var o = day(d);
-    return o.sess || plannedFor(d);
-  }
-
-  function weekTarget() { return phase() === 1 ? 2 : 3; }
-
-  function weekStart(date) {
-    var d = parseIso(iso(date));
-    var w = d.getDay();
-    d.setDate(d.getDate() - (w === 0 ? 6 : w - 1));
-    return d;
-  }
-
-  function doneThisWeek() {
-    var s = weekStart(new Date()), n = 0;
-    for (var i = 0; i < 7; i++) {
-      var dd = new Date(s); dd.setDate(s.getDate() + i);
-      var o = S.days[iso(dd)];
-      if (o && o.done) n++;
-    }
-    return n;
-  }
-
-  function streak() {
-    var n = 0, d = new Date();
-    for (;;) {
-      var o = S.days[iso(d)];
-      var all = o && SUPPS.every(function (x) { return o.supps[x.id]; });
-      if (!all) {
-        // hoje ainda pode estar a meio: não quebra a sequência
-        if (n === 0 && iso(d) === iso(new Date())) { d.setDate(d.getDate() - 1); continue; }
-        break;
-      }
-      n++;
-      d.setDate(d.getDate() - 1);
-      if (n > 3650) break;
-    }
-    return n;
-  }
-
-  // última carga registada para um exercício, antes de `before`
-  function lastLoad(exName, before) {
-    var keys = Object.keys(S.days).filter(function (k) { return k < before; }).sort().reverse();
-    for (var i = 0; i < keys.length; i++) {
-      var lg = S.days[keys[i]].log;
-      if (lg && lg[exName] && lg[exName].length) {
-        var sets = lg[exName].filter(function (x) { return x && (x.w || x.r); });
-        if (sets.length) return { date: keys[i], sets: sets };
-      }
-    }
-    return null;
-  }
-
-  // ---------- render ----------
-
-  function el(id) { return document.getElementById(id); }
-
-  function renderHeader() {
-    el("phaseTag").textContent = "semana " + weekNum() + " · fase " + phase();
-
-    var s = weekStart(new Date()), html = "";
-    for (var i = 0; i < 7; i++) {
-      var dd = new Date(s); dd.setDate(s.getDate() + i);
-      var k = iso(dd), o = S.days[k];
-      var cls = "daychip";
-      if (plannedFor(k)) cls += " has-strength";
-      if (yogaDay(k)) cls += " has-yoga";
-      if (o && o.yoga) cls += " yoga-done";
-      if (o && (o.done || (o.prot > 0) || SUPPS.some(function (x) { return o.supps[x.id]; }))) cls += " filled";
-      if (k === iso(new Date())) cls += " is-today";
-      if (k === viewDate) cls += " is-view";
-      html += '<button class="' + cls + '" data-d="' + k + '">' +
-              '<span class="dow">' + DOW[dd.getDay()] + '</span>' +
-              '<span class="num">' + dd.getDate() + '</span>' +
-              '<span class="dot"></span></button>';
-    }
-    el("weekstrip").innerHTML = html;
-
-    // Sem isto perde-se de vista em que dia está a registar.
-    var vn = el("viewNote"), hoje = iso(new Date());
-    if (viewDate === hoje) {
-      vn.className = "viewnote";
-      vn.innerHTML = "";
-    } else {
-      var vd = parseIso(viewDate);
-      vn.className = "viewnote on";
-      vn.innerHTML = '<span>a registar em <b>' + DOW[vd.getDay()] + ", " + pad(vd.getDate()) +
-                     "/" + pad(vd.getMonth() + 1) + '</b>, não em hoje</span>' +
-                     '<button class="linkbtn" data-backtoday="1">voltar a hoje</button>';
-    }
-  }
-
-  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-
-  function renderSupps() {
-    var o = day(viewDate), html = "";
-    SUPPS.forEach(function (x) {
-      html += '<button class="checkrow ' + (o.supps[x.id] ? "on" : "") + '" data-supp="' + x.id + '">' +
-              '<span class="box">' + CHECK + '</span>' +
-              '<span class="rowtext"><span class="rowtitle">' + x.t + '</span><br>' +
-              '<span class="rowsub">' + x.s + '</span></span></button>';
-    });
-    el("suppRows").innerHTML = html;
-    el("streakPill").textContent = "sequência " + streak() + " d";
-  }
-
-  function renderProt() {
-    var o = day(viewDate);
-    var pct = Math.min(100, Math.round((o.prot / PROT_TARGET) * 100));
-    el("protNum").textContent = Math.round(o.prot);
-    var m = el("protMeter");
-    m.firstElementChild.style.width = pct + "%";
-    m.className = "meter" + (o.prot >= PROT_TARGET ? " hit" : "");
-
-    // o que já foi somado hoje, cada um removível
-    var tags = "";
-    o.entries.forEach(function (e, i) {
-      tags += '<button class="tag" data-rm="' + i + '" aria-label="Remover ' + esc(e.n) + '">' +
-              esc(e.n) + ' ' + fmt(e.v) + 'g <i>×</i></button>';
-    });
-    el("protEntries").innerHTML = tags;
-
-    // lista pessoal: o que ele já registou, mais usado primeiro
-    if (!S.myFoods) S.myFoods = {};
-    myKeys = [];
-    for (var mk in S.myFoods) {
-      if (Object.prototype.hasOwnProperty.call(S.myFoods, mk)) myKeys.push(mk);
-    }
-    myKeys.sort(function (a, b) {
-      var d = (S.myFoods[b].n || 0) - (S.myFoods[a].n || 0);
-      return d !== 0 ? d : (a < b ? -1 : 1);
-    });
-
-    // o filtro só aparece quando a lista já é grande ao ponto de o justificar
-    var myTotal = myKeys.length;
-    var mq = norm(myQuery.replace(/^\s+|\s+$/g, ""));
-    if (mq) {
-      myKeys = myKeys.filter(function (k) { return norm(k).indexOf(mq) >= 0; });
-    }
-    el("myFilter").className = "myfilter" + (myTotal > 8 ? " on" : "");
-
-    var mh = "";
-    for (var mi = 0; mi < myKeys.length; mi++) {
-      var mf = S.myFoods[myKeys[mi]];
-      mh += '<button class="chip mine' + (myEdit ? " rm" : "") + '" data-my="' + mi + '">' +
-            '<span>' + esc(myKeys[mi]) + '</span><b>' + (myEdit ? "remover" : fmt(mf.v) + " g") + '</b></button>';
-    }
-    el("myFoods").innerHTML = mh || '<div class="empty" style="padding:10px 4px;text-align:left">' +
-      (mq ? "Nada na sua lista corresponde a isso. Escreva o nome e os gramas em cima — fica guardado."
-          : "Ainda vazio. O que registar acima aparece aqui, e a um toque nos dias seguintes.") + '</div>';
-    el("myEditBtn").textContent = myEdit ? "concluir" : "editar";
-    el("myEditBtn").style.display = myTotal ? "" : "none";
-
-    // referência dos blocos do plano
-    var rl = "";
-    for (var ri = 0; ri < MEALS.length; ri++) {
-      rl += (ri ? " &nbsp;·&nbsp; " : "") + esc(MEALS[ri].t) + " <b>" + MEALS[ri].g + " g</b>";
-    }
-    el("planRef").innerHTML = '<span class="label">blocos do plano, como referência</span>' +
-      '<div class="refline">' + rl + '</div>';
-
-  }
-
-  // busca insensível a acentos: "amendoas" encontra "amêndoas"
-  function norm(s) {
-    return String(s).toLowerCase()
-      .replace(/[áàâã]/g, "a").replace(/[éê]/g, "e").replace(/[í]/g, "i")
-      .replace(/[óòôõ]/g, "o").replace(/[úü]/g, "u").replace(/[ç]/g, "c");
-  }
-
-  function esc(s) {
-    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-  function fmt(n) {
-    return (Math.round(n * 10) / 10).toString().replace(".", ",");
-  }
-
-  function addProt(name, grams) {
-    var o = day(viewDate);
-    o.entries.push({ n: name, v: grams });
-    o.prot = Math.round((o.prot + grams) * 10) / 10;
-    remember(name, grams);
-    save(); renderProt(); renderHeader();
-  }
-
-  // Tudo o que regista fica guardado para reutilizar. É isto que faz a app
-  // aprender o que ele come, em vez de tentar adivinhar com uma tabela fixa.
-  function remember(name, grams) {
-    if (!S.myFoods) S.myFoods = {};
-    var k = String(name).trim();
-    if (!k) return;
-    var e = S.myFoods[k] || { v: grams, n: 0 };
-    e.v = grams;
-    e.n = (e.n || 0) + 1;
-    S.myFoods[k] = e;
-  }
-
-  function renderTodayTrain() {
-    var sess = sessionOf(viewDate), o = day(viewDate);
-    var c = el("todayTrainCard");
-    if (!sess) {
-      c.innerHTML = '<div class="card-head"><h2>Hoje: bicicleta</h2>' +
-        '<div class="pill green">' + doneThisWeek() + "/" + weekTarget() + ' esta semana</div></div>' +
-        '<p style="font-size:14px;color:var(--ink-soft);margin:0">' +
-        'Sem força hoje. As deslocações de bicicleta são a sua base aeróbica — ' +
-        'contam e não precisam de registo.</p>';
-      return;
-    }
-    c.innerHTML = '<div class="card-head"><h2>Hoje: ' + SESSIONS[sess].name + '</h2>' +
-      '<div class="pill ' + (o.done ? "green" : "blue") + '">' +
-      (o.done ? "feita" : doneThisWeek() + "/" + weekTarget() + " esta semana") + '</div></div>' +
-      '<p style="font-size:14px;color:var(--ink-soft);margin:0 0 12px">' +
-      SESSIONS[sess].ex.length + ' exercícios · cerca de 40 minutos.</p>' +
-      '<button class="btn wide" id="goTrain">' +
-      (o.done ? "Rever registo" : "Abrir e registar cargas") + '</button>';
-    el("goTrain").addEventListener("click", function () { setView("treino"); });
-  }
-
-  function renderTrain() {
-    var sess = sessionOf(viewDate), o = day(viewDate);
-
-    var pick = "";
-    ["A", "B", "C"].forEach(function (k) {
-      pick += '<button class="chip ' + (sess === k ? "on" : "") + '" data-sess="' + k + '">' +
-              '<span>' + SESSIONS[k].name + '</span><b>' + (plannedFor(viewDate) === k ? "hoje" : "") + '</b></button>';
-    });
-    pick += '<button class="chip ' + (!sess ? "on" : "") + '" data-sess="none"><span>Sem força</span><b></b></button>';
-    el("pickSession").innerHTML = pick;
-
-    if (!sess) {
-      el("trainTitle").textContent = "Sem sessão";
-      el("trainPill").textContent = doneThisWeek() + "/" + weekTarget();
-      el("exList").innerHTML = '<div class="empty">Dia de bicicleta ou descanso.<br>' +
-        'Escolha uma sessão abaixo se quiser treinar hoje.</div>';
-      el("markDone").style.display = "none";
-      return;
-    }
-
-    el("markDone").style.display = "";
-    el("markDone").textContent = o.done ? "Sessão feita ✓ (toque para desmarcar)" : "Marcar sessão como feita";
-    el("trainTitle").textContent = SESSIONS[sess].name;
-    el("trainPill").textContent = doneThisWeek() + "/" + weekTarget() + " esta semana";
-
-    var html = "";
-    SESSIONS[sess].ex.forEach(function (x, xi) {
-      var prev = lastLoad(x.n, viewDate);
-      var cur = o.log[x.n] || [];
-      html += '<div class="ex"><div class="ex-head"><span class="ex-name">' + esc(x.n) + '</span>' +
-              '<span class="ex-target">' + esc(x.t) + '</span></div>';
-
-      if (x.cue) html += '<div class="cue">' + esc(x.cue) + '</div>';
-
-      if (x.prog && x.prog.length) {
-        var li = Math.min(lvlOf(x.n), x.prog.length - 1);
-        html += '<div class="lvlbar">' +
-          '<button class="lvlbtn down" data-lvl="' + xi + '" data-dir="-1"' +
-          (li === 0 ? " disabled" : "") + ' aria-label="Nível anterior">&minus;</button>' +
-          '<span class="lvlname"><span class="lv">nível ' + (li + 1) + ' de ' + x.prog.length + '</span>' +
-          '<span class="lt">' + esc(x.prog[li]) + '</span></span>' +
-          '<button class="lvlbtn up" data-lvl="' + xi + '" data-dir="1"' +
-          (li === x.prog.length - 1 ? " disabled" : "") + ' aria-label="Nível seguinte">+</button>' +
-          '</div>';
-
-        html += '<a class="vidlink" target="_blank" rel="noopener noreferrer" href="' +
-                esc(ytUrl(vidQuery(x, li))) + '">' +
-                '<span class="play" aria-hidden="true">&#9654;</span> ver como se faz' +
-                '<span class="vq">' + esc(vidQuery(x, li)) + '</span></a>';
-      }
-
-      if (prev) {
-        html += '<div class="ex-last">última: ' + prev.sets.map(function (s) {
-          return (s.w ? s.w + "kg×" : "") + (s.r || "?");
-        }).join("  ·  ") + '</div>';
-      }
-      html += '<div class="sets">';
-      for (var i = 0; i < x.sets; i++) {
-        var v = cur[i] || {};
-        html += '<span class="setbox"><span class="n">' + (i + 1) + '</span>';
-        if (x.load) {
-          html += '<input type="number" inputmode="decimal" placeholder="kg" data-ex="' + xi +
-                  '" data-set="' + i + '" data-f="w" value="' + (v.w != null ? v.w : "") + '" />' +
-                  '<span class="x">×</span>';
-        }
-        html += '<input type="number" inputmode="numeric" placeholder="reps" data-ex="' + xi +
-                '" data-set="' + i + '" data-f="r" value="' + (v.r != null ? v.r : "") + '" />';
-        html += '</span>';
-      }
-      html += '</div></div>';
-    });
-    el("exList").innerHTML = html;
-  }
-
-  function renderMetrics() {
-    var w = S.weights, c = S.waists;
-    if (el("hIn") && document.activeElement !== el("hIn")) el("hIn").value = heightCm();
-
-    if (w.length) {
-      var lw = w[w.length - 1];
-      el("wNow").textContent = lw.v.toFixed(1) + " kg";
-      if (w.length > 1) {
-        var d = lw.v - w[0].v;
-        el("wDelta").textContent = (d >= 0 ? "+" : "") + d.toFixed(1) + " kg desde o início";
-      } else { el("wDelta").textContent = "primeiro registo"; }
-    }
-    if (c.length) {
-      var lc = c[c.length - 1];
-      el("cNow").textContent = lc.v.toFixed(1) + " cm";
-      var r = lc.v / heightCm();
-      el("cDelta").textContent = "cintura/altura " + r.toFixed(2) + (r < 0.5 ? " · dentro" : " · acima de 0,50");
-    }
-
-    if (el("histSeg")) {
-      var hbtn = el("histSeg").getElementsByTagName("button");
-      for (var hb = 0; hb < hbtn.length; hb++) {
-        var hon = hbtn[hb].getAttribute("data-hist") === histTab;
-        hbtn[hb].className = hon ? "segbtn on" : "segbtn";
-        hbtn[hb].setAttribute("aria-pressed", hon ? "true" : "false");
-      }
-    }
-
-    var hh = "", hsrc = histTab === "c" ? c : w;
-    hsrc.slice().reverse().slice(0, 12).forEach(function (x, i, arr) {
-      var main, side;
-      if (histTab === "c") {
-        main = x.v.toFixed(1) + " cm";
-        side = "c/altura " + (x.v / heightCm()).toFixed(2);
-      } else {
-        main = x.v.toFixed(1) + " kg";
-        side = "";
-      }
-      // variação face ao registo anterior no tempo, que na lista invertida é o seguinte
-      var older = arr[i + 1];
-      if (older) {
-        var dv = x.v - older.v;
-        side = (dv >= 0 ? "+" : "") + dv.toFixed(1) + (histTab === "c" ? " cm" : " kg") + (side ? " · " + side : "");
-      }
-      hh += '<div class="hist-row"><span>' + main + '</span><span>' +
-            (side ? side + " · " : "") + x.d + '</span></div>';
-    });
-    el("wHist").innerHTML = hh ||
-      '<div class="empty">' + (histTab === "c" ? "Sem registos de cintura. Meça uma vez por mês." : "Sem registos de peso.") + '</div>';
-
-    // treinos por semana, últimas 6
-    var vh = "", cursor = weekStart(new Date());
-    for (var k = 0; k < 6; k++) {
-      var n = 0, ws = new Date(cursor);
-      for (var i = 0; i < 7; i++) {
-        var dd = new Date(ws); dd.setDate(ws.getDate() + i);
-        var o = S.days[iso(dd)];
-        if (o && o.done) n++;
-      }
-      var lbl = (k === 0 ? "esta semana" : "há " + k + (k === 1 ? " semana" : " semanas"));
-      vh += '<div class="hist-row"><span>' + n + " / " + weekTarget() + ' sessões</span><span>' + lbl + '</span></div>';
-      cursor.setDate(cursor.getDate() - 7);
-    }
-    el("volHist").innerHTML = vh;
-  }
-
-  function renderYoga() {
-    if (!el("yogaRow")) return;
-    var o = day(viewDate), n = yogaThisWeek();
-    var quando = yogaDay(viewDate) ? "dia de ioga" : "fora do dia marcado, conta na mesma";
-    el("yogaRow").innerHTML =
-      '<button class="checkrow ' + (o.yoga ? "on" : "") + '" data-yoga="1">' +
-      '<span class="box">' + CHECK + '</span>' +
-      '<span class="rowtext"><span class="rowtitle">Ioga feito neste dia</span><br>' +
-      '<span class="rowsub">' + quando + '</span></span></button>';
-    el("yogaPill").textContent = n + " esta semana";
-  }
-
-  function renderKit() {
-    el("kitList").innerHTML = LOADS.map(function (s) {
-      return '<div class="kitrow">' + esc(s) + '</div>';
-    }).join("");
-  }
-
-  function renderLabs() {
-    var html = "";
-    LABS.forEach(function (x) {
-      html += '<button class="checkrow ' + (S.labs[x.id] ? "on" : "") + '" data-lab="' + x.id + '">' +
-              '<span class="box">' + CHECK + '</span>' +
-              '<span class="rowtext"><span class="rowtitle">' + x.t + '</span><br>' +
-              '<span class="rowsub">' + x.s + '</span></span></button>';
-    });
-    el("labRows").innerHTML = html;
-  }
-
-  // sessões feitas nas últimas `n` semanas completas, incluindo a atual
-  function doneLastWeeks(n) {
-    var total = 0, cursor = weekStart(new Date());
-    for (var k = 0; k < n; k++) {
-      var ws = new Date(cursor);
-      for (var i = 0; i < 7; i++) {
-        var dd = new Date(ws); dd.setDate(ws.getDate() + i);
-        var o = S.days[iso(dd)];
-        if (o && o.done) total++;
-      }
-      cursor.setDate(cursor.getDate() - 7);
-    }
-    return total;
-  }
-
-  function renderPromo() {
-    var c = el("promoCard");
-    if (!phase2Available()) { c.style.display = "none"; return; }
-    c.style.display = "";
-    var feitas = doneLastWeeks(4), esperadas = 8;
-    var solido = feitas >= 6;
-    c.innerHTML =
-      '<div class="card-head"><h2>Passar à fase 2?</h2>' +
-      '<div class="pill ' + (solido ? "green" : "blue") + '">' + feitas + '/' + esperadas + ' em 4 semanas</div></div>' +
-      '<p style="font-size:14px;color:var(--ink-soft);margin:0 0 12px">' +
-      (solido
-        ? "As duas sessões estão consolidadas. Acrescentar a Força C à sexta é o passo seguinte."
-        : "Fez " + feitas + " das " + esperadas + " sessões previstas. Consolidar as duas primeiro " +
-          "vale mais do que acrescentar uma terceira — o plano não deve ficar à frente da realidade.") +
-      '</p>' +
-      '<button class="btn wide" id="promoYes">Acrescentar Força C (3 sessões)</button>' +
-      '<div style="height:8px"></div>' +
-      '<button class="btn ghost wide" id="promoNo">Manter 2 sessões, perguntar depois</button>';
-    el("promoYes").addEventListener("click", function () {
-      S.phase2 = true; save(); renderAll();
-      toast("Fase 2 ativa: segunda, quarta e sexta.");
-    });
-    el("promoNo").addEventListener("click", function () {
-      c.style.display = "none";
-      toast("Mantemos 2 sessões. Volto a perguntar na próxima semana.");
-    });
-  }
-
-  function renderAll() {
-    renderHeader();
-    renderSupps();
-    renderProt();
-    renderPromo();
-    renderTodayTrain();
-    renderTrain();
-    renderYoga();
-    renderMetrics();
-    renderBp();
-    renderSx();
-    renderKit();
-    renderLabs();
-  }
-
-  // ---------- interaction ----------
-
-  function toast(msg) {
-    var t = el("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    clearTimeout(t._h);
-    t._h = setTimeout(function () { t.classList.remove("show"); }, 2200);
-  }
-
-  function setView(v) {
-    var vs = document.querySelectorAll(".view");
-    for (var i = 0; i < vs.length; i++) vs[i].classList.toggle("on", vs[i].id === "v-" + v);
-    var ts = document.querySelectorAll(".tab");
-    for (var j = 0; j < ts.length; j++) ts[j].classList.toggle("on", ts[j].dataset.view === v);
-    window.scrollTo(0, 0);
-  }
-
-  // for clássico em vez de NodeList.forEach: funciona em browsers mais antigos
-  var tabEls = document.querySelectorAll(".tab");
-  for (var ti = 0; ti < tabEls.length; ti++) {
-    (function (b) {
-      b.addEventListener("click", function () { setView(b.dataset.view); });
-    })(tabEls[ti]);
-  }
-
-  document.addEventListener("click", function (e) {
-    var t = e.target.closest("button");
-    if (!t) return;
-
-    if (t.dataset.backtoday) {
-      viewDate = iso(new Date());
-      renderAll();
-      return;
-    }
-    if (t.dataset.d) {
-      viewDate = t.dataset.d;
-      renderAll();
-      return;
-    }
-    if (t.dataset.supp) {
-      var o = day(viewDate);
-      o.supps[t.dataset.supp] = !o.supps[t.dataset.supp];
-      save(); renderSupps(); renderHeader();
-      return;
-    }
-    if (t.dataset.lvl) {
-      var sx = sessionOf(viewDate);
-      if (!sx) return;
-      var ex = SESSIONS[sx].ex[+t.dataset.lvl];
-      if (!ex || !ex.prog) return;
-      if (!S.levels) S.levels = {};
-      var next = Math.max(0, Math.min(ex.prog.length - 1, lvlOf(ex.n) + (+t.dataset.dir)));
-      S.levels[ex.n] = next;
-      save(); renderTrain();
-      toast(ex.n + " · nível " + (next + 1) + ": " + ex.prog[next]);
-      return;
-    }
-    if (t.dataset.my) {
-      var mname = myKeys[+t.dataset.my];
-      if (!mname || !S.myFoods[mname]) return;
-      if (myEdit) {
-        delete S.myFoods[mname];
-        save(); renderProt();
-        toast("Removido da lista: " + mname);
-      } else {
-        addProt(mname, S.myFoods[mname].v);
-        toast(mname + " · +" + fmt(S.myFoods[mname].v) + " g");
-      }
-      return;
-    }
-    if (t.dataset.rm) {
-      var o2 = day(viewDate), ri = +t.dataset.rm, ent = o2.entries[ri];
-      if (ent) {
-        o2.entries.splice(ri, 1);
-        o2.prot = Math.max(0, Math.round((o2.prot - ent.v) * 10) / 10);
-        save(); renderProt(); renderHeader();
-      }
-      return;
-    }
-    if (t.dataset.sess) {
-      var o3 = day(viewDate);
-      o3.sess = t.dataset.sess === "none" ? "none" : t.dataset.sess;
-      if (o3.sess === "none") { o3.sess = null; o3.done = false; }
-      save(); renderTrain(); renderTodayTrain(); renderHeader();
-      return;
-    }
-    if (t.dataset.yoga) {
-      var oy = day(viewDate);
-      oy.yoga = !oy.yoga;
-      save(); renderYoga(); renderHeader();
-      toast(oy.yoga ? "Ioga registado." : "Ioga desmarcado.");
-      return;
-    }
-    if (t.dataset.lab) {
-      S.labs[t.dataset.lab] = !S.labs[t.dataset.lab];
-      save(); renderLabs();
-      return;
-    }
-  });
-
-  function submitFree() {
-    var nm = el("fName").value.trim();
-    var v = parseFloat(el("fGrams").value);
-    if (!nm) { toast("Escreva o que comeu."); el("fName").focus(); return; }
-    if (!isFinite(v) || v <= 0) { toast("Faltam os gramas de proteína."); el("fGrams").focus(); return; }
-    el("fName").value = "";
-    el("fGrams").value = "";
-    addProt(nm, v);
-    toast(nm + " · +" + fmt(v) + " g — fica guardado");
-  }
-
-  el("fAdd").addEventListener("click", submitFree);
-
-  el("fName").addEventListener("keydown", function (e) {
-    if (e.key === "Enter" || e.keyCode === 13) { e.preventDefault(); el("fGrams").focus(); }
-  });
-  el("fGrams").addEventListener("keydown", function (e) {
-    if (e.key === "Enter" || e.keyCode === 13) { e.preventDefault(); submitFree(); }
-  });
-
-  el("myFilter").addEventListener("input", function () {
-    myQuery = this.value;
-    renderProt();
-  });
-
-  el("myEditBtn").addEventListener("click", function () {
-    myEdit = !myEdit;
-    renderProt();
-  });
-
-  el("markDone").addEventListener("click", function () {
-    var o = day(viewDate);
-    o.done = !o.done;
-    save(); renderTrain(); renderTodayTrain(); renderMetrics(); renderHeader();
-    if (o.done) toast("Sessão registada. " + doneThisWeek() + "/" + weekTarget() + " esta semana.");
-  });
-
-  document.addEventListener("change", function (e) {
-    var i = e.target;
-    if (!i.dataset || i.dataset.ex == null) return;
-    var sess = sessionOf(viewDate);
-    if (!sess) return;
-    var x = SESSIONS[sess].ex[+i.dataset.ex];
-    var o = day(viewDate);
-    if (!o.log[x.n]) o.log[x.n] = [];
-    var si = +i.dataset.set;
-    if (!o.log[x.n][si]) o.log[x.n][si] = {};
-    var v = parseFloat(i.value);
-    o.log[x.n][si][i.dataset.f] = isFinite(v) ? v : null;
-    save();
-  });
-
-  el("wAdd").addEventListener("click", function () {
-    var v = parseFloat(el("wIn").value);
-    if (!isFinite(v) || v < 30 || v > 250) { toast("Peso em kg, por favor."); return; }
-    S.weights.push({ d: iso(new Date()), v: v });
-    S.weights.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
-    el("wIn").value = "";
-    save(); renderMetrics();
-    var n = S.weights.length;
-    if (n > 1) {
-      var prev = S.weights[n - 2].v, diff = v - prev;
-      if (diff < -0.7) toast("Desceu " + Math.abs(diff).toFixed(1) + " kg. Aumente as calorias.");
-      else if (diff > 0.8) toast("Subiu " + diff.toFixed(1) + " kg. Confirme a cintura.");
-      else toast("Registado. Variação normal.");
-    } else { toast("Peso base registado."); }
-  });
-
-  el("cAdd").addEventListener("click", function () {
-    var v = parseFloat(el("cIn").value);
-    if (!isFinite(v) || v < 50 || v > 200) { toast("Cintura em cm, por favor."); return; }
-    S.waists.push({ d: iso(new Date()), v: v });
-    S.waists.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
-    el("cIn").value = "";
-    save(); renderMetrics();
-    toast(v / heightCm() < 0.5 ? "Registado. Cintura/altura dentro de 0,50." : "Acima de 0,50 — vale ajustar as calorias.");
-  });
-
-  // ---------- sintomas ----------
-  // O relatório do Holter deu-o como assintomático, o que não corresponde ao que ele
-  // descreve. Isto existe para levar à consulta o que o exame não registou: o que
-  // sente, a que horas começa e quanto dura.
-
-  var SX_TAGS = ["descompassado", "acelerado", "falhas", "cansaço", "falta de ar", "tonturas"];
-
-  function sxList() {
-    if (!S.sx) S.sx = [];
-    return S.sx;
-  }
-
-  function sxOpen() {
-    var L = sxList();
-    for (var i = L.length - 1; i >= 0; i--) {
-      if (!L[i].f) return L[i];
-    }
-    return null;
-  }
-
-  function sxStamp(d) {
-    return iso(d) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
-  }
-
-  function sxStart(tag) {
-    var now = new Date();
-    var e = { i: sxStamp(now), f: null, tg: [] };
-    if (tag) e.tg.push(tag);
-    sxList().push(e);
-    return e;
-  }
-
-  // "2026-08-30 03:20" -> Date, sem depender de Date.parse com formatos estranhos
-  function sxDate(stamp) {
-    var a = stamp.split(" "), d = parseIso(a[0]), h = (a[1] || "00:00").split(":");
-    d.setHours(+h[0], +h[1], 0, 0);
-    return d;
-  }
-
-  function sxDur(e, until) {
-    var end = e.f ? sxDate(e.f) : (until || new Date());
-    var min = Math.round((end - sxDate(e.i)) / 60000);
-    return min < 0 ? 0 : min;
-  }
-
-  function sxFmt(min) {
-    if (min < 60) return min + " min";
-    var h = Math.floor(min / 60), m = min % 60;
-    return h + " h" + (m ? " " + pad(m) : "");
-  }
-
-  function renderSx() {
-    if (!el("sxNow")) return;
-    var L = sxList(), op = sxOpen();
-
-    if (op) {
-      el("sxNow").innerHTML =
-        '<div class="sxopen">' +
-        '<div class="lbl">a decorrer desde ' + esc(op.i.slice(11)) + ' de ' +
-        DOW[sxDate(op.i).getDay()] + '</div>' +
-        '<div class="since">' + sxFmt(sxDur(op)) + '</div>' +
-        '</div>' +
-        '<button class="btn wide" data-sxend="1">Já passou</button>';
-    } else {
-      el("sxNow").innerHTML = '<button class="btn wide" data-sxstart="1">Começou agora</button>';
-    }
-
-    var ch = "";
-    for (var i = 0; i < SX_TAGS.length; i++) {
-      var on = op && op.tg && op.tg.indexOf(SX_TAGS[i]) >= 0;
-      ch += '<button class="sxchip' + (on ? " on" : "") + '" data-sxtag="' + esc(SX_TAGS[i]) + '">' +
-            esc(SX_TAGS[i]) + '</button>';
-    }
-    el("sxTags").innerHTML = ch;
-
-    var hh = "", shown = 0;
-    for (var j = L.length - 1; j >= 0 && shown < 12; j--, shown++) {
-      var e = L[j];
-      var quando = DOW[sxDate(e.i).getDay()] + " " + e.i.slice(8, 10) + "/" + e.i.slice(5, 7) +
-                   " · " + e.i.slice(11);
-      var quanto = e.f ? sxFmt(sxDur(e)) : "a decorrer";
-      var tg = (e.tg && e.tg.length) ? e.tg.join(", ") : "sem nota";
-      hh += '<div class="hist-row"><span>' + esc(tg) + ' · ' + quanto +
-            '</span><span>' + quando + '</span></div>';
-    }
-    el("sxHist").innerHTML = hh || '<div class="empty">Sem episódios registados.</div>';
-    el("sxPill").textContent = L.length + (L.length === 1 ? " episódio" : " episódios");
-  }
-
-  el("v-metricas").addEventListener("click", function (ev) {
-    var b = ev.target.closest ? ev.target.closest("button") : null;
-    if (!b) return;
-
-    if (b.getAttribute("data-sxstart")) {
-      sxStart(null); save(); renderSx();
-      toast("A contar. Se puder, meça a tensão agora.");
-      return;
-    }
-    if (b.getAttribute("data-sxend")) {
-      var op = sxOpen();
-      if (op) {
-        op.f = sxStamp(new Date());
-        save(); renderSx();
-        toast("Episódio de " + sxFmt(sxDur(op)) + " registado.");
-      }
-      return;
-    }
-    var tag = b.getAttribute("data-sxtag");
-    if (tag) {
-      var o = sxOpen();
-      if (!o) {
-        sxStart(tag);
-        toast("A contar: " + tag + ". Se puder, meça a tensão agora.");
-      } else {
-        var k = o.tg.indexOf(tag);
-        if (k >= 0) o.tg.splice(k, 1); else o.tg.push(tag);
-      }
-      save(); renderSx();
-    }
-  });
-
-
-  // Protocolo de medição em casa: 7 dias seguidos, duas medições de manhã e duas
-  // à noite. O primeiro dia é excluído da média porque é sistematicamente o mais
-  // alto — é o que as recomendações europeias fazem, e é a média que decide.
-
-  var histTab = "w";
-
-  var BP_DAYS = 7, BP_PER_DAY = 4;
-  var bpPer = (new Date()).getHours() < 12 ? "m" : "n";
-
-  function bpList() {
-    if (!S.bps) S.bps = [];
-    return S.bps;
-  }
-
-  function bpByDay() {
-    var map = {}, keys = [];
-    bpList().forEach(function (x) {
-      if (!map[x.d]) { map[x.d] = []; keys.push(x.d); }
-      map[x.d].push(x);
-    });
-    keys.sort();
-    return { map: map, keys: keys };
-  }
-
-  function bpStats() {
-    var g = bpByDay(), keys = g.keys;
-    var use = keys.length > 1 ? keys.slice(1) : keys;
-    var ss = 0, dd = 0, n = 0, pp = 0, pn = 0;
-    use.forEach(function (k) {
-      g.map[k].forEach(function (x) {
-        ss += x.s; dd += x.di; n++;
-        if (x.pl) { pp += x.pl; pn++; }
-      });
-    });
-    return {
-      days: keys.length,
-      first: keys.length ? keys[0] : null,
-      n: n,
-      s: n ? ss / n : 0,
-      di: n ? dd / n : 0,
-      pl: pn ? pp / pn : 0,
-      partial: keys.length < 2
-    };
-  }
-
-  function bpVerdict(s, di) {
-    if (s >= 135 || di >= 85) return "acima de 135/85 · leve à consulta";
-    if (s < 120 && di < 80) return "ótima, abaixo de 120/80";
-    return "normal, abaixo de 135/85";
-  }
-
-  function renderBp() {
-    if (!el("bpNow")) return;
-    var g = bpByDay(), st = bpStats(), today = iso(new Date());
-
-    el("bpPill").textContent = st.days + " / " + BP_DAYS + " dias";
-    if (st.n) {
-      el("bpNow").textContent = Math.round(st.s) + "/" + Math.round(st.di);
-      el("bpDelta").textContent = st.partial ? "só o 1.º dia — ainda não conta" : bpVerdict(st.s, st.di);
-    } else {
-      el("bpNow").textContent = "—";
-      el("bpDelta").textContent = "sem registo";
-    }
-
-    var td = g.map[today] ? g.map[today].length : 0;
-    el("bpToday").textContent = td + " / " + BP_PER_DAY;
-    el("bpCount").textContent = st.pl
-      ? "pulso médio " + Math.round(st.pl)
-      : bpList().length + (bpList().length === 1 ? " medição no total" : " medições no total");
-
-    var seg = el("bpSeg").getElementsByTagName("button");
-    for (var i = 0; i < seg.length; i++) {
-      var on = seg[i].getAttribute("data-per") === bpPer;
-      seg[i].className = on ? "segbtn on" : "segbtn";
-      seg[i].setAttribute("aria-pressed", on ? "true" : "false");
-    }
-
-    var hh = "";
-    g.keys.slice().reverse().forEach(function (k) {
-      var rows = g.map[k], ss = 0, dd = 0, pp = 0, pn = 0;
-      rows.forEach(function (x) {
-        ss += x.s; dd += x.di;
-        if (x.pl) { pp += x.pl; pn++; }
-      });
-      var lbl = DOW[parseIso(k).getDay()] + " " + k.slice(8) + "/" + k.slice(5, 7);
-      var mark = (k === st.first && g.keys.length > 1) ? " · fora da média" : "";
-      var puls = pn ? " · " + Math.round(pp / pn) + " bpm" : "";
-      hh += '<div class="hist-row"><span>' + Math.round(ss / rows.length) + "/" + Math.round(dd / rows.length) +
-            puls + '</span><span>' + lbl + " · " + rows.length + "×" + mark + '</span></div>';
-    });
-    el("bpHist").innerHTML = hh || '<div class="empty">Sem medições. Comece de manhã, antes do café.</div>';
-  }
-
-  el("histSeg").addEventListener("click", function (e) {
-    var h = e.target;
-    if (!h || !h.getAttribute || !h.getAttribute("data-hist")) return;
-    histTab = h.getAttribute("data-hist");
-    renderMetrics();
-  });
-
-  el("bpSeg").addEventListener("click", function (e) {
-    var b = e.target;
-    if (!b || !b.getAttribute || !b.getAttribute("data-per")) return;
-    bpPer = b.getAttribute("data-per");
-    renderBp();
-  });
-
-  el("bpAdd").addEventListener("click", function () {
-    var s = parseFloat(el("bpS").value), di = parseFloat(el("bpD").value);
-    if (!isFinite(s) || s < 70 || s > 260) { toast("Sistólica (o número maior) entre 70 e 260."); return; }
-    if (!isFinite(di) || di < 40 || di > 160) { toast("Diastólica (o número menor) entre 40 e 160."); return; }
-    if (di >= s) { toast("A sistólica tem de ser maior. Trocou os números?"); return; }
-
-    // a pulsação é opcional: quem tem máquina que não a dá deixa em branco
-    var pl = parseFloat(el("bpP").value);
-    if (el("bpP").value !== "" && (!isFinite(pl) || pl < 30 || pl > 200)) {
-      toast("Pulsação entre 30 e 200, ou deixe em branco."); return;
-    }
-
-    var now = new Date();
-    var rec = {
-      d: iso(now), p: bpPer, s: s, di: di,
-      t: pad(now.getHours()) + ":" + pad(now.getMinutes())
-    };
-    if (isFinite(pl) && el("bpP").value !== "") rec.pl = pl;
-    bpList().push(rec);
-    S.bps.sort(function (a, b) {
-      if (a.d !== b.d) return a.d < b.d ? -1 : 1;
-      return (a.t || "") < (b.t || "") ? -1 : 1;
-    });
-    el("bpS").value = ""; el("bpD").value = ""; el("bpP").value = "";
-    save(); renderBp(); renderLabs();
-
-    if (s >= 180 || di >= 110) {
-      toast("Valor alto. Descanse 5 min e repita; se confirmar, fale com o médico hoje.");
-      return;
-    }
-    var g2 = bpByDay(), st2 = bpStats();
-    var td2 = g2.map[iso(now)].length;
-    if (st2.days >= BP_DAYS) {
-      toast("7 dias completos. Média " + Math.round(st2.s) + "/" + Math.round(st2.di) + " — leve-a à consulta.");
-    } else {
-      toast("Registado. " + td2 + "/" + BP_PER_DAY + " hoje · " + st2.days + "/" + BP_DAYS + " dias.");
-    }
-  });
-
-  // ---------- exportação ----------
-
-  el("saveBtn").addEventListener("click", function () {
-    var payload = JSON.stringify({ exported: iso(new Date()), week: weekNum(), state: S }, null, 2);
-    try {
-      var blob = new Blob([payload], { type: "application/json" });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement("a");
-      a.href = url;
-      a.download = "plano-" + iso(new Date()) + ".json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
-      toast("Cópia guardada.");
-    } catch (e) {
-      toast("Não foi possível guardar. Use o resumo em texto.");
-    }
-  });
-
-  el("loadFile").addEventListener("change", function () {
-    var f = this.files && this.files[0];
-    if (!f) return;
-    var self = this;
-    var r = new FileReader();
-    r.onload = function () {
-      try {
-        var parsed = JSON.parse(r.result);
-        var st = parsed && parsed.state ? parsed.state : parsed;
-        if (!st || typeof st !== "object" || !st.days) throw new Error("formato");
-        if (!window.confirm("Restaurar esta cópia? O registo atual é substituído.")) { self.value = ""; return; }
-        S = st;
-        if (!S.weights) S.weights = [];
-        if (!S.waists) S.waists = [];
-        if (!S.bps) S.bps = [];
-        if (!S.labs) S.labs = {};
-        if (!S.levels) S.levels = {};
-        if (!S.myFoods) S.myFoods = {};
-        save(); renderAll();
-        toast("Registo restaurado.");
-      } catch (e) {
-        toast("Ficheiro inválido.");
-      }
-      self.value = "";
-    };
-    r.onerror = function () { toast("Não foi possível ler o ficheiro."); self.value = ""; };
-    r.readAsText(f);
-  });
-
-  el("hSave").addEventListener("click", function () {
-    var v = parseFloat(el("hIn").value);
-    if (!isFinite(v) || v < 100 || v > 250) { toast("Altura em cm, entre 100 e 250."); return; }
-    S.height = v;
-    save(); renderMetrics();
-    toast("Altura guardada: " + v + " cm.");
-  });
-
-  el("resetBtn").addEventListener("click", function () {
-    if (!window.confirm("Apagar todo o registo? Isto não tem retorno.")) return;
-    S = { start: iso(new Date()), days: {}, weights: [], waists: [], bps: [], labs: {}, phase2: false };
-    save(); renderAll(); toast("Registo apagado.");
-  });
-
+  if (!r.ok) throw new GhError(r.status, (await r.json().catch(() => ({}))).message || r.statusText);
+  return r.json();
+}
+async function ghLoad(){
+  try { const j = await gh("GET"); return {data: completo(JSON.parse(b64dec(j.content))), sha: j.sha}; }
+  catch (e) { if (e.status === 404) return {data: vazio(), sha: null}; throw e; }
+}
+function ghMsg(e){
+  if (e && e.status === 401) return "O token do GitHub não é válido ou expirou.";
+  if (e && (e.status === 403 || e.status === 404)) return "O token não tem acesso a " + cfg.repo + ". Confirme o repositório e a permissão Contents: Read and write.";
+  return "Sem ligação ao GitHub. Fica guardado aqui e segue quando houver rede.";
+}
+
+function setStatus(txt, cls){ const s = el("status"); s.textContent = txt; s.className = cls || ""; }
+function statusFila(){
+  if (!online()) return setStatus("Só neste telemóvel", "bad");
+  if (fila.length) return setStatus("Por enviar: " + fila.length, "bad");
+  setStatus("Guardado no GitHub", "ok");
+}
+
+/* Regista já, no ecrã e neste telemóvel; envia ao GitHub pouco depois, juntando
+   os toques seguidos num só commit. */
+function registar(op, args, msg){
+  const o = {id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), op, args, msg};
+  OPS[op](S, args);
+  fila.push(o);
+  ls.set("caderno-cache", S); ls.set("caderno-fila", fila);
   renderAll();
+  agendar();
+}
+let tEnvio = null, enviando = false;
+function agendar(ms){ clearTimeout(tEnvio); tEnvio = setTimeout(enviar, ms === undefined ? 1500 : ms); }
+async function enviar(){
+  if (!online()) { statusFila(); return; }
+  if (enviando || !fila.length) { statusFila(); return; }
+  enviando = true; setStatus("A guardar…");
+  const lote = fila.slice();
+  try {
+    for (let tentativa = 0; tentativa < 2; tentativa++){
+      const {data, sha} = await ghLoad();
+      for (const o of lote) OPS[o.op](data, o.args);
+      const msg = lote.length === 1 ? lote[0].msg : lote[lote.length - 1].msg + " (+" + (lote.length - 1) + ")";
+      try {
+        await gh("PUT", Object.assign({message: msg || "Atualizar registo", content: b64enc(JSON.stringify(data, null, 1))}, sha ? {sha} : {}));
+        fila = fila.filter(o => !lote.includes(o));
+        S = data; for (const o of fila) OPS[o.op](S, o.args);
+        ls.set("caderno-cache", S); ls.set("caderno-fila", fila);
+        break;
+      } catch (e) { if (!(e.status === 409 || e.status === 422) || tentativa) throw e; }
+    }
+    enviando = false; renderAll(); statusFila();
+    if (fila.length) agendar(300);
+  } catch (e) {
+    enviando = false; console.error(e);
+    setStatus("Por enviar: " + fila.length, "bad");
+    if (e instanceof GhError && e.status < 500) toast(ghMsg(e));
+  }
+}
+async function carregar(){
+  if (!online()) { statusFila(); return; }
+  setStatus("A carregar…");
+  try {
+    const {data} = await ghLoad();
+    S = data; for (const o of fila) OPS[o.op](S, o.args);
+    ls.set("caderno-cache", S); renderAll();
+    importarAntigo();
+    if (fila.length) agendar(0); else statusFila();
+  } catch (e) { console.error(e); setStatus("Sem ligação — a mostrar a última cópia", "bad"); if (e instanceof GhError && e.status < 500) toast(ghMsg(e)); }
+}
+
+/* As outras apps no mesmo site guardam o token em `<app>-cfg`. Se um deles já tiver
+   acesso a caderno-dados, usa-se esse e não é preciso criar outro. */
+async function procurarToken(){
+  if (online()) return false;
+  const vistos = {};
+  let chaves = [];
+  try { chaves = Object.keys(localStorage); } catch (e) { return false; }
+  for (const k of chaves){
+    if (!/-cfg$/.test(k) || k === "caderno-cfg") continue;
+    const c = ls.get(k);
+    if (!c || !c.token || vistos[c.token]) continue;
+    vistos[c.token] = 1;
+    const tenta = {repo: cfg.repo || DEFAULT_REPO, token: c.token};
+    try { await gh("GET", null, tenta); }
+    catch (e) { if (e.status !== 404 || !(await repoVisivel(tenta))) continue; }
+    cfg = tenta; ls.set("caderno-cfg", cfg);
+    toast("Ligado ao GitHub com o token que já tinha.");
+    return true;
+  }
+  return false;
+}
+async function repoVisivel(c){
+  try { const r = await fetch("https://api.github.com/repos/" + c.repo, {headers: {"Authorization": "Bearer " + c.token}}); return r.ok; }
+  catch (e) { return false; }
+}
+
+/* O registo da versão anterior está neste mesmo browser: entra uma vez, sozinho. */
+// A marca é deste telemóvel: o registo antigo de outro browser também tem de entrar,
+// e juntar duas vezes não duplica nada.
+function importarAntigo(){
+  if (ls.get("caderno-importado")) return;
+  const velho = ls.get(OLD_KEY);
+  if (!velho || !velho.days) return;
+  ls.set("caderno-importado", hoje());
+  registar("importar", {velho: reduzirVelho(velho)}, "Importar o registo da versão anterior");
+  toast("O registo antigo deste telemóvel foi importado.");
+}
+// só o que interessa, para a operação não carregar a alimentação toda
+function reduzirVelho(o){
+  const days = {};
+  for (const k of Object.keys(o.days || {})){
+    const x = o.days[k] || {};
+    days[k] = {supps: x.supps || {}, done: !!x.done, sess: x.sess || null, log: x.done ? (x.log || {}) : {}, yoga: !!x.yoga};
+  }
+  return {start: o.start, days, levels: o.levels || {}, weights: o.weights || [], phase2: !!o.phase2};
+}
+
+/* ---------- regras do plano ---------- */
+function sessaoPlaneada(dia, dias){
+  dias = dias || S.dias;
+  const i = dias.indexOf(parseIso(dia).getDay());
+  return i < 0 ? null : ["A", "B", "C"][i % 3];
+}
+const alvoSemana = () => S.dias.length;
+// cada medicamento só conta a partir do dia em que entrou na lista (`desde`)
+const medsDe = dia => S.meds.filter(m => !m.desde || m.desde <= dia);
+const tomouTudo = dia => { const t = S.tomas[dia] || [], ms = medsDe(dia); return ms.length > 0 && ms.every(m => t.includes(m.id)); };
+const tomouAlgo = dia => (S.tomas[dia] || []).length > 0;
+function treinosSemana(seg){
+  let n = 0;
+  for (let i = 0; i < 7; i++) if (S.treinos[addDias(seg, i)]) n++;
+  return n;
+}
+function sequencia(){
+  let n = 0, d = hoje();
+  if (!tomouTudo(d)) d = addDias(d, -1);   // hoje ainda pode estar a meio
+  while (tomouTudo(d) && n < 3650) { n++; d = addDias(d, -1); }
+  return n;
+}
+function proximoTreino(desde){
+  for (let i = 1; i <= 7; i++){ const d = addDias(desde, i), s = sessaoPlaneada(d); if (s) return {d, s}; }
+  return null;
+}
+function nomeSessao(s){ return SESSIONS[s] ? SESSIONS[s].name : "Treino"; }
+
+/* ---------- ecrã ---------- */
+const el = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+let diaVisto = hoje();
+let sessVista = null;
+let vista = "hoje";
+
+function toast(msg){ const t = el("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600); }
+
+// Os últimos sete dias, e não a semana do calendário: à segunda de manhã ainda dá para
+// corrigir o fim de semana.
+function renderSemana(){
+  const h = hoje();
+  let html = "";
+  for (let i = -6; i <= 0; i++){
+    const d = addDias(h, i), dd = parseIso(d);
+    let marks = "";
+    if (tomouTudo(d)) marks += '<i class="m med"></i>'; else if (tomouAlgo(d)) marks += '<i class="m medp"></i>';
+    if (S.treinos[d]) marks += '<i class="m tr"></i>'; else if (sessaoPlaneada(d)) marks += '<i class="m plan"></i>';
+    const cls = "day" + (d === diaVisto ? " sel" : "") + (d === h ? " today" : "");
+    html += '<button type="button" class="' + cls + '" data-dia="' + d + '" aria-label="' + DOW_LONG[dd.getDay()] + " " + dd.getDate() + '"><span class="dw">' + DOW[dd.getDay()] +
+      '</span><span class="dn">' + dd.getDate() + '</span><span class="marks">' + marks + "</span></button>";
+  }
+  el("semana").innerHTML = html;
+}
+
+// Dias recentes sem nada registado: um toque resolve, em vez de os deixar em branco.
+function renderPorRegistar(){
+  const falta = [];
+  for (let i = 1; i <= 3; i++){ const d = addDias(hoje(), -i); if (d >= S.inicio && !tomouAlgo(d)) falta.push(d); }
+  const box = el("porRegistar");
+  if (!falta.length || !S.meds.length) { box.hidden = true; box.innerHTML = ""; return; }
+  box.hidden = false;
+  box.innerHTML = '<p class="small">Sem medicação registada em <strong>' + falta.map(dataCurta).join(", ") + "</strong>. Se tomou, um toque chega.</p>" +
+    '<div class="actions">' + falta.map(d => '<button type="button" class="btn" data-tudo="' + d + '">Tomei em ' + esc(dataCurta(d)) + "</button>").join("") + "</div>";
+}
+
+function renderMeds(){
+  const d = diaVisto, t = S.tomas[d] || [];
+  el("medTitulo").textContent = d === hoje() ? "Medicação de hoje" : "Medicação de " + dataCurta(d);
+  const seq = sequencia();
+  el("medSeq").textContent = seq ? seq + (seq === 1 ? " dia seguido" : " dias seguidos") : "";
+  const hm = el("horaMed").value || "08:00";
+  const porHora = medsDe(d).sort((a, b) => (a.hora || hm) < (b.hora || hm) ? -1 : (a.hora || hm) > (b.hora || hm) ? 1 : 0);
+  el("meds").innerHTML = S.meds.length ? porHora.map(m => {
+    const on = t.includes(m.id);
+    return '<button type="button" class="tick' + (on ? " on" : "") + '" data-med="' + esc(m.id) + '" aria-pressed="' + on + '">' +
+      '<span class="box">' + CHECK + '</span><span><span class="t">' + esc(m.nome) + "</span>" +
+      (m.dose || m.hora ? '<br><span class="s">' + esc([m.dose, m.hora].filter(Boolean).join(" · ")) + "</span>" : "") + "</span></button>";
+  }).join("") : '<p class="small muted">Sem medicação na lista. Acrescente em Ajustes.</p>';
+  const tudo = tomouTudo(d);
+  el("tudo").textContent = tudo ? "Tudo tomado ✓" : "Tomei tudo";
+  el("tudo").className = "btn big " + (tudo ? "done" : "primary");
+  el("tudo").hidden = !S.meds.length;
+}
+
+function renderTreinoHoje(){
+  const d = diaVisto, h = hoje(), feito = S.treinos[d], plan = sessaoPlaneada(d);
+  const seg = segundaDe(d), n = treinosSemana(seg), alvo = alvoSemana();
+  const ehHoje = d === h;
+  let html = '<div class="row"><h2>' + (ehHoje ? "Treino" : "Treino de " + esc(dataCurta(d))) + '</h2><span class="small muted num">' + n + " de " + alvo + " esta semana</span></div>";
+  if (feito){
+    html += '<p class="note good">Feito: <strong>' + esc(nomeSessao(feito.s)) + "</strong>. Como correu?</p>" +
+      '<div class="chips">' + COMO.map(c => '<button type="button" class="chip' + (feito.como === c[0] ? " on" : "") + '" data-como="' + c[0] + '">' + c[1] + "</button>").join("") + "</div>" +
+      '<button type="button" class="btn link" data-desfazer="' + d + '">Desfazer</button>';
+  } else {
+    const s = plan || sessaoSugerida(d);
+    if (plan) html += '<p class="note calm">' + (ehHoje ? "Hoje é dia de treino: " : "Estava marcado: ") + "<strong>" + esc(nomeSessao(plan)) + "</strong>, cerca de 30 minutos.</p>";
+    else {
+      const falta = Math.max(0, alvo - n);
+      const restantes = diasMarcadosAte(d, addDias(seg, 6));
+      if (ehHoje && falta > restantes) html += '<p class="note">Falta' + (falta > 1 ? "m " + falta + " treinos" : " 1 treino") + " esta semana e já não há dias marcados que cheguem. Hoje serve.</p>";
+      else if (falta === 0) html += '<p class="note good">Semana cumprida. Hoje é descanso.</p>';
+      else { const p = proximoTreino(d); html += '<p class="small muted">Dia de descanso.' + (p ? " Próximo treino: " + DOW_LONG[parseIso(p.d).getDay()] + ", " + esc(nomeSessao(p.s)) + "." : "") + "</p>"; }
+    }
+    html += '<button type="button" class="btn big ' + (plan ? "primary" : "") + '" data-fiz="' + s + '">Fiz o treino (' + esc(nomeSessao(s)) + ")</button>" +
+      '<button type="button" class="btn link" data-ver="' + s + '">Ver os exercícios</button>';
+  }
+  html += '<button type="button" class="tick' + (S.ioga[d] ? " on" : "") + '" data-ioga="' + d + '" aria-pressed="' + !!S.ioga[d] + '"><span class="box">' + CHECK + '</span><span class="t">Fiz ioga</span></button>';
+  el("treinoHoje").innerHTML = html;
+}
+// dias marcados depois de `d` até `fim`, inclusive
+function diasMarcadosAte(d, fim){ let n = 0; for (let x = addDias(d, 1); x <= fim; x = addDias(x, 1)) if (sessaoPlaneada(x)) n++; return n; }
+// fora dos dias marcados: a sessão a seguir à última feita
+function sessaoSugerida(d){
+  const keys = Object.keys(S.treinos).filter(k => k < d).sort();
+  const ult = keys.length ? S.treinos[keys[keys.length - 1]].s : null;
+  const ordem = ["A", "B", "C"].slice(0, Math.max(2, alvoSemana()));
+  const i = ordem.indexOf(ult);
+  return i < 0 ? ordem[0] : ordem[(i + 1) % ordem.length];
+}
+
+function lvl(ex){ return S.niveis[ex] || 0; }
+function ytUrl(x, li){ return "https://www.youtube.com/results?search_query=" + encodeURIComponent((x.pv && x.pv[li]) || x.vq || x.n); }
+
+function renderTreino(){
+  const d = diaVisto;
+  if (!sessVista) sessVista = (S.treinos[d] && S.treinos[d].s) || sessaoPlaneada(d) || sessaoSugerida(d);
+  const ordem = ["A", "B", "C"].slice(0, Math.max(2, alvoSemana()));
+  if (!ordem.includes(sessVista)) ordem.push(sessVista);
+  el("sessSeg").innerHTML = ordem.map(s => '<button type="button" data-sess="' + s + '" class="' + (s === sessVista ? "on" : "") + '">' + esc(nomeSessao(s)) + "</button>").join("");
+  el("sessData").textContent = d === hoje() ? "" : dataCurta(d);
+  el("exList").innerHTML = SESSIONS[sessVista].ex.map((x, xi) => {
+    const li = Math.min(lvl(x.n), x.prog.length - 1);
+    let pips = ""; for (let i = 0; i < x.prog.length; i++) pips += '<i class="' + (i <= li ? "on" : "") + '"></i>';
+    return '<div class="ex"><div class="row"><h3>' + esc(x.n) + '</h3><span class="small muted num">' + esc(x.t) + "</span></div>" +
+      '<div class="lvl"><button type="button" data-lvl="' + xi + '" data-delta="-1" aria-label="Baixar nível"' + (li === 0 ? " disabled" : "") + '>‹</button>' +
+      '<div class="now">' + esc(x.prog[li]) + "<small>nível " + (li + 1) + " de " + x.prog.length + '</small><div class="pips" aria-hidden="true">' + pips + "</div></div>" +
+      '<button type="button" data-lvl="' + xi + '" data-delta="1" aria-label="Subir nível"' + (li >= x.prog.length - 1 ? " disabled" : "") + ">›</button></div>" +
+      '<p class="cue">' + esc(x.cue) + "</p>" +
+      '<a class="small" href="' + ytUrl(x, li) + '" target="_blank" rel="noopener">Ver vídeo deste nível</a></div>';
+  }).join("");
+  const feito = S.treinos[d];
+  el("treinoFim").innerHTML = feito
+    ? '<p class="note good">Treino registado em ' + esc(dataCurta(d)) + ": " + esc(nomeSessao(feito.s)) + ".</p>"
+    : '<button type="button" class="btn primary big" data-fiz="' + sessVista + '">Fiz o treino (' + esc(nomeSessao(sessVista)) + ")</button>";
+  el("cargas").innerHTML = LOADS.map(s => "<li>" + esc(s) + "</li>").join("");
+}
+
+function renderProgresso(){
+  const h = hoje(), seg = segundaDe(h);
+  // medicação: % dos últimos 28 dias com tudo tomado (desde o início, se for mais recente)
+  let dias = 0, tudo = 0, html = ["S", "T", "Q", "Q", "S", "S", "D"].map(x => "<b>" + x + "</b>").join("");
+  const inicio28 = addDias(h, -27), primeira = segundaDe(inicio28);
+  for (let d = primeira; d <= addDias(seg, 6); d = addDias(d, 1)){
+    if (d < inicio28 || d > h) { html += '<i class="x"></i>'; continue; }
+    const c = tomouTudo(d) ? "f" : tomouAlgo(d) ? "p" : "";
+    if (d >= S.inicio) { dias++; if (c === "f") tudo++; }
+    html += '<i class="' + c + '" title="' + dataCurta(d) + '"></i>';
+  }
+  el("grafMeds").innerHTML = html;
+
+  // treinos por semana, 12 semanas
+  const semanas = [];
+  for (let i = 11; i >= 0; i--){ const s = addDias(seg, -7 * i); semanas.push({s, n: treinosSemana(s)}); }
+  const ult4 = semanas.slice(-5, -1), cumpridas = ult4.filter(w => w.n >= alvoSemana()).length;
+  el("grafTreinos").innerHTML = graficoSemanas(semanas);
+
+  const total = Object.keys(S.treinos).length;
+  el("stats").innerHTML =
+    '<div class="stat"><b>' + (dias ? Math.round(100 * tudo / dias) : 0) + '%</b><span>dias com a medicação toda (28 dias)</span></div>' +
+    '<div class="stat"><b>' + sequencia() + '</b><span>dias seguidos de medicação</span></div>' +
+    '<div class="stat"><b>' + cumpridas + '/4</b><span>semanas com os treinos cumpridos</span></div>';
+
+  // níveis
+  const vistos = {};
+  let lv = "";
+  for (const k of ["A", "B", "C"].slice(0, Math.max(2, alvoSemana()))) for (const x of SESSIONS[k].ex){
+    if (vistos[x.n]) continue; vistos[x.n] = 1;
+    const li = Math.min(lvl(x.n), x.prog.length - 1);
+    lv += '<div class="row"><span>' + esc(x.n) + ' <span class="muted">· ' + esc(x.prog[li]) + '</span></span><span class="bar" aria-label="nível ' + (li + 1) + " de " + x.prog.length + '"><i style="width:' + Math.round(100 * (li + 1) / x.prog.length) + '%"></i></span></div>';
+  }
+  el("niveis").innerHTML = lv;
+  el("subidas").innerHTML = S.subidas.length ? S.subidas.slice().reverse().map(x => {
+    const ex = acharEx(x.ex);
+    return "<div>" + esc(dataCurta(x.d)) + " · " + esc(x.ex) + " → " + esc(ex ? ex.prog[Math.min(x.n, ex.prog.length - 1)] : "nível " + (x.n + 1)) + "</div>";
+  }).join("") : '<p class="muted">Ainda nenhuma subida registada nesta versão. ' + total + " treinos no total.</p>";
+
+  el("pesos").innerHTML = S.pesos.slice(-8).reverse().map((p, i, a) => {
+    const ant = a[i + 1], dif = ant ? p.v - ant.v : null;
+    return '<div class="row"><span>' + esc(dataCurta(p.d)) + '</span><span class="num">' + p.v.toFixed(1).replace(".", ",") + " kg" +
+      (dif !== null ? ' <span class="muted">' + (dif >= 0 ? "+" : "") + dif.toFixed(1).replace(".", ",") + "</span>" : "") + "</span></div>";
+  }).join("");
+}
+function acharEx(n){ for (const k of ["A", "B", "C"]) for (const x of SESSIONS[k].ex) if (x.n === n) return x; return null; }
+
+function graficoSemanas(semanas){
+  const W = 340, H = 140, l = 22, b = 22, t = 8, alvo = alvoSemana();
+  const max = Math.max(4, alvo + 1, ...semanas.map(w => w.n));
+  const bw = (W - l - 4) / semanas.length;
+  const y = v => t + (H - b - t) * (1 - v / max);
+  let s = '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Treinos por semana nas últimas 12 semanas">';
+  for (let v = 0; v <= max; v++) s += '<line x1="' + l + '" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--edge)" stroke-width="' + (v ? .5 : 1) + '"/><text x="' + (l - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + "</text>";
+  semanas.forEach((w, i) => {
+    const x = l + 4 + i * bw, cumpre = w.n >= alvo;
+    if (w.n) s += '<rect x="' + (x + 3) + '" y="' + y(w.n) + '" width="' + (bw - 6) + '" height="' + (y(0) - y(w.n)) + '" rx="2" fill="' + (cumpre ? "var(--azulejo)" : "var(--amber)") + '"/>';
+    if (i % 2 === 1 || i === semanas.length - 1) { const d = parseIso(w.s); s += '<text x="' + (x + bw / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + d.getDate() + "/" + (d.getMonth() + 1) + "</text>"; }
+  });
+  s += '<line x1="' + l + '" x2="' + W + '" y1="' + y(alvo) + '" y2="' + y(alvo) + '" stroke="var(--olive)" stroke-width="1.5" stroke-dasharray="4 3"/>';
+  return s + "</svg>" + '<p class="small muted">A tracejado, o objetivo de ' + alvo + " por semana. Barras a laranja ficaram abaixo.</p>";
+}
+
+function renderAjustes(){
+  el("cfgEstado").innerHTML = online()
+    ? "Ligado a <code>" + esc(cfg.repo) + "</code>. Cada registo fica guardado lá, e o Claude lê-o diretamente."
+    : "Os dados estão <strong>só neste telemóvel</strong>. Ligue ao GitHub para os guardar no repositório privado <code>caderno-dados</code>.";
+  if (document.activeElement !== el("cfgRepo")) el("cfgRepo").value = cfg.repo || DEFAULT_REPO;
+  el("cfgDesligar").hidden = !cfg.token;
+  el("cfgAjuda").open = !online();
+  el("medEdit").innerHTML = S.meds.map((m, i) =>
+    '<div class="medrow"><span><strong>' + esc(m.nome) + "</strong>" + (m.dose || m.hora ? '<br><span class="small muted">' + esc([m.dose, m.hora].filter(Boolean).join(" · ")) + "</span>" : "") +
+    '</span><button type="button" class="btn link" data-tirar="' + i + '">Tirar</button></div>').join("");
+  const ordem = [1, 2, 3, 4, 5, 6, 0];
+  el("diasTreino").innerHTML = ordem.map(w => '<button type="button" class="chip' + (S.dias.includes(w) ? " on" : "") + '" data-dow="' + w + '" aria-pressed="' + S.dias.includes(w) + '">' + DOW[w] + "</button>").join("");
+  el("diasNota").textContent = S.dias.length
+    ? S.dias.map((w, i) => DOW_LONG[w] + ": " + nomeSessao(["A", "B", "C"][i % 3])).join(" · ")
+    : "Sem dias escolhidos.";
+  const imp = ls.get("caderno-importado");
+  el("impEstado").textContent = imp ? "O registo da versão anterior já foi importado (" + imp.split("-").reverse().join("-") + ")." : "A versão anterior não deixou registo neste browser.";
+}
+
+const TITULOS = {hoje: "Hoje", treino: "Treino", progresso: "Progresso", ajustes: "Ajustes"};
+const vistaDoEndereco = () => { const v = (location.hash || "").slice(1); return TITULOS[v] ? v : "hoje"; };
+function renderAll(){
+  renderSemana(); renderPorRegistar(); renderMeds(); renderTreinoHoje();
+  if (vista === "treino") renderTreino();
+  if (vista === "progresso") renderProgresso();
+  if (vista === "ajustes") renderAjustes();
+}
+function setView(v){
+  vista = v;
+  for (const s of document.querySelectorAll(".view")) s.hidden = s.id !== "v-" + v;
+  for (const b of document.querySelectorAll(".tab")) b.classList.toggle("on", b.dataset.view === v);
+  el("titulo").textContent = TITULOS[v];
+  if ((location.hash || "#hoje") !== "#" + v) history.replaceState(null, "", v === "hoje" ? location.pathname : "#" + v);
+  renderAll();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- ações ---------- */
+document.addEventListener("click", ev => {
+  const b = ev.target.closest ? ev.target.closest("button") : null;
+  if (!b) return;
+  const ds = b.dataset;
+  if (ds.view) return setView(ds.view);
+  if (ds.dia) { diaVisto = ds.dia; sessVista = null; return renderAll(); }
+  if (ds.med !== undefined) {
+    const on = !(S.tomas[diaVisto] || []).includes(ds.med);
+    const m = S.meds.find(x => x.id === ds.med);
+    return registar("toma", {dia: diaVisto, id: ds.med, on}, (on ? "Tomei " : "Não tomei ") + (m ? m.nome : ds.med) + " em " + diaVisto);
+  }
+  if (ds.tudo) return registar("tomasDia", {dia: ds.tudo, ids: medsDe(ds.tudo).map(m => m.id)}, "Medicação toda em " + ds.tudo);
+  if (ds.fiz) {
+    registar("treino", {dia: diaVisto, s: ds.fiz}, "Treino " + ds.fiz + " em " + diaVisto);
+    const n = treinosSemana(segundaDe(diaVisto));
+    toast("Treino registado. " + n + " de " + alvoSemana() + " esta semana.");
+    if (vista === "treino") setView("hoje");
+    return;
+  }
+  if (ds.desfazer) return registar("treino", {dia: ds.desfazer, s: null}, "Desfazer treino em " + ds.desfazer);
+  if (ds.como) return registar("como", {dia: diaVisto, como: ds.como}, "Treino de " + diaVisto + ": " + ds.como);
+  if (ds.ioga) return registar("ioga", {dia: ds.ioga, on: !S.ioga[ds.ioga]}, "Ioga em " + ds.ioga);
+  if (ds.ver) { sessVista = ds.ver; return setView("treino"); }
+  if (ds.sess) { sessVista = ds.sess; return renderTreino(); }
+  if (ds.lvl !== undefined) {
+    const x = SESSIONS[sessVista].ex[+ds.lvl];
+    const n = Math.max(0, Math.min(x.prog.length - 1, lvl(x.n) + (+ds.delta)));
+    registar("nivel", {ex: x.n, n, dia: hoje()}, x.n + ": nível " + (n + 1));
+    if (+ds.delta > 0) toast("Subiu de nível: " + x.prog[n]);
+    return;
+  }
+  if (ds.tirar !== undefined) {
+    const meds = S.meds.filter((m, i) => i !== +ds.tirar);
+    return registar("meds", {meds}, "Tirar " + S.meds[+ds.tirar].nome + " da medicação");
+  }
+  if (ds.dow !== undefined) {
+    const w = +ds.dow, dias = S.dias.includes(w) ? S.dias.filter(x => x !== w) : S.dias.concat([w]);
+    if (dias.length > 3) return toast("No máximo três dias por semana.");
+    return registar("dias", {dias}, "Dias de treino: " + dias.map(x => DOW[x]).join(", "));
+  }
+});
+
+el("tudo").addEventListener("click", () => {
+  if (tomouTudo(diaVisto)) return;
+  registar("tomasDia", {dia: diaVisto, ids: medsDe(diaVisto).map(m => m.id)}, "Medicação toda em " + diaVisto);
+  toast("Registado. " + sequencia() + " dias seguidos.");
+});
+
+el("fMed").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const nome = el("medNome").value.trim(), dose = el("medDose").value.trim(), hora = el("medHora").value;
+  if (!nome) return toast("Escreva o nome.");
+  let id = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "med";
+  while (S.meds.some(m => m.id === id)) id += "-2";
+  registar("meds", {meds: S.meds.concat([Object.assign({id, nome, dose, desde: hoje()}, hora ? {hora} : {})])}, "Acrescentar " + nome + " à medicação");
+  el("medNome").value = ""; el("medDose").value = ""; el("medHora").value = "";
+});
+
+el("pesoAdd").addEventListener("click", () => {
+  const v = parseFloat(String(el("pesoIn").value).replace(",", "."));
+  if (!isFinite(v) || v < 30 || v > 250) return toast("Peso em kg, por favor.");
+  registar("peso", {dia: hoje(), kg: Math.round(v * 10) / 10}, "Peso " + v + " kg");
+  el("pesoIn").value = "";
+});
+
+el("fCfg").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const repo = el("cfgRepo").value.trim().replace(/^https:\/\/github\.com\//, "").replace(/\/$/, "") || DEFAULT_REPO;
+  const token = el("cfgToken").value.trim() || cfg.token;
+  if (!token) return toast("Cole o token do GitHub.");
+  cfg = {repo, token}; ls.set("caderno-cfg", cfg); el("cfgToken").value = "";
+  renderAjustes();
+  await carregar();
+});
+el("cfgDesligar").addEventListener("click", () => {
+  cfg = {repo: cfg.repo, token: ""}; ls.set("caderno-cfg", cfg);
+  renderAjustes(); statusFila(); toast("Token apagado deste telemóvel.");
+});
+
+el("impFile").addEventListener("change", function(){
+  const f = this.files && this.files[0], self = this;
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      let o = JSON.parse(r.result);
+      if (o && o.state && o.state.days) o = o.state;     // cópia exportada: {exported, week, state}
+      if (!o || !o.days) throw new Error("formato");
+      registar("importar", {velho: reduzirVelho(o)}, "Importar cópia da versão anterior");
+      toast("Cópia importada: " + Object.keys(o.days).length + " dias.");
+    } catch (e) { toast("Este ficheiro não é uma cópia da versão anterior."); }
+    self.value = "";
+  };
+  r.readAsText(f);
+});
+
+/* ---------- lembretes no calendário ---------- */
+const icsTxt = s => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+const icsFold = l => { const out = []; while (l.length > 73){ out.push(l.slice(0, 73)); l = " " + l.slice(73); } out.push(l); return out.join("\r\n"); };
+function icsHora(dia, hhmm){ return dia.replace(/-/g, "") + "T" + (hhmm || "08:00").replace(":", "") + "00"; }
+function proximoDiaSemana(w){ for (let i = 0; i < 7; i++){ const d = addDias(hoje(), i); if (parseIso(d).getDay() === w) return d; } return hoje(); }
+const BYDAY = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+function gerarIcs(){
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  const hm = el("horaMed").value || "08:00", ht = el("horaTreino").value || "18:00";
+  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Plano//PT", "CALSCALE:GREGORIAN", "X-WR-CALNAME:Plano"];
+  const ev = (uid, dia, hora, rrule, titulo, desc, url) => {
+    L.push("BEGIN:VEVENT", "UID:" + uid + "@oakshift.github.io", "DTSTAMP:" + stamp, "DTSTART:" + icsHora(dia, hora), "DURATION:PT15M", rrule,
+           "SUMMARY:" + icsTxt(titulo), "DESCRIPTION:" + icsTxt(desc + "\n\nRegistar: " + url), "URL:" + url,
+           "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + icsTxt(titulo), "TRIGGER:PT0M", "END:VALARM", "END:VEVENT");
+  };
+  // um lembrete diário por cada hora diferente (os suplementos de manhã, o que for ao jantar à noite)
+  const horas = {};
+  for (const m of S.meds) (horas[m.hora || hm] = horas[m.hora || hm] || []).push(m.nome);
+  Object.keys(horas).sort().forEach(h => ev("plano-medicacao-" + h.replace(":", ""), hoje(), h, "RRULE:FREQ=DAILY", "Medicação: " + horas[h].join(", "), horas[h].join(", "), APP_URL));
+  S.dias.forEach((w, i) => {
+    const s = ["A", "B", "C"][i % 3];
+    ev("plano-treino-" + BYDAY[w].toLowerCase(), proximoDiaSemana(w), ht, "RRULE:FREQ=WEEKLY;BYDAY=" + BYDAY[w], "Treino: " + nomeSessao(s),
+       SESSIONS[s].ex.map(x => x.n).join(", ") + ". Cerca de 30 minutos.", APP_URL + "#treino");
+  });
+  L.push("END:VCALENDAR");
+  return L.map(icsFold).join("\r\n") + "\r\n";
+}
+el("ics").addEventListener("click", () => {
+  const blob = new Blob([gerarIcs()], {type: "text/calendar"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "plano.ics";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast("Abra o ficheiro para o juntar ao calendário.");
+});
+for (const id of ["horaMed", "horaTreino"]) {
+  const v = ls.get("caderno-" + id); if (v) el(id).value = v;
+  el(id).addEventListener("change", () => ls.set("caderno-" + id, el(id).value));
+}
+
+/* ---------- arranque ---------- */
+window.addEventListener("online", () => agendar(0));
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  if (diaVisto < hoje() && vista === "hoje") diaVisto = hoje();   // app deixada aberta de um dia para o outro
+  if (fila.length) agendar(0); else carregar();
+});
+setView(vistaDoEndereco());
+// Atalho do ícone (carregar e manter premido): regista a medicação toda de hoje.
+if (/[?&]acao=tudo\b/.test(location.search || "")) {
+  history.replaceState(null, "", location.pathname);
+  if (!tomouTudo(hoje()) && S.meds.length) registar("tomasDia", {dia: hoje(), ids: S.meds.map(m => m.id)}, "Medicação toda em " + hoje() + " (atalho)");
+  toast("Medicação de hoje registada.");
+}
+window.addEventListener("hashchange", () => { if (vistaDoEndereco() !== vista) setView(vistaDoEndereco()); });
+(async () => {
+  if (!online()) await procurarToken();
+  if (online()) await carregar();
+  else { importarAntigo(); statusFila(); }
 })();
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
 </body>
 </html>

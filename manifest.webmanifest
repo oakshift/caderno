@@ -1,20 +1,19 @@
 {
-  "name": "Plano de treino e alimentação",
+  "name": "Plano de treino e medicação",
   "short_name": "Plano",
-  "description": "Registo diário de suplementos, proteína, treino, peso e cintura.",
+  "description": "Registo diário de medicação e treino.",
+  "lang": "pt-PT",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F5F3EF",
   "theme_color": "#F5F3EF",
-  "lang": "pt-PT",
+  "shortcuts": [
+    {"name": "Tomei a medicação toda", "short_name": "Tomei tudo", "url": "./?acao=tudo", "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
+    {"name": "Treino de hoje", "short_name": "Treino", "url": "./#treino", "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}]}
+  ],
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
   ]
 }
